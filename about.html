@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About — Contrast CTCA Calcium Score Calculator</title>
+<style>
+  :root {
+    --primary: #1a5276;
+    --primary-light: #2980b9;
+    --accent: #e74c3c;
+    --bg: #f4f6f9;
+    --card: #ffffff;
+    --text: #2c3e50;
+    --muted: #7f8c8d;
+    --border: #dce1e6;
+    --success: #27ae60;
+    --warning: #f39c12;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  header {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+    padding: 1.5rem 1rem;
+    text-align: center;
+  }
+
+  header h1 { font-size: 1.3rem; font-weight: 600; margin-bottom: 0.25rem; }
+  header p { font-size: 0.85rem; opacity: 0.85; }
+
+  nav {
+    display: flex;
+    justify-content: center;
+    gap: 0.25rem;
+    padding: 0.5rem 1rem 0;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  }
+
+  nav a {
+    color: rgba(255,255,255,0.7);
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 0.4rem 0.9rem;
+    border-radius: 6px 6px 0 0;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  nav a:hover { color: white; background: rgba(255,255,255,0.1); }
+  nav a.active { color: var(--primary); background: var(--bg); font-weight: 600; }
+
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+
+  .card {
+    background: var(--card);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .card h2 {
+    font-size: 1rem;
+    color: var(--primary);
+    margin-bottom: 0.75rem;
+  }
+
+  .card h3 {
+    font-size: 0.9rem;
+    color: var(--primary);
+    margin: 0.75rem 0 0.4rem;
+  }
+
+  .card p, .card li {
+    font-size: 0.88rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .card ul {
+    padding-left: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .card li { margin-bottom: 0.35rem; }
+
+  .page-title {
+    text-align: center;
+    padding: 1rem 0 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary);
+  }
+
+  .creator-card {
+    text-align: center;
+    padding: 1.5rem 1.25rem;
+  }
+
+  .creator-card .creator-name {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 0.25rem;
+  }
+
+  .creator-card .creator-title {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 0.75rem;
+  }
+
+  .creator-card p {
+    font-size: 0.88rem;
+    text-align: left;
+  }
+
+  .ref-box {
+    background: #f8f9fa;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.85rem;
+    font-size: 0.82rem;
+    line-height: 1.7;
+    margin: 0.5rem 0;
+  }
+
+  .ref-box .ref-title {
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .ref-box .ref-journal {
+    font-style: italic;
+    color: var(--muted);
+  }
+
+  .warning-box {
+    background: #fdedec;
+    border-left: 3px solid var(--accent);
+    padding: 0.65rem 0.85rem;
+    border-radius: 0 8px 8px 0;
+    font-size: 0.85rem;
+    color: #922b21;
+    margin: 0.5rem 0;
+  }
+
+  .info-box {
+    background: #eaf2f8;
+    border-left: 3px solid var(--primary-light);
+    padding: 0.65rem 0.85rem;
+    border-radius: 0 8px 8px 0;
+    font-size: 0.85rem;
+    color: var(--primary);
+    margin: 0.5rem 0;
+  }
+
+  .version-tag {
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--muted);
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .cta-btn {
+    display: block;
+    width: 100%;
+    padding: 0.85rem;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    margin-bottom: 1rem;
+  }
+
+  strong { color: var(--text); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Contrast CTCA Calcium Score</h1>
+  <p>Nicol / Pavitt Method (2014)</p>
+</header>
+<nav>
+  <a href="index.html">Calculator</a>
+  <a href="guide.html">How to Use</a>
+  <a href="about.html" class="active">About</a>
+</nav>
+
+<div class="container">
+
+  <p class="page-title">About This App</p>
+
+  <!-- Creator -->
+  <div class="card creator-card">
+    <div class="creator-name">Dr Charles Badu-Boateng</div>
+    <div class="creator-title">Created for clinical research and educational use</div>
+    <p>This calculator was developed to provide a practical, accessible tool for deriving coronary artery calcium scores from contrast-enhanced CT coronary angiography using the validated Nicol/Pavitt methodology. It is intended as an aid for clinicians and researchers working with CTCA data, particularly in settings where a dedicated non-contrast calcium scoring acquisition is not available.</p>
+  </div>
+
+  <!-- Purpose -->
+  <div class="card">
+    <h2>Purpose</h2>
+    <p>In standard practice, coronary artery calcium scoring requires a separate non-contrast CT acquisition. This adds radiation dose and scanning time. In many clinical and research scenarios &mdash; particularly retrospective datasets or streamlined CTCA-first pathways &mdash; only contrast-enhanced images are available.</p>
+    <p>This tool implements a validated method for <strong>estimating Agatston calcium score directly from contrast CTCA</strong>, enabling calcium risk stratification without needing a second scan.</p>
+  </div>
+
+  <!-- The Method -->
+  <div class="card">
+    <h2>The Nicol/Pavitt Method</h2>
+    <p>The method was published by Pavitt, Harron, Lindsay, Nicol and colleagues, and proposes a three-step approach:</p>
+
+    <h3>1. Patient-Specific Threshold</h3>
+    <p>Rather than the fixed 130 HU threshold used in non-contrast calcium scoring, a <strong>dynamic threshold</strong> is calculated from the patient's own contrast attenuation:</p>
+    <p style="text-align:center; font-family:'Courier New',monospace; font-weight:600; color:var(--primary); margin:0.5rem 0;">
+      Threshold = Mean HU + 2 &times; SD
+    </p>
+    <p>This accounts for individual variation in contrast opacification and prevents enhanced blood from being misclassified as calcium.</p>
+
+    <h3>2. Modified Agatston Scoring</h3>
+    <p>Calcification is scored on axial 3 mm slices using the patient-specific threshold in place of the standard 130 HU, yielding a raw CTCA calcium score (rCTCAS).</p>
+
+    <h3>3. Regression Conversion</h3>
+    <p>The raw score is converted to an estimated Agatston equivalent using a validated regression equation:</p>
+    <p style="text-align:center; font-family:'Courier New',monospace; font-weight:600; color:var(--primary); margin:0.5rem 0;">
+      CACS = (1.183 &times; rCTCAS) + (0.002 &times; rCTCAS &times; threshold)
+    </p>
+  </div>
+
+  <!-- Performance -->
+  <div class="card">
+    <h2>Reported Performance</h2>
+    <ul>
+      <li>Excellent overall agreement with true (non-contrast) CACS</li>
+      <li>Sensitivity ~85%, specificity ~99% for risk stratification</li>
+      <li>Strong discrimination for &gt;400 vs &lt;400 Agatston categories</li>
+      <li>Potential to eliminate the need for a separate calcium scan, reducing radiation dose</li>
+    </ul>
+  </div>
+
+  <!-- Limitations -->
+  <div class="card">
+    <h2>Limitations</h2>
+    <ul>
+      <li><strong>Contrast variability</strong> &mdash; differences in contrast timing, concentration, and injection rate can affect threshold stability</li>
+      <li><strong>Blooming vs enhancement</strong> &mdash; overlapping attenuation profiles between dense calcification blooming and contrast enhancement</li>
+      <li><strong>Low calcium scores</strong> &mdash; less accurate in the near-zero range, where small threshold errors can materially affect whether a lesion is counted</li>
+      <li><strong>Not universally adopted</strong> &mdash; this method has not yet been incorporated into routine clinical reporting guidelines</li>
+    </ul>
+
+    <div class="warning-box">
+      <strong>SCAD cohorts:</strong> When calcium burden is expected to be 0 or minimal (as in SCAD), this method is at its weakest. Near-zero scores should be reported categorically (0 vs &gt;0) rather than as precise Agatston equivalents.
+    </div>
+  </div>
+
+  <!-- Clinical relevance -->
+  <div class="card">
+    <h2>Clinical Relevance</h2>
+    <ul>
+      <li><strong>NICE pathways</strong> &mdash; where historically a calcium-first approach was used, this method can support CTCA-first strategies</li>
+      <li><strong>Retrospective datasets</strong> &mdash; enables calcium scoring in cohorts where only CTCA exists (e.g. research databases, SCAD registries)</li>
+      <li><strong>Radiation reduction</strong> &mdash; avoids dual acquisition (non-contrast + CTCA)</li>
+      <li><strong>Research integration</strong> &mdash; can be combined with other CTCA-derived metrics such as FAI, tortuosity, and plaque characterisation</li>
+    </ul>
+  </div>
+
+  <!-- Reference -->
+  <div class="card">
+    <h2>Reference</h2>
+    <div class="ref-box">
+      <span class="ref-title">Deriving coronary artery calcium scores from CT coronary angiography.</span><br>
+      Pavitt CW, Harron K, Lindsay AC, Ray R, Sheppard MN, Wilde P, Defined E, Nicol ED.<br>
+      <span class="ref-journal">International Journal of Cardiovascular Imaging (2014).</span>
+    </div>
+
+    <div class="info-box">
+      This calculator implements the methodology as described in the above publication. It is provided for clinical research and educational purposes and should not be used as the sole basis for clinical decision-making.
+    </div>
+  </div>
+
+  <!-- Disclaimer -->
+  <div class="card">
+    <h2>Disclaimer</h2>
+    <p>This tool is provided <strong>for clinical research and educational use only</strong>. It is not a validated diagnostic device and has not been approved by any regulatory body for clinical decision-making.</p>
+    <p>Results should be interpreted in clinical context by qualified professionals. The developer accepts no liability for clinical decisions made on the basis of this calculator's output.</p>
+    <p>All calculations are performed locally in your browser. No patient data is transmitted, stored, or collected.</p>
+  </div>
+
+  <a href="index.html" class="cta-btn">Open Calculator</a>
+
+  <p class="version-tag">v1.0 &middot; 2026</p>
+
+</div>
+
+</body>
+</html>

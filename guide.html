@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to Use — Contrast CTCA Calcium Score Calculator</title>
+<style>
+  :root {
+    --primary: #1a5276;
+    --primary-light: #2980b9;
+    --accent: #e74c3c;
+    --bg: #f4f6f9;
+    --card: #ffffff;
+    --text: #2c3e50;
+    --muted: #7f8c8d;
+    --border: #dce1e6;
+    --success: #27ae60;
+    --warning: #f39c12;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  header {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+    padding: 1.5rem 1rem;
+    text-align: center;
+  }
+
+  header h1 { font-size: 1.3rem; font-weight: 600; margin-bottom: 0.25rem; }
+  header p { font-size: 0.85rem; opacity: 0.85; }
+
+  nav {
+    display: flex;
+    justify-content: center;
+    gap: 0.25rem;
+    padding: 0.5rem 1rem 0;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  }
+
+  nav a {
+    color: rgba(255,255,255,0.7);
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 0.4rem 0.9rem;
+    border-radius: 6px 6px 0 0;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  nav a:hover { color: white; background: rgba(255,255,255,0.1); }
+  nav a.active { color: var(--primary); background: var(--bg); font-weight: 600; }
+
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+
+  .card {
+    background: var(--card);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .card h2 {
+    font-size: 1rem;
+    color: var(--primary);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .step-badge {
+    background: var(--primary);
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .card p, .card li {
+    font-size: 0.88rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .card ul {
+    padding-left: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .card li {
+    margin-bottom: 0.35rem;
+  }
+
+  .highlight-box {
+    background: #eaf2f8;
+    border-left: 3px solid var(--primary-light);
+    padding: 0.65rem 0.85rem;
+    border-radius: 0 8px 8px 0;
+    font-size: 0.85rem;
+    color: var(--primary);
+    margin: 0.5rem 0;
+  }
+
+  .warning-box {
+    background: #fef9e7;
+    border-left: 3px solid var(--warning);
+    padding: 0.65rem 0.85rem;
+    border-radius: 0 8px 8px 0;
+    font-size: 0.85rem;
+    color: #7d6608;
+    margin: 0.5rem 0;
+  }
+
+  .tip-box {
+    background: #eafaf1;
+    border-left: 3px solid var(--success);
+    padding: 0.65rem 0.85rem;
+    border-radius: 0 8px 8px 0;
+    font-size: 0.85rem;
+    color: #1e8449;
+    margin: 0.5rem 0;
+  }
+
+  .formula-box {
+    background: #f8f9fa;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem;
+    text-align: center;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    margin: 0.75rem 0;
+    color: var(--primary);
+    font-weight: 600;
+  }
+
+  .diagram {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 0.75rem 0;
+    flex-wrap: wrap;
+  }
+
+  .diagram-step {
+    background: var(--primary);
+    color: white;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-align: center;
+    min-width: 100px;
+  }
+
+  .diagram-arrow {
+    color: var(--primary-light);
+    font-size: 1.2rem;
+    font-weight: 700;
+  }
+
+  .page-title {
+    text-align: center;
+    padding: 1rem 0 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary);
+  }
+
+  .cta-btn {
+    display: block;
+    width: 100%;
+    padding: 0.85rem;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    margin-bottom: 1rem;
+  }
+
+  .screenshot-placeholder {
+    background: #f0f3f6;
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.8rem;
+    margin: 0.5rem 0;
+  }
+
+  strong { color: var(--text); }
+  code {
+    background: #f0f3f6;
+    padding: 0.15rem 0.35rem;
+    border-radius: 4px;
+    font-size: 0.82rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Contrast CTCA Calcium Score</h1>
+  <p>Nicol / Pavitt Method (2014)</p>
+</header>
+<nav>
+  <a href="index.html">Calculator</a>
+  <a href="guide.html" class="active">How to Use</a>
+  <a href="about.html">About</a>
+</nav>
+
+<div class="container">
+
+  <p class="page-title">Quick Start Guide</p>
+
+  <!-- Overview -->
+  <div class="card">
+    <h2>What This Calculator Does</h2>
+    <p>This tool estimates an <strong>Agatston calcium score</strong> from a <strong>contrast-enhanced CTCA</strong>, so you don't need a separate non-contrast calcium scoring scan.</p>
+    <p>It uses a patient-specific HU threshold and a validated regression formula from the Nicol/Pavitt method.</p>
+
+    <div class="diagram">
+      <div class="diagram-step">Measure contrast<br>in vessel</div>
+      <span class="diagram-arrow">&rarr;</span>
+      <div class="diagram-step">Calculate<br>threshold</div>
+      <span class="diagram-arrow">&rarr;</span>
+      <div class="diagram-step">Score calcium<br>on CTCA</div>
+      <span class="diagram-arrow">&rarr;</span>
+      <div class="diagram-step">Derived<br>CACS</div>
+    </div>
+  </div>
+
+  <!-- Step 1 -->
+  <div class="card">
+    <h2><span class="step-badge">1</span> Measure Contrast Attenuation</h2>
+    <p>On your CTCA images, place a <strong>region of interest (ROI)</strong> in a contrast-filled vessel:</p>
+    <ul>
+      <li><strong>Where:</strong> Left main stem (LMS) or proximal right coronary artery (RCA)</li>
+      <li><strong>ROI size:</strong> Approximately 0.1 cm&sup2;</li>
+      <li><strong>What to record:</strong> The <strong>mean HU</strong> and <strong>standard deviation (SD)</strong> from the ROI</li>
+    </ul>
+
+    <div class="highlight-box">
+      <strong>On your workstation:</strong> Use the elliptical ROI tool. Place it within the lumen, avoiding the vessel wall. Most CT workstations will display mean and SD automatically.
+    </div>
+
+    <div class="tip-box">
+      <strong>Tip:</strong> Choose a segment with good contrast opacification and minimal artefact. Avoid areas with stents, heavy calcification, or motion artefact.
+    </div>
+
+    <p>Enter these two values (<strong>Mean HU</strong> and <strong>SD</strong>) into the first section of the calculator. The dynamic threshold will calculate automatically as you type.</p>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="card">
+    <h2><span class="step-badge">2</span> Understand the Dynamic Threshold</h2>
+    <p>In a standard non-contrast calcium score, the threshold is fixed at <strong>130 HU</strong>. But on contrast CTCA, the vessel lumen is already enhanced well above 130 HU, so that threshold doesn't work.</p>
+    <p>Instead, this method calculates a <strong>patient-specific threshold</strong>:</p>
+
+    <div class="formula-box">
+      Threshold = Mean HU + 2 &times; SD
+    </div>
+
+    <p>This accounts for individual variation in contrast opacification. Any voxel above this threshold is considered calcification rather than contrast enhancement.</p>
+
+    <div class="warning-box">
+      <strong>Why this matters:</strong> If contrast is very bright (high mean HU), the threshold rises accordingly, preventing contrast from being mistaken for calcium.
+    </div>
+  </div>
+
+  <!-- Step 3 -->
+  <div class="card">
+    <h2><span class="step-badge">3</span> Score Calcification on CTCA</h2>
+    <p>Using the calculated threshold (shown in the yellow box), score calcification on your CTCA using the <strong>Agatston-style approach</strong>:</p>
+    <ul>
+      <li>Use <strong>axial 3 mm slices</strong></li>
+      <li>Identify any voxels <strong>above your dynamic threshold</strong></li>
+      <li>Apply Agatston weighting factors based on peak HU (relative to your threshold)</li>
+      <li>Sum across all slices to get the <strong>raw CTCA calcium score (rCTCAS)</strong></li>
+    </ul>
+
+    <div class="highlight-box">
+      <strong>Practical note:</strong> If your workstation has a calcium scoring module, you may be able to manually adjust the detection threshold from 130 HU to your calculated threshold, then use the standard scoring workflow.
+    </div>
+
+    <p>Enter the resulting <strong>rCTCAS</strong> value into the second section of the calculator.</p>
+  </div>
+
+  <!-- Step 4 -->
+  <div class="card">
+    <h2><span class="step-badge">4</span> Get Your Derived Score</h2>
+    <p>Press <strong>"Calculate Derived CACS"</strong>. The app applies the Nicol/Pavitt conversion formula:</p>
+
+    <div class="formula-box">
+      CACS = (1.183 &times; rCTCAS) + (0.002 &times; rCTCAS &times; threshold)
+    </div>
+
+    <p>You'll see:</p>
+    <ul>
+      <li><strong>Estimated Agatston Score</strong> &mdash; the derived calcium score</li>
+      <li><strong>Risk category</strong> &mdash; from "No calcification" to "Severe" with a colour-coded bar</li>
+      <li><strong>Working details</strong> &mdash; threshold used, raw score, and the full formula with your values</li>
+      <li><strong>SCAD-specific reporting</strong> &mdash; simplified categorisation for SCAD cohorts (expandable)</li>
+    </ul>
+  </div>
+
+  <!-- Risk categories -->
+  <div class="card">
+    <h2>Risk Categories</h2>
+    <p>The calculator categorises results using standard Agatston thresholds:</p>
+    <ul>
+      <li><strong>0</strong> &mdash; No calcification detected</li>
+      <li><strong>1&ndash;10</strong> &mdash; Minimal calcification</li>
+      <li><strong>11&ndash;100</strong> &mdash; Mild calcification</li>
+      <li><strong>101&ndash;400</strong> &mdash; Moderate calcification</li>
+      <li><strong>&gt;400</strong> &mdash; Severe calcification</li>
+    </ul>
+
+    <div class="warning-box">
+      <strong>Key discrimination:</strong> The Nicol/Pavitt method shows strongest agreement with true CACS for distinguishing <strong>&gt;400 vs &lt;400</strong> categories. Exact scores in the very low range (&lt;10) should be interpreted with more caution.
+    </div>
+  </div>
+
+  <!-- SCAD note -->
+  <div class="card">
+    <h2>Using This for SCAD Research</h2>
+    <p>For SCAD cohorts, where calcium burden is typically expected to be near zero, the method has specific limitations:</p>
+    <ul>
+      <li>Small thresholding errors from contrast, noise, or blooming can affect whether a lesion is counted at all</li>
+      <li>The method was validated across a broad range of scores, not optimised for near-zero precision</li>
+    </ul>
+    <p><strong>Recommended approach:</strong></p>
+    <ul>
+      <li>Primary categorisation: <strong>0 vs &gt;0</strong></li>
+      <li>Secondary categorisation: <strong>0, 1&ndash;10, &gt;10</strong> (only if image quality is excellent)</li>
+      <li>Frame as <em>"derived contrast-CTCA calcium burden"</em> rather than exact Agatston equivalent</li>
+    </ul>
+
+    <div class="tip-box">
+      When a low score is returned, the calculator will automatically display a SCAD-specific caveat and simplified categorisation to help you report appropriately.
+    </div>
+  </div>
+
+  <!-- Go to calculator -->
+  <a href="index.html" class="cta-btn">Open Calculator</a>
+
+</div>
+
+</body>
+</html>

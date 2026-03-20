@@ -1,0 +1,22 @@
+{
+  "name": "Contrast CTCA Calcium Score Calculator",
+  "short_name": "CTCA Calcium",
+  "description": "Derive coronary artery calcium scores from contrast CTCA using the Nicol/Pavitt method",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#1a5276",
+  "theme_color": "#1a5276",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

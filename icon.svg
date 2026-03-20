@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a5276"/>
+      <stop offset="100%" style="stop-color:#2980b9"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="80" fill="url(#bg)"/>
+  <!-- Heart shape -->
+  <g transform="translate(256,200)" fill="none" stroke="white" stroke-width="16" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M0,40 C0,40 -80,-40 -80,-80 C-80,-120 -40,-140 0,-100 C40,-140 80,-120 80,-80 C80,-40 0,40 0,40Z" fill="rgba(255,255,255,0.15)"/>
+  </g>
+  <!-- Calcium dots -->
+  <circle cx="230" cy="175" r="10" fill="#f39c12"/>
+  <circle cx="280" cy="160" r="7" fill="#f39c12"/>
+  <circle cx="260" cy="195" r="8" fill="#f39c12"/>
+  <!-- Ca text -->
+  <text x="256" y="370" text-anchor="middle" font-family="system-ui,-apple-system,sans-serif" font-size="72" font-weight="700" fill="white">Ca</text>
+  <text x="256" y="420" text-anchor="middle" font-family="system-ui,-apple-system,sans-serif" font-size="36" font-weight="500" fill="rgba(255,255,255,0.7)">SCORE</text>
+</svg>
