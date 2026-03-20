@@ -297,19 +297,74 @@
   <!-- Step 3 -->
   <div class="card">
     <h2><span class="step-badge">3</span> Score Calcification on CTCA</h2>
-    <p>Using the calculated threshold (shown in the yellow box), score calcification on your CTCA using the <strong>Agatston-style approach</strong>:</p>
+
+    <p>This is the key step. You are doing a <strong>calcium score on your contrast CTCA images</strong>, but instead of the standard 130 HU detection threshold, you use the <strong>dynamic threshold you just calculated</strong> (shown in the yellow box in Step 1).</p>
+
+    <div class="warning-box">
+      <strong>What is the rCTCAS?</strong> It is simply the Agatston score your workstation produces when you run calcium scoring on the <em>contrast CTCA dataset</em> with the detection threshold changed from 130 HU to your calculated threshold. That is it &mdash; it is not a separate measurement or a different scoring system.
+    </div>
+
+    <p><strong>What you need to do:</strong></p>
     <ul>
-      <li>Use <strong>axial 3 mm slices</strong></li>
-      <li>Identify any voxels <strong>above your dynamic threshold</strong></li>
-      <li>Apply Agatston weighting factors based on peak HU (relative to your threshold)</li>
-      <li>Sum across all slices to get the <strong>raw CTCA calcium score (rCTCAS)</strong></li>
+      <li>Load your <strong>contrast CTCA axial dataset</strong> (not an MPR &mdash; the original axial slices, ideally reconstructed at 3 mm)</li>
+      <li>Open the <strong>calcium scoring module</strong> on your workstation</li>
+      <li>Change the <strong>HU detection threshold</strong> from 130 to your calculated threshold (e.g. 440 HU)</li>
+      <li>Run the automated scoring &mdash; the number it gives you is the <strong>rCTCAS</strong></li>
+    </ul>
+
+    <div class="tip-box">
+      <strong>Why 3 mm?</strong> Standard Agatston scoring is validated on 3 mm axial slices. If your CTCA was reconstructed at thinner slices (e.g. 0.6 mm), you will need to create a 3 mm reformat or use your workstation's built-in slice thickness adjustment within the calcium scoring module.
+    </div>
+  </div>
+
+  <!-- Workstation instructions -->
+  <div class="card">
+    <h2><span class="step-badge">3a</span> On syngo.via (Siemens)</h2>
+    <p><strong>Step-by-step:</strong></p>
+    <ul>
+      <li>Open the CTCA dataset and launch the <strong>Ca Scoring</strong> application (or Calcium Scoring under CT Cardiac)</li>
+      <li>If the axial series is not automatically loaded, drag your contrast CTCA axial series into the application</li>
+      <li>In the scoring parameters panel, locate the <strong>Threshold</strong> field &mdash; this defaults to 130 HU</li>
+      <li>Change the threshold to your calculated value (e.g. 440 HU)</li>
+      <li>The software will highlight any voxels above that threshold in the axial images</li>
+      <li>Review and confirm the detected lesions (exclude any obvious artefact, e.g. stent blooming, contrast pooling in side branches)</li>
+      <li>The <strong>total Agatston score</strong> displayed is your <strong>rCTCAS</strong> &mdash; enter this into the calculator</li>
     </ul>
 
     <div class="highlight-box">
-      <strong>Practical note:</strong> If your workstation has a calcium scoring module, you may be able to manually adjust the detection threshold from 130 HU to your calculated threshold, then use the standard scoring workflow.
+      <strong>Note:</strong> syngo.via may flag that contrast-enhanced data is being used. You can proceed &mdash; the modified threshold accounts for the contrast enhancement. If the software does not allow threshold adjustment, you may need to use the <strong>CT Cardiac Function</strong> or <strong>CT Vascular</strong> workflow as an alternative way to access the calcium scoring tools.
     </div>
+  </div>
 
-    <p>Enter the resulting <strong>rCTCAS</strong> value into the second section of the calculator.</p>
+  <div class="card">
+    <h2><span class="step-badge">3b</span> On TeraRecon (Intuition / Aquarius)</h2>
+    <p><strong>Step-by-step:</strong></p>
+    <ul>
+      <li>Load the CTCA dataset and open the <strong>Calcium Scoring</strong> module from the cardiac analysis tools</li>
+      <li>Ensure the <strong>axial source images</strong> are loaded (not thin-slice or MPR reformats)</li>
+      <li>In the scoring settings/preferences, locate the <strong>HU Threshold</strong> parameter &mdash; this defaults to 130 HU</li>
+      <li>Manually change this to your calculated threshold (e.g. 440 HU)</li>
+      <li>Run the <strong>auto-detect</strong> &mdash; the software will identify all regions above your threshold</li>
+      <li>Review each detected lesion: assign it to the correct vessel (LAD, LCx, RCA) if prompted, and <strong>exclude artefacts</strong> (e.g. contrast in a side branch, stent blooming, motion artefact at the RCA ostium)</li>
+      <li>The <strong>total Agatston score</strong> displayed is your <strong>rCTCAS</strong> &mdash; enter this into the calculator</li>
+    </ul>
+
+    <div class="highlight-box">
+      <strong>Note:</strong> In some TeraRecon versions, the threshold adjustment is under <strong>Settings &gt; Calcium Scoring &gt; Detection Threshold</strong> or accessible via the gear icon within the scoring module. If the auto-detect picks up too much noise (especially at lower thresholds), increase the minimum lesion area to 1 mm&sup2; to filter out single-voxel noise.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>What If My Workstation Won't Change the Threshold?</h2>
+    <p>Some workstations lock the 130 HU threshold. In this case you have two options:</p>
+    <ul>
+      <li><strong>Option A:</strong> Use the workstation's <strong>ROI / measurement tools</strong> to manually identify and measure calcified lesions above your threshold on each axial slice. Measure the area (mm&sup2;) and peak HU of each lesion, then calculate the Agatston score manually using the standard weighting factors.</li>
+      <li><strong>Option B:</strong> Export the DICOM data and use a <strong>research tool</strong> (e.g. 3D Slicer, ImageJ/FIJI with the Agatston plugin, or a custom Python script) that allows you to set an arbitrary HU threshold for calcium scoring.</li>
+    </ul>
+
+    <div class="warning-box">
+      <strong>Manual Agatston weighting reminder:</strong> For each lesion, multiply area (mm&sup2;) by a density factor: 1 if peak HU is 1&ndash;1.99&times; threshold, 2 if 2&ndash;2.99&times;, 3 if 3&ndash;3.99&times;, 4 if &ge;4&times; threshold. Sum all lesion scores across all slices = rCTCAS.
+    </div>
   </div>
 
   <!-- Step 4 -->
