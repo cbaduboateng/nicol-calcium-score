@@ -15,6 +15,12 @@ from datetime import date, datetime, timedelta
 from typing import Any
 
 import requests
+from tenacity import (
+    retry,
+    retry_if_exception_type,
+    stop_after_attempt,
+    wait_exponential,
+)
 
 from ..schema import AssetType, Direction, Owner, Trade
 
@@ -43,9 +49,11 @@ def _parse_amount(raw: str | None) -> tuple[float, float]:
 def _parse_date(raw: str | None) -> date | None:
     if not raw:
         return None
-    for fmt in ("%Y-%m-%d", "%m/%d/%Y", "%Y-%m-%dT%H:%M:%S"):
+    # Strip any trailing time component so the date-only formats can match.
+    head = raw.split("T")[0].split(" ")[0].strip()
+    for fmt in ("%Y-%m-%d", "%m/%d/%Y"):
         try:
-            return datetime.strptime(raw[: len(fmt)], fmt).date()
+            return datetime.strptime(head, fmt).date()
         except ValueError:
             continue
     return None
@@ -85,6 +93,12 @@ class QuiverClient:
             "Authorization": f"Bearer {self.api_key}",
         }
 
+    @retry(
+        reraise=True,
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=2, min=2, max=20),
+        retry=retry_if_exception_type((requests.RequestException,)),
+    )
     def _fetch_raw(self, since: date) -> list[dict[str, Any]]:
         url = f"{self.base_url}/bulk/congresstrading"
         resp = requests.get(url, headers=self._headers(), timeout=self.timeout)

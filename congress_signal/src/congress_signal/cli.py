@@ -109,9 +109,15 @@ def ingest(
         console.print(f"[green]Extracted {len(trades)} trades from House PTRs for {target_year}[/]")
     elif source == "synthetic":
         from .ingest.synthetic import synthetic_actors, synthetic_trades
-        trades = synthetic_trades(end=date.today())
+        # `--days` controls how far back the synthetic tape spans; we also bump
+        # n_trades proportionally so longer windows have enough events to score.
+        n = max(80, days // 2)
+        trades = synthetic_trades(end=date.today(), span_days=days, n_trades=n)
         actors = synthetic_actors()
-        console.print(f"[green]Generated {len(trades)} synthetic trades and {len(actors)} actors[/]")
+        console.print(
+            f"[green]Generated {len(trades)} synthetic trades and {len(actors)} actors "
+            f"over {days} days[/]"
+        )
     else:
         raise click.UsageError(f"Unknown source: {source}")
 
@@ -231,6 +237,9 @@ def rank(cand_path: str, top: int) -> None:
               default="data/processed/trades.parquet")
 @click.option("--candidates", "cand_path", type=click.Path(exists=True),
               default="data/processed/candidates.parquet")
+@click.option("--filter-stack", "filter_stack", type=str,
+              default="actor_quality,trade_signal,clustering",
+              help="Comma-separated filter labels (metadata only, recorded in notes).")
 @click.pass_context
 def backtest(
     ctx: click.Context,
@@ -239,6 +248,7 @@ def backtest(
     holding_period: int,
     trades_path: str,
     cand_path: str,
+    filter_stack: str,
 ) -> None:
     """Run the event-study backtest on flagged candidates."""
     import pandas as pd
@@ -271,7 +281,48 @@ def backtest(
         slippage_bps=cfg["backtest"]["slippage_bps"],
         bootstrap_iterations=cfg["backtest"]["bootstrap_iterations"],
     )
-    console.print_json(json.dumps(result.model_dump(), default=str))
+    payload = result.model_dump()
+    payload["notes"] = f"filter_stack={filter_stack}; " + payload.get("notes", "")
+    console.print_json(json.dumps(payload, default=str))
+
+
+@main.command()
+@click.option("--output", type=click.Path(), default="data/processed/actors.parquet")
+@click.pass_context
+def committees(ctx: click.Context, output: str) -> None:
+    """Populate actors.parquet from unitedstates/congress-legislators."""
+    import pandas as pd
+    from .ingest.committees import load_committee_actors
+
+    cfg = ctx.obj["config"]
+    cache_dir = Path(cfg["paths"]["cache"])
+    actors = load_committee_actors(cache_dir)
+    out_path = Path(output)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame([a.model_dump() for a in actors]).to_parquet(out_path)
+    console.print(f"[green]Wrote {len(actors)} actors to {out_path}[/]")
+
+
+@main.command()
+@click.option("--horizon-days", type=int, default=90)
+@click.option("--output", type=click.Path(), default="data/processed/catalysts.parquet")
+def catalysts(horizon_days: int, output: str) -> None:
+    """Build the forward catalyst calendar."""
+    import pandas as pd
+    from .scoring.catalyst import build_calendar
+
+    events = build_calendar(horizon_days=horizon_days)
+    out_path = Path(output)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    df = pd.DataFrame([{
+        "event_date": e.event_date,
+        "ticker": e.ticker,
+        "category": e.category,
+        "source": e.source,
+        "rationale": e.rationale,
+    } for e in events])
+    df.to_parquet(out_path)
+    console.print(f"[green]Wrote {len(df)} catalyst events to {out_path}[/]")
 
 
 if __name__ == "__main__":
