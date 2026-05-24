@@ -1,0 +1,51 @@
+# congress-signal configuration
+# Environment overrides: CONGRESS_SIGNAL_<DOTTED__KEY>=value
+# (use double-underscore to descend into nested keys)
+
+paths:
+  cache: data/cache
+  raw: data/raw
+  processed: data/processed
+
+ingest:
+  quiver:
+    base_url: "https://api.quiverquant.com/beta"
+    timeout_seconds: 30
+  house_ptr:
+    base_url: "https://disclosures-clerk.house.gov/public_disc"
+    timeout_seconds: 60
+  prices:
+    provider: yfinance  # one of: yfinance, synthetic
+    cache_days: 7
+
+scoring:
+  actor_quality:
+    weights:
+      committee_relevance: 0.30
+      historical_alpha: 0.30
+      concentration: 0.20
+      skin_in_game: 0.20
+    min_trades_for_alpha: 5
+  trade_signal:
+    options_weight: 0.4
+    size_weight: 0.3
+    speed_weight: 0.2
+    committee_overlap_weight: 0.1
+    size_z_threshold: 1.0
+    fast_disclosure_days: 14
+  cluster:
+    window_days: 14
+    min_actors: 2
+    min_combined_quality: 0.5
+  residual:
+    lookahead_days: 30
+    catalyst_threshold_pct: 5.0
+  asymmetric:
+    minimum_trade_signal_score: 0.5
+    minimum_actor_quality: 0.3
+
+backtest:
+  benchmark: "SPY"
+  slippage_bps: 25.0
+  bootstrap_iterations: 1000
+  default_holding_period_days: 90
