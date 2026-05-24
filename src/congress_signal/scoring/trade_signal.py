@@ -13,7 +13,7 @@ import statistics
 from collections import defaultdict
 
 from ..schema import Actor, AssetType, Direction, Trade, TradeSignal
-from .actor import COMMITTEE_TICKER_HINTS
+from .actor_quality import COMMITTEE_TICKER_HINTS
 
 
 def _committee_overlap(actor: Actor, ticker: str) -> bool:
