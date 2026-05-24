@@ -11,6 +11,7 @@ dist/
 htmlcov/
 .ruff_cache/
 .mypy_cache/
+.hypothesis/
 
 # Virtual envs
 .venv/
