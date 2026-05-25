@@ -1,0 +1,14 @@
+pydantic>=2.5
+pandas>=2.0
+numpy>=1.24
+click>=8.1
+rich>=13.0
+pyyaml>=6.0
+requests>=2.31
+pyarrow>=14.0
+tenacity>=8.2
+streamlit>=1.36
+yfinance>=0.2.40
+
+# install the package itself (src layout, configured via pyproject.toml)
+-e .
