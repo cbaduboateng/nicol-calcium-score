@@ -21,6 +21,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from .mobile import APP_ICON_EMOJI, APP_TITLE, inject as inject_mobile
 from .ticker_facts import lookup as ticker_lookup
 
 
@@ -214,9 +215,23 @@ def main() -> None:
         )
 
     processed = Path("data/processed")
-    st.set_page_config(page_title="congress-signal", layout="wide")
-    st.title("congress-signal — asymmetric trade screen")
-    st.caption("Read-only research view. Refresh the underlying parquet files to update.")
+    st.set_page_config(
+        page_title=APP_TITLE,
+        page_icon=APP_ICON_EMOJI,
+        layout="wide",
+        initial_sidebar_state="collapsed",
+        menu_items={
+            "Get help": None,
+            "Report a Bug": None,
+            "About": f"{APP_TITLE} — read-only research view of congressional trading signals.",
+        },
+    )
+    inject_mobile(st)
+    st.title(f"{APP_ICON_EMOJI} {APP_TITLE}")
+    st.caption(
+        "Asymmetric-trade screen for congressional disclosures. "
+        "Read-only research view — not financial advice."
+    )
 
     trades = _read_parquet(processed / "trades.parquet")
     actors = _read_parquet(processed / "actors.parquet")
@@ -229,6 +244,28 @@ def main() -> None:
             "`csig ingest --source synthetic && csig score`"
         )
         return
+
+    # Surface the data source so the user knows whether this is live or
+    # synthetic. Quiver-sourced trades carry source=='quiver'; the synthetic
+    # generator uses 'synthetic'.
+    sources = (
+        set(trades["source"].dropna().unique()) if "source" in trades.columns else set()
+    )
+    if "quiver" in sources or "house_ptr" in sources or "senate_efd" in sources:
+        live = ", ".join(sorted(s for s in sources if s != "synthetic"))
+        last_disc = (
+            pd.to_datetime(trades["disclosure_date"]).max()
+            if "disclosure_date" in trades.columns else None
+        )
+        label = f"📡 Live data from **{live}**"
+        if last_disc is not None and not pd.isna(last_disc):
+            label += f" — latest disclosure {last_disc.strftime('%-d %b %Y')}"
+        st.success(label)
+    elif "synthetic" in sources or not sources:
+        st.info(
+            "🧪 Showing **synthetic data** (no QUIVER_API_KEY configured). "
+            "Set the secret in Streamlit Cloud → Settings → Secrets to switch to live trades."
+        )
 
     enriched = _enrich_candidates(candidates, trades, actors)
 
