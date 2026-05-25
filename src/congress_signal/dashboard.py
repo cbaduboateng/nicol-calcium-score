@@ -21,6 +21,17 @@ from pathlib import Path
 
 import pandas as pd
 
+from .ticker_facts import lookup as ticker_lookup
+
+
+CAP_LABEL = {
+    "mega": "Mega cap (>$200B)",
+    "large": "Large cap ($10B-$200B)",
+    "mid": "Mid cap ($2B-$10B)",
+    "small": "Small cap ($300M-$2B)",
+    "micro": "Micro cap (<$300M)",
+}
+
 
 def _read_parquet(path: Path) -> pd.DataFrame:
     if not path.exists():
@@ -37,7 +48,8 @@ def _enrich_candidates(
     actors: pd.DataFrame,
 ) -> pd.DataFrame:
     """Join candidates back to trades (for dates / amount / direction) and
-    actors (for human-readable name + state)."""
+    actors (for human-readable name + state), plus static ticker facts
+    (company name, exchange, cap bucket)."""
     if candidates.empty:
         return candidates
 
@@ -54,7 +66,6 @@ def _enrich_candidates(
         enriched = enriched.merge(
             trades[trade_cols], on="trade_id", how="left",
         )
-        # Days between trade and filing — the "speed" component.
         if "transaction_date" in enriched.columns and "disclosure_date" in enriched.columns:
             enriched["days_to_disclose"] = (
                 pd.to_datetime(enriched["disclosure_date"])
@@ -66,12 +77,17 @@ def _enrich_candidates(
                 if c in actors.columns]
         enriched = enriched.merge(actors[cols], on="actor_id", how="left")
         if "name" in enriched.columns:
-            # Fall back to actor_id when we don't have a name yet.
             enriched["who"] = enriched["name"].fillna(enriched["actor_id"])
         else:
             enriched["who"] = enriched["actor_id"]
     else:
         enriched["who"] = enriched["actor_id"]
+
+    facts = enriched["ticker"].apply(ticker_lookup)
+    enriched["company"] = facts.apply(lambda f: f.name if f else None)
+    enriched["exchange"] = facts.apply(lambda f: f.exchange if f else None)
+    enriched["cap"] = facts.apply(lambda f: f.cap if f else None)
+    enriched["sector"] = facts.apply(lambda f: f.sector if f else None)
 
     if "signal_types" in enriched.columns:
         enriched["signal_types"] = enriched["signal_types"].apply(
@@ -80,6 +96,112 @@ def _enrich_candidates(
             else str(x)
         )
     return enriched
+
+
+def _format_amount(lo: float | None, hi: float | None) -> str:
+    if lo is None and hi is None:
+        return "unknown"
+    if lo and hi and lo > 0:
+        return f"${lo:,.0f} – ${hi:,.0f}"
+    return f"up to ${hi:,.0f}" if hi else "unknown"
+
+
+def _narrative(row: pd.Series) -> str:
+    """Build a plain-English story explaining why this specific trade matters."""
+    parts: list[str] = []
+
+    who = row.get("who") or row.get("actor_id") or "A member"
+    chamber = (row.get("chamber") or "").lower()
+    chamber_word = {"house": "(House)", "senate": "(Senate)"}.get(chamber, "")
+    state = row.get("state")
+    party = row.get("party")
+    when_raw = row.get("transaction_date")
+    when = (
+        pd.to_datetime(when_raw).strftime("%-d %B %Y")
+        if pd.notna(when_raw) else "(date unknown)"
+    )
+    direction = row.get("direction") or "trade"
+    direction_word = {
+        "buy": "bought", "sell": "sold", "partial_sale": "partially sold",
+        "exchange": "exchanged",
+    }.get(direction, direction)
+
+    ticker = row.get("ticker", "?")
+    company = row.get("company") or ticker
+    amount = _format_amount(row.get("amount_min_usd"), row.get("amount_max_usd"))
+
+    who_prefix = who
+    if state and party:
+        who_prefix = f"{who} ({party[:1].upper()}-{state})"
+    if chamber_word:
+        who_prefix = f"{who_prefix} {chamber_word}"
+
+    parts.append(
+        f"On {when}, {who_prefix} {direction_word} {amount} of "
+        f"**{company} ({ticker})**."
+    )
+
+    days = row.get("days_to_disclose")
+    if pd.notna(days):
+        if days <= 14:
+            parts.append(
+                f"They disclosed it in {int(days)} days — well inside the "
+                "STOCK-Act 45-day window, which the model treats as a "
+                "high-conviction signal."
+            )
+        elif days <= 30:
+            parts.append(f"Disclosed {int(days)} days later (typical lag).")
+        else:
+            parts.append(
+                f"Disclosed only {int(days)} days later, near the legal "
+                "filing limit — a stale signal by the time it surfaced."
+            )
+
+    cluster = row.get("cluster_size") or 0
+    if cluster >= 3:
+        parts.append(
+            f"**{int(cluster)} members of Congress traded {ticker} in the "
+            "same two-week window** — a cluster signal worth following."
+        )
+    elif cluster == 2:
+        parts.append(f"One other member also traded {ticker} in the same window.")
+
+    if row.get("catalyst_pending"):
+        parts.append(
+            "A known catalyst is pending (contract award cycle, hearing, "
+            "or budget event) — see the Catalyst tab."
+        )
+
+    if row.get("signal_types"):
+        parts.append(f"Filter triggers: _{row['signal_types']}_.")
+
+    return "\n\n".join(parts)
+
+
+def _render_ticker_card(st, row: pd.Series) -> None:
+    ticker = row.get("ticker", "?")
+    fact = ticker_lookup(ticker)
+
+    st.markdown(f"### {fact.name if fact else ticker}  ·  `{ticker}`")
+    if fact:
+        meta = " · ".join([
+            fact.exchange,
+            CAP_LABEL.get(fact.cap, fact.cap.title()),
+            fact.sector,
+        ])
+        st.caption(meta)
+        with st.container(border=True):
+            st.markdown(f"**What they do.** {fact.summary}")
+            st.markdown(f"**Why it tends to be signal-worthy.** {fact.why_it_matters}")
+    else:
+        st.info(
+            f"No reference data on file for {ticker}. Add it to "
+            "`congress_signal/ticker_facts.py` to enrich this view."
+        )
+
+    st.markdown("**Why this specific trade was flagged:**")
+    with st.container(border=True):
+        st.markdown(_narrative(row))
 
 
 def main() -> None:
@@ -118,16 +240,17 @@ def main() -> None:
         st.subheader("Top asymmetric candidates")
         st.caption(
             "Highest-scoring trades the model flagged. Higher score = better "
-            "risk/reward by this filter stack."
+            "risk/reward by this filter stack. Click a row's ticker below to see details."
         )
         top_n = st.slider("Top N", 5, 50, 20)
-        view = enriched.sort_values("asymmetry_score", ascending=False).head(top_n)
+        view = enriched.sort_values("asymmetry_score", ascending=False).head(top_n).reset_index(drop=True)
 
         display_cols = [c for c in (
-            "transaction_date", "ticker", "who", "chamber", "state",
+            "transaction_date", "ticker", "company", "exchange", "cap",
+            "who", "chamber", "state",
             "direction", "amount_max_usd", "days_to_disclose",
             "asymmetry_score", "cluster_size", "catalyst_pending",
-            "signal_types", "rationale",
+            "signal_types",
         ) if c in view.columns]
         st.dataframe(
             view[display_cols],
@@ -136,25 +259,46 @@ def main() -> None:
             column_config={
                 "transaction_date": st.column_config.DateColumn("Trade date"),
                 "ticker": "Ticker",
+                "company": "Company",
+                "exchange": "Exchange",
+                "cap": st.column_config.TextColumn(
+                    "Cap", help="Market-cap bucket: mega >$200B, large $10-200B, mid $2-10B, small $300M-$2B, micro <$300M"),
                 "who": "Member",
                 "chamber": "Chamber",
                 "state": "State",
                 "direction": "Buy/Sell",
                 "amount_max_usd": st.column_config.NumberColumn(
-                    "Amount (upper bracket)", format="$%d"),
+                    "Amount (upper)", format="$%d"),
                 "days_to_disclose": st.column_config.NumberColumn(
-                    "Days to file", help="Days between the trade and the public disclosure. Faster filings imply higher conviction."),
+                    "Days to file", help="Days between the trade and the public disclosure. Faster = higher conviction signal."),
                 "asymmetry_score": st.column_config.NumberColumn(
                     "Score", format="%.2f",
                     help="Composite signal. Higher = better risk/reward."),
                 "cluster_size": st.column_config.NumberColumn(
-                    "Cluster", help="How many members traded the same ticker around the same time."),
+                    "Cluster", help="How many members traded the same ticker in the same window."),
                 "catalyst_pending": st.column_config.CheckboxColumn(
-                    "Catalyst ahead", help="A known catalyst (contract award, hearing) is pending."),
+                    "Catalyst", help="A known catalyst is pending."),
                 "signal_types": "Why flagged",
-                "rationale": "Notes",
             },
         )
+
+        st.markdown("---")
+        st.markdown("#### Details")
+        choice_options = [
+            (
+                f"{i+1}. {row.get('company') or row['ticker']} "
+                f"({row['ticker']}) — {row.get('who','?')} on "
+                f"{pd.to_datetime(row.get('transaction_date')).strftime('%Y-%m-%d') if pd.notna(row.get('transaction_date')) else '?'}"
+            )
+            for i, row in view.iterrows()
+        ]
+        selected = st.selectbox(
+            "Show details for:", options=list(range(len(view))),
+            format_func=lambda i: choice_options[i] if i < len(choice_options) else "?",
+        )
+        if selected is not None and selected < len(view):
+            _render_ticker_card(st, view.iloc[selected])
+
         st.caption(
             "This is a research screen, not a recommendation. Disclosure "
             "amounts are filed in brackets, so 'Amount' is the bracket ceiling."
@@ -218,14 +362,18 @@ def main() -> None:
             if clusters.empty:
                 st.info("No active clusters with cluster_size >= 2.")
             else:
+                agg = {
+                    "cluster_size": ("cluster_size", "max"),
+                    "mean_score": ("asymmetry_score", "mean"),
+                    "members": ("who", lambda s: ", ".join(sorted(set(s)))),
+                }
+                if "transaction_date" in clusters.columns:
+                    agg["latest_trade"] = ("transaction_date", "max")
+                if "company" in clusters.columns:
+                    agg["company"] = ("company", "first")
                 cluster_view = (
                     clusters.groupby("ticker")
-                    .agg(
-                        cluster_size=("cluster_size", "max"),
-                        mean_score=("asymmetry_score", "mean"),
-                        members=("who", lambda s: ", ".join(sorted(set(s)))),
-                        latest_trade=("transaction_date", "max") if "transaction_date" in clusters.columns else ("ticker", "count"),
-                    )
+                    .agg(**agg)
                     .reset_index()
                     .sort_values("mean_score", ascending=False)
                 )
@@ -233,7 +381,8 @@ def main() -> None:
                     cluster_view, use_container_width=True, hide_index=True,
                     column_config={
                         "ticker": "Ticker",
-                        "cluster_size": "Members in cluster",
+                        "company": "Company",
+                        "cluster_size": "Members",
                         "mean_score": st.column_config.NumberColumn(
                             "Avg score", format="%.2f"),
                         "members": "Who",
@@ -258,11 +407,17 @@ def main() -> None:
             view = catalysts.copy()
             view["event_date"] = pd.to_datetime(view["event_date"])
             view = view[view["event_date"] >= today].sort_values("event_date")
+            # Decorate with company name where available.
+            view["company"] = view["ticker"].apply(
+                lambda t: (ticker_lookup(t).name if ticker_lookup(t) else "")
+            )
             st.dataframe(
-                view, use_container_width=True, hide_index=True,
+                view[["event_date", "ticker", "company", "category", "source", "rationale"]],
+                use_container_width=True, hide_index=True,
                 column_config={
                     "event_date": st.column_config.DateColumn("When"),
                     "ticker": "Ticker",
+                    "company": "Company",
                     "category": "Type",
                     "source": "Source",
                     "rationale": "Why",
