@@ -324,6 +324,23 @@ _MINIMAL: tuple[tuple[str, str, str, str, str], ...] = (
     # ---- misc widely-traded ----
     ("STT", "State Street", "NYSE", "large", "Custody bank"),
     ("F", "Ford Motor", "NYSE", "large", "Auto manufacturer"),
+    ("ANET", "Arista Networks", "NYSE", "large", "Networking hardware (cloud)"),
+    ("LULU", "Lululemon Athletica", "NASDAQ", "large", "Athletic apparel"),
+    ("PTC", "PTC Inc", "NASDAQ", "mid", "Industrial software / CAD"),
+    ("WDAY", "Workday", "NASDAQ", "large", "HR / finance SaaS"),
+    ("DDOG", "Datadog", "NASDAQ", "large", "Observability SaaS"),
+    ("MDB", "MongoDB", "NASDAQ", "large", "Database software"),
+    ("ZS", "Zscaler", "NASDAQ", "large", "Cloud security"),
+    ("OKTA", "Okta", "NASDAQ", "large", "Identity SaaS"),
+    ("TEAM", "Atlassian", "NASDAQ", "large", "Developer SaaS"),
+    ("SHOP", "Shopify", "NYSE", "large", "E-commerce platform"),
+    ("PYPL", "PayPal Holdings", "NASDAQ", "large", "Digital payments"),
+    ("SQ", "Block (Square)", "NYSE", "large", "Payments / Bitcoin"),
+    ("ROKU", "Roku", "NASDAQ", "mid", "Streaming hardware / ads"),
+    ("SPOT", "Spotify Technology", "NYSE", "large", "Music streaming"),
+    ("BABA", "Alibaba", "NYSE", "large", "China e-commerce"),
+    ("PDD", "PDD Holdings (Temu)", "NASDAQ", "large", "China e-commerce"),
+    ("TSM", "Taiwan Semiconductor", "NYSE", "mega", "Foundry semiconductors"),
 )
 
 for _t, _n, _x, _c, _s in _MINIMAL:
