@@ -150,7 +150,10 @@ def _bootstrap_data_if_missing() -> None:
     )
 
     log.info("Running scoring pipeline on %d trades / %d actors", len(trades), len(actors))
-    result = run_full_pipeline(cfg, trades, actors)
+    # Skip the in-bootstrap yfinance fetch — pulling prices for hundreds of
+    # tickers blows the request timeout on Render's free tier. The residual
+    # scoring layer falls back to a neutral verdict when prices are missing.
+    result = run_full_pipeline(cfg, trades, actors, prices=pd.DataFrame())
     log.info("Pipeline produced %d candidates", len(result.candidates))
     pd.DataFrame([c.model_dump() for c in result.candidates]).to_parquet(
         processed / "candidates.parquet"
