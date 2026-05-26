@@ -325,5 +325,38 @@ def catalysts(horizon_days: int, output: str) -> None:
     console.print(f"[green]Wrote {len(df)} catalyst events to {out_path}[/]")
 
 
+@main.command()
+@click.option("--start", type=str, default="2018-01-01",
+              help="Backtest start date (inclusive).")
+@click.option("--end", type=str, default=None,
+              help="Backtest end date (inclusive). Defaults to today.")
+@click.option("--top-n", type=int, default=50,
+              help="Top-N candidates kept by asymmetry_score.")
+@click.option("--slippage-bps", type=float, default=25.0)
+@click.option("--output-dir", type=click.Path(), default="docs")
+def phase0(start: str, end: str | None, top_n: int,
+           slippage_bps: float, output_dir: str) -> None:
+    """Run the Phase 0 real-data validation. Requires QUIVER_API_KEY."""
+    from datetime import date as _date
+    from .validation import run_phase0_validation
+
+    start_d = _date.fromisoformat(start)
+    end_d = _date.fromisoformat(end) if end else None
+    summary = run_phase0_validation(
+        start=start_d, end=end_d,
+        top_n=top_n, slippage_bps=slippage_bps,
+        output_dir=output_dir,
+    )
+    p = summary["primary"]
+    console.print(
+        f"[bold]Verdict:[/] [{'green' if summary['verdict'] == 'PROCEED' else 'red'}]"
+        f"{summary['verdict']}[/]\n"
+        f"Primary horizon ({p.horizon_days}d): delta CAR = {p.delta_car * 100:+.2f}%, "
+        f"95% CI [{p.delta_ci_lower * 100:+.2f}%, {p.delta_ci_upper * 100:+.2f}%]\n"
+        f"Filtered n={p.n_filtered}, Baseline n={p.n_baseline}\n"
+        f"Report: {summary['report_path']}"
+    )
+
+
 if __name__ == "__main__":
     main(obj={})
