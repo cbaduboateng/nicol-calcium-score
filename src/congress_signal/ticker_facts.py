@@ -549,8 +549,56 @@ for _entry in _EXTRA:
         ))
 
 
+# Map fine-grained sector strings (~80 unique values across the facts table)
+# down to ~15 top-level buckets that work as a multiselect filter on the
+# dashboard.
+_CATEGORY_RULES: tuple[tuple[str, tuple[str, ...]], ...] = (
+    ("Defence",            ("defence",)),
+    ("Aerospace / defence", ("aerospace",)),
+    ("Semiconductors",     ("semiconductor", "foundry")),
+    ("Tech / software",    ("software", "saas", "data cloud", "enterprise it",
+                            "cybersecurity", "e-commerce platform", "music streaming")),
+    ("Tech / hardware",    ("tech hardware", "networking", "pcs", "evs", "streaming hardware")),
+    ("Internet / media",   ("advertising", "social media", "streaming media", "media / theme",
+                            "online travel", "short-term rentals", "ride-share")),
+    ("Pharma",             ("pharma",)),
+    ("Biotech",            ("biotech",)),
+    ("Medical devices",    ("medical device", "surgical", "lab equipment",
+                            "life sciences / diagnostics", "animal health",
+                            "public-safety tech")),
+    ("Health insurance",   ("health insurance", "pharmacy / insurance")),
+    ("Financials",         ("bank", "brokerage", "payment", "asset manager",
+                            "alternative asset", "payroll", "crypto")),
+    ("Industrial",         ("industrial", "construction equipment", "agricultural equipment",
+                            "rail freight", "power management", "aerospace engines")),
+    ("Logistics & transport", ("logistics", "airlines", "e-commerce / cloud")),
+    ("Consumer",           ("retail", "restaurants", "coffee", "beverages",
+                            "athletic apparel", "consumer staples", "auto manufacturer")),
+    ("Energy",             ("oil", "oilfield", "integrated oil")),
+    ("Utilities",          ("utility", "regulated utility")),
+    ("Telecom",            ("telecom",)),
+    ("Real estate",        ("reit",)),
+)
+
+
+def top_level_category(sector: str | None) -> str:
+    """Return a top-level grouping label suitable for a multiselect filter."""
+    if not sector:
+        return "Other"
+    s = sector.lower()
+    for label, needles in _CATEGORY_RULES:
+        if any(n in s for n in needles):
+            return label
+    return "Other"
+
+
 def lookup(ticker: str) -> TickerFact | None:
     return _FACTS.get((ticker or "").upper())
+
+
+def category_for_ticker(ticker: str) -> str:
+    f = lookup(ticker)
+    return top_level_category(f.sector) if f else "Other"
 
 
 def known_tickers() -> set[str]:

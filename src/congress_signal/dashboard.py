@@ -22,7 +22,7 @@ from pathlib import Path
 import pandas as pd
 
 from .mobile import APP_ICON_EMOJI, APP_TITLE, inject as inject_mobile
-from .ticker_facts import lookup as ticker_lookup
+from .ticker_facts import lookup as ticker_lookup, top_level_category
 
 
 CAP_LABEL = {
@@ -89,6 +89,7 @@ def _enrich_candidates(
     enriched["exchange"] = facts.apply(lambda f: f.exchange if f else None)
     enriched["cap"] = facts.apply(lambda f: f.cap if f else None)
     enriched["sector"] = facts.apply(lambda f: f.sector if f else None)
+    enriched["category"] = enriched["sector"].apply(top_level_category)
 
     if "signal_types" in enriched.columns:
         enriched["signal_types"] = enriched["signal_types"].apply(
@@ -317,6 +318,17 @@ def main() -> None:
                     placeholder="e.g. NVDA",
                     help="Substring match, case-insensitive.",
                 )
+            # Third row: sector multiselect, full width — most useful single cut
+            # for narrowing to a thematic slice (Defence, Pharma, Semis, etc.).
+            sector_options = sorted(
+                enriched["category"].dropna().unique().tolist(),
+            ) if "category" in enriched.columns else []
+            f_sectors = st.multiselect(
+                "Sectors",
+                options=sector_options,
+                default=[],
+                help="Pick one or more top-level sectors. Leave empty for all.",
+            )
 
         # ---- Apply filters --------------------------------------------------
         filtered = enriched.copy()
@@ -350,6 +362,8 @@ def main() -> None:
             filtered = filtered[
                 filtered["ticker"].astype(str).str.upper().str.contains(needle, na=False)
             ]
+        if f_sectors and "category" in filtered.columns:
+            filtered = filtered[filtered["category"].isin(f_sectors)]
 
         st.caption(f"Showing **{len(filtered)} of {len(enriched)}** candidates after filters.")
         top_n = st.slider("Top N", 5, 100, min(20, max(5, len(filtered))))
