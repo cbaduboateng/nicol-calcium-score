@@ -102,10 +102,17 @@ class QuiverClient:
     def _fetch_raw(self, since: date) -> list[dict[str, Any]]:
         url = f"{self.base_url}/bulk/congresstrading"
         resp = requests.get(url, headers=self._headers(), timeout=self.timeout)
+        log.info(
+            "Quiver GET %s -> HTTP %d (%d bytes)",
+            url, resp.status_code, len(resp.content),
+        )
         resp.raise_for_status()
         rows = resp.json()
+        log.info("Quiver bulk endpoint returned %d total rows", len(rows))
         cutoff = since.isoformat()
-        return [r for r in rows if (r.get("TransactionDate") or "") >= cutoff]
+        filtered = [r for r in rows if (r.get("TransactionDate") or "") >= cutoff]
+        log.info("After filtering to since=%s: %d rows", cutoff, len(filtered))
+        return filtered
 
     def congress_trades(self, since: date | None = None) -> list[Trade]:
         """Fetch and normalise trades since `since` (default: 90 days ago).
