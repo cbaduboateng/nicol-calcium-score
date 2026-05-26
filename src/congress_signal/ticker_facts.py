@@ -583,7 +583,7 @@ _CATEGORY_RULES: tuple[tuple[str, tuple[str, ...]], ...] = (
 
 def top_level_category(sector: str | None) -> str:
     """Return a top-level grouping label suitable for a multiselect filter."""
-    if not sector:
+    if not isinstance(sector, str) or not sector:
         return "Other"
     s = sector.lower()
     for label, needles in _CATEGORY_RULES:
