@@ -109,9 +109,21 @@ class QuiverClient:
         resp.raise_for_status()
         rows = resp.json()
         log.info("Quiver bulk endpoint returned %d total rows", len(rows))
-        cutoff = since.isoformat()
-        filtered = [r for r in rows if (r.get("TransactionDate") or "") >= cutoff]
-        log.info("After filtering to since=%s: %d rows", cutoff, len(filtered))
+        if rows:
+            sample = rows[0]
+            log.info(
+                "Sample row keys: %s; TransactionDate=%r",
+                sorted(sample.keys())[:10], sample.get("TransactionDate"),
+            )
+        # Parse TransactionDate via the multi-format parser before comparing.
+        # The raw API can return MM/DD/YYYY, YYYY-MM-DD, or ISO timestamps;
+        # naive string comparison silently rejects non-ISO formats.
+        filtered: list[dict[str, Any]] = []
+        for r in rows:
+            d = _parse_date(r.get("TransactionDate"))
+            if d is not None and d >= since:
+                filtered.append(r)
+        log.info("After filtering to since=%s: %d rows", since.isoformat(), len(filtered))
         return filtered
 
     def congress_trades(self, since: date | None = None) -> list[Trade]:
