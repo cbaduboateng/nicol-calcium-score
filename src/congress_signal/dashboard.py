@@ -282,8 +282,78 @@ def main() -> None:
             "Highest-scoring trades the model flagged. Higher score = better "
             "risk/reward by this filter stack. Click a row's ticker below to see details."
         )
-        top_n = st.slider("Top N", 5, 50, 20)
-        view = enriched.sort_values("asymmetry_score", ascending=False).head(top_n).reset_index(drop=True)
+
+        # ---- Filters --------------------------------------------------------
+        with st.expander("Filters", expanded=False):
+            row1 = st.columns(3)
+            with row1[0]:
+                f_direction = st.selectbox(
+                    "Direction", ["All", "Buy", "Sell", "Partial sale"], index=0,
+                )
+            with row1[1]:
+                f_chamber = st.selectbox(
+                    "Chamber", ["All", "House", "Senate"], index=0,
+                )
+            with row1[2]:
+                f_window = st.selectbox(
+                    "Time window",
+                    ["All time", "Last 7 days", "Last 30 days", "Last 90 days", "Last 365 days"],
+                    index=0,
+                )
+            row2 = st.columns(3)
+            with row2[0]:
+                f_min_cluster = st.number_input(
+                    "Min cluster size", min_value=1, max_value=20, value=1, step=1,
+                    help="Show only trades where at least N members traded the same ticker in the same window.",
+                )
+            with row2[1]:
+                f_catalyst = st.checkbox(
+                    "Pending catalyst only",
+                    help="Hide trades where the model didn't detect a known upcoming event.",
+                )
+            with row2[2]:
+                f_ticker = st.text_input(
+                    "Ticker contains",
+                    placeholder="e.g. NVDA",
+                    help="Substring match, case-insensitive.",
+                )
+
+        # ---- Apply filters --------------------------------------------------
+        filtered = enriched.copy()
+        if f_direction != "All" and "direction" in filtered.columns:
+            target = f_direction.lower().replace(" ", "_")
+            filtered = filtered[
+                filtered["direction"].astype(str).str.lower().str.startswith(
+                    target.split("_")[0]
+                )
+            ]
+        if f_chamber != "All" and "chamber" in filtered.columns:
+            filtered = filtered[
+                filtered["chamber"].astype(str).str.lower() == f_chamber.lower()
+            ]
+        if f_window != "All time" and "transaction_date" in filtered.columns:
+            days_map = {
+                "Last 7 days": 7, "Last 30 days": 30,
+                "Last 90 days": 90, "Last 365 days": 365,
+            }
+            from datetime import timedelta
+            cutoff = pd.Timestamp(date.today() - timedelta(days=days_map[f_window]))
+            filtered = filtered[
+                pd.to_datetime(filtered["transaction_date"]) >= cutoff
+            ]
+        if f_min_cluster > 1 and "cluster_size" in filtered.columns:
+            filtered = filtered[filtered["cluster_size"] >= f_min_cluster]
+        if f_catalyst and "catalyst_pending" in filtered.columns:
+            filtered = filtered[filtered["catalyst_pending"] == True]
+        if f_ticker.strip() and "ticker" in filtered.columns:
+            needle = f_ticker.strip().upper()
+            filtered = filtered[
+                filtered["ticker"].astype(str).str.upper().str.contains(needle, na=False)
+            ]
+
+        st.caption(f"Showing **{len(filtered)} of {len(enriched)}** candidates after filters.")
+        top_n = st.slider("Top N", 5, 100, min(20, max(5, len(filtered))))
+        view = filtered.sort_values("asymmetry_score", ascending=False).head(top_n).reset_index(drop=True)
 
         display_cols = [c for c in (
             "transaction_date", "ticker", "company", "exchange", "cap",
