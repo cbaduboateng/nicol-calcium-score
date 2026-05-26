@@ -29,12 +29,46 @@ logging.basicConfig(
 log = logging.getLogger("streamlit_app")
 
 
+_MAX_DATA_AGE_HOURS = 24
+
+
+def _existing_data_is_fresh_and_live() -> bool:
+    """Skip the bootstrap only when we already have *live* data that isn't
+    too old. Synthetic-only data is treated as stale so the next cold start
+    (after a Quiver key lands) upgrades it to live."""
+    processed = Path("data/processed")
+    candidates_file = processed / "candidates.parquet"
+    trades_file = processed / "trades.parquet"
+    if not (candidates_file.exists() and trades_file.exists()):
+        return False
+    import time
+
+    age_hours = (time.time() - trades_file.stat().st_mtime) / 3600.0
+    if age_hours > _MAX_DATA_AGE_HOURS:
+        log.info("Existing data is %.1fh old; will rebootstrap", age_hours)
+        return False
+    try:
+        import pandas as pd
+
+        sources = set(pd.read_parquet(trades_file)["source"].dropna().unique())
+    except Exception as exc:
+        log.info("Could not inspect existing trades.parquet (%s); rebootstrapping", exc)
+        return False
+    has_live = bool(sources - {"synthetic"})
+    has_key = bool(os.environ.get("QUIVER_API_KEY", "").strip())
+    if has_key and not has_live:
+        log.info("Existing data is synthetic but Quiver key now set; upgrading to live")
+        return False
+    log.info("Existing data is fresh and %s; skipping bootstrap", sources)
+    return True
+
+
 def _bootstrap_data_if_missing() -> None:
     """Generate or fetch the input tape on cold start so the dashboard always
-    has something to render. No-op when files already exist on disk."""
+    has something to render. Skips re-bootstrap only when existing data is
+    both fresh (<24h) and already includes a live source."""
     processed = Path("data/processed")
-    if (processed / "candidates.parquet").exists():
-        log.info("candidates.parquet already exists; skipping bootstrap")
+    if _existing_data_is_fresh_and_live():
         return
 
     processed.mkdir(parents=True, exist_ok=True)
