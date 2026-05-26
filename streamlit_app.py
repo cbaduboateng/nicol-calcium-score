@@ -124,23 +124,67 @@ def _bootstrap_data_if_missing() -> None:
         trades = synthetic_trades(span_days=2555, n_trades=1277)
         actors = synthetic_actors()
     else:
+        # ---- Dedup Quiver entries -----------------------------------------
+        # Quiver often returns multiple rows for what is effectively the
+        # same trade (multiple sub-accounts, amendments, mirror filings).
+        # Collapse by (actor_id, ticker, transaction_date, direction) and
+        # keep the row with the largest disclosure amount so we don't lose
+        # signal.
+        before = len(trades)
+        deduped: dict[tuple, "object"] = {}
+        for t in trades:
+            key = (t.actor_id, t.ticker, t.transaction_date, t.direction)
+            existing = deduped.get(key)
+            if existing is None or (t.amount_max_usd or 0) > (existing.amount_max_usd or 0):
+                deduped[key] = t
+        trades = list(deduped.values())
+        log.info("Deduped trades: %d -> %d", before, len(trades))
+
+        # ---- Build actor list with real names ------------------------------
         log.info("Loading committee actors from unitedstates/congress-legislators")
         try:
             actors = load_committee_actors(Path(cfg["paths"]["cache"]))
         except Exception as exc:
             log.warning("Committee load failed (%s); using synthetic actors", exc)
-            actors = synthetic_actors()
-        # Stub-in any actor_id the trade tape references but the committee
-        # feed doesn't (ex-members, missing bioguide mappings).
+            actors = []
+
         from congress_signal.schema import Actor, Chamber
-        known = {a.actor_id for a in actors}
+
+        actor_by_id: dict[str, Actor] = {a.actor_id: a for a in actors}
+
         for t in trades:
-            if t.actor_id not in known:
-                actors.append(Actor(
-                    actor_id=t.actor_id, name=t.actor_id,
-                    chamber=Chamber.HOUSE,
-                ))
-                known.add(t.actor_id)
+            raw = t.raw_source if isinstance(t.raw_source, dict) else {}
+            quiver_name = (raw.get("Name") or "").strip()
+            quiver_state = (raw.get("State") or "").strip() or None
+            quiver_chamber_raw = (raw.get("Chamber") or "").strip()
+            chamber = (
+                Chamber.SENATE if quiver_chamber_raw == "Senators"
+                else Chamber.HOUSE
+            )
+            party = {
+                "Democratic": "D", "Democrat": "D",
+                "Republican": "R", "Independent": "I",
+            }.get((raw.get("Party") or "").strip())
+
+            existing = actor_by_id.get(t.actor_id)
+            if existing is None:
+                actor_by_id[t.actor_id] = Actor(
+                    actor_id=t.actor_id,
+                    name=quiver_name or t.actor_id,
+                    chamber=chamber,
+                    state=quiver_state,
+                    party=party,
+                )
+            elif existing.name == existing.actor_id and quiver_name:
+                # Committee feed had a bare stub for this bioguide; upgrade
+                # name (and state/party) from Quiver.
+                actor_by_id[t.actor_id] = existing.model_copy(update={
+                    "name": quiver_name,
+                    "state": existing.state or quiver_state,
+                    "party": existing.party or party,
+                })
+
+        actors = list(actor_by_id.values())
 
     pd.DataFrame([t.model_dump() for t in trades]).to_parquet(
         processed / "trades.parquet",

@@ -191,9 +191,12 @@ def _render_ticker_card(st, row: pd.Series) -> None:
             fact.sector,
         ])
         st.caption(meta)
-        with st.container(border=True):
-            st.markdown(f"**What they do.** {fact.summary}")
-            st.markdown(f"**Why it tends to be signal-worthy.** {fact.why_it_matters}")
+        if fact.summary or fact.why_it_matters:
+            with st.container(border=True):
+                if fact.summary:
+                    st.markdown(f"**What they do.** {fact.summary}")
+                if fact.why_it_matters:
+                    st.markdown(f"**Why it tends to be signal-worthy.** {fact.why_it_matters}")
     else:
         st.info(
             f"No reference data on file for {ticker}. Add it to "

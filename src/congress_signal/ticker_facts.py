@@ -29,8 +29,8 @@ class TickerFact:
     exchange: str
     cap: str            # mega / large / mid / small / micro
     sector: str
-    summary: str        # one-paragraph plain-English description
-    why_it_matters: str # one sentence: why this name is signal-worthy
+    summary: str = ""        # one-paragraph plain-English description (optional)
+    why_it_matters: str = "" # one sentence: why this name is signal-worthy
 
 
 _FACTS: dict[str, TickerFact] = {
@@ -190,6 +190,146 @@ _FACTS: dict[str, TickerFact] = {
         "drivers; small policy shifts cause big revaluations.",
     ),
 }
+
+
+# Minimal coverage for the long tail of common congressional-trade tickers.
+# Just name / exchange / cap / sector — no narrative. The detail card will
+# render only the meta line for these.
+_MINIMAL: tuple[tuple[str, str, str, str, str], ...] = (
+    # ---- mega-cap tech ----
+    ("AAPL", "Apple", "NASDAQ", "mega", "Tech hardware"),
+    ("MSFT", "Microsoft", "NASDAQ", "mega", "Tech software"),
+    ("GOOGL", "Alphabet (Class A)", "NASDAQ", "mega", "Tech / advertising"),
+    ("GOOG", "Alphabet (Class C)", "NASDAQ", "mega", "Tech / advertising"),
+    ("AMZN", "Amazon", "NASDAQ", "mega", "E-commerce / cloud"),
+    ("NVDA", "NVIDIA", "NASDAQ", "mega", "Semiconductors / AI"),
+    ("META", "Meta Platforms", "NASDAQ", "mega", "Social media"),
+    ("TSLA", "Tesla", "NASDAQ", "mega", "EVs / energy"),
+    ("BRK.B", "Berkshire Hathaway", "NYSE", "mega", "Conglomerate"),
+    # ---- large-cap tech ----
+    ("NFLX", "Netflix", "NASDAQ", "large", "Streaming media"),
+    ("ORCL", "Oracle", "NYSE", "large", "Enterprise software"),
+    ("CRM", "Salesforce", "NYSE", "large", "Enterprise software"),
+    ("ADBE", "Adobe", "NASDAQ", "large", "Creative software"),
+    ("INTC", "Intel", "NASDAQ", "large", "Semiconductors"),
+    ("AMD", "Advanced Micro Devices", "NASDAQ", "large", "Semiconductors"),
+    ("QCOM", "Qualcomm", "NASDAQ", "large", "Semiconductors / wireless"),
+    ("AVGO", "Broadcom", "NASDAQ", "mega", "Semiconductors / infra software"),
+    ("TXN", "Texas Instruments", "NASDAQ", "large", "Analog semiconductors"),
+    ("MU", "Micron Technology", "NASDAQ", "large", "Memory semiconductors"),
+    ("AMAT", "Applied Materials", "NASDAQ", "large", "Semiconductor equipment"),
+    ("LRCX", "Lam Research", "NASDAQ", "large", "Semiconductor equipment"),
+    ("KLAC", "KLA Corporation", "NASDAQ", "large", "Semiconductor equipment"),
+    ("ASML", "ASML Holding", "NASDAQ", "mega", "Semiconductor equipment"),
+    ("IBM", "IBM", "NYSE", "large", "Enterprise IT"),
+    ("CRWD", "CrowdStrike", "NASDAQ", "large", "Cybersecurity"),
+    ("PANW", "Palo Alto Networks", "NASDAQ", "large", "Cybersecurity"),
+    ("NOW", "ServiceNow", "NYSE", "large", "Enterprise SaaS"),
+    ("SNOW", "Snowflake", "NYSE", "large", "Data cloud"),
+    ("INTU", "Intuit", "NASDAQ", "large", "SMB software"),
+    ("CSCO", "Cisco Systems", "NASDAQ", "large", "Networking hardware"),
+    ("HPQ", "HP Inc", "NYSE", "large", "PCs / printers"),
+    ("DELL", "Dell Technologies", "NYSE", "large", "PCs / enterprise IT"),
+    # ---- pharma / biotech ----
+    ("PFE", "Pfizer", "NYSE", "large", "Pharma"),
+    ("MRK", "Merck & Co", "NYSE", "large", "Pharma"),
+    ("JNJ", "Johnson & Johnson", "NYSE", "mega", "Pharma / consumer health"),
+    ("LLY", "Eli Lilly", "NYSE", "mega", "Pharma (GLP-1, oncology)"),
+    ("ABBV", "AbbVie", "NYSE", "mega", "Pharma"),
+    ("BMY", "Bristol-Myers Squibb", "NYSE", "large", "Pharma"),
+    ("AMGN", "Amgen", "NASDAQ", "large", "Biotech"),
+    ("GILD", "Gilead Sciences", "NASDAQ", "large", "Biotech (HIV, oncology)"),
+    ("MRNA", "Moderna", "NASDAQ", "mid", "Biotech / mRNA"),
+    ("REGN", "Regeneron Pharmaceuticals", "NASDAQ", "large", "Biotech"),
+    ("VRTX", "Vertex Pharmaceuticals", "NASDAQ", "large", "Biotech (CF, sickle cell)"),
+    ("ABT", "Abbott Laboratories", "NYSE", "large", "Medical devices / diagnostics"),
+    ("MDT", "Medtronic", "NYSE", "large", "Medical devices"),
+    ("TMO", "Thermo Fisher Scientific", "NYSE", "large", "Lab equipment"),
+    ("ISRG", "Intuitive Surgical", "NASDAQ", "large", "Surgical robotics"),
+    ("DHR", "Danaher", "NYSE", "large", "Life sciences / diagnostics"),
+    ("ZTS", "Zoetis", "NYSE", "large", "Animal health"),
+    ("CVS", "CVS Health", "NYSE", "large", "Pharmacy / insurance"),
+    ("UNH", "UnitedHealth Group", "NYSE", "mega", "Health insurance"),
+    ("HUM", "Humana", "NYSE", "large", "Health insurance"),
+    ("ELV", "Elevance Health", "NYSE", "large", "Health insurance"),
+    ("CI", "Cigna Group", "NYSE", "large", "Health insurance"),
+    # ---- financials ----
+    ("JPM", "JPMorgan Chase", "NYSE", "mega", "Universal bank"),
+    ("BAC", "Bank of America", "NYSE", "mega", "Universal bank"),
+    ("WFC", "Wells Fargo", "NYSE", "large", "Universal bank"),
+    ("C", "Citigroup", "NYSE", "large", "Universal bank"),
+    ("GS", "Goldman Sachs", "NYSE", "large", "Investment bank"),
+    ("MS", "Morgan Stanley", "NYSE", "large", "Investment bank / wealth mgmt"),
+    ("SCHW", "Charles Schwab", "NYSE", "large", "Brokerage"),
+    ("AXP", "American Express", "NYSE", "large", "Payment cards"),
+    ("V", "Visa", "NYSE", "mega", "Payment network"),
+    ("MA", "Mastercard", "NYSE", "mega", "Payment network"),
+    ("BX", "Blackstone", "NYSE", "large", "Alternative asset manager"),
+    ("BLK", "BlackRock", "NYSE", "large", "Asset manager"),
+    ("COIN", "Coinbase Global", "NASDAQ", "large", "Crypto exchange"),
+    ("USB", "U.S. Bancorp", "NYSE", "large", "Regional bank"),
+    ("PNC", "PNC Financial", "NYSE", "large", "Regional bank"),
+    ("PAYX", "Paychex", "NASDAQ", "large", "Payroll services"),
+    # ---- industrials ----
+    ("BA", "Boeing", "NYSE", "large", "Aerospace / defence"),
+    ("CAT", "Caterpillar", "NYSE", "large", "Construction equipment"),
+    ("GE", "GE Aerospace", "NYSE", "large", "Aerospace engines"),
+    ("MMM", "3M", "NYSE", "large", "Diversified industrial"),
+    ("HON", "Honeywell", "NASDAQ", "large", "Diversified industrial"),
+    ("UNP", "Union Pacific", "NYSE", "large", "Rail freight"),
+    ("UPS", "United Parcel Service", "NYSE", "large", "Logistics / parcel"),
+    ("FDX", "FedEx", "NYSE", "large", "Logistics / parcel"),
+    ("DE", "Deere & Company", "NYSE", "large", "Agricultural equipment"),
+    ("EMR", "Emerson Electric", "NYSE", "large", "Industrial automation"),
+    ("ETN", "Eaton", "NYSE", "large", "Power management"),
+    # ---- consumer ----
+    ("WMT", "Walmart", "NYSE", "mega", "Retail / grocery"),
+    ("COST", "Costco Wholesale", "NASDAQ", "mega", "Membership retail"),
+    ("HD", "Home Depot", "NYSE", "large", "Home improvement retail"),
+    ("LOW", "Lowe's", "NYSE", "large", "Home improvement retail"),
+    ("TGT", "Target", "NYSE", "large", "General merchandise retail"),
+    ("MCD", "McDonald's", "NYSE", "large", "Quick-service restaurants"),
+    ("SBUX", "Starbucks", "NASDAQ", "large", "Coffee retail"),
+    ("KO", "Coca-Cola", "NYSE", "large", "Beverages"),
+    ("PEP", "PepsiCo", "NASDAQ", "large", "Beverages / snacks"),
+    ("NKE", "Nike", "NYSE", "large", "Athletic apparel"),
+    ("DIS", "Walt Disney", "NYSE", "large", "Media / theme parks"),
+    ("PG", "Procter & Gamble", "NYSE", "mega", "Consumer staples"),
+    ("CL", "Colgate-Palmolive", "NYSE", "large", "Consumer staples"),
+    ("KMB", "Kimberly-Clark", "NYSE", "large", "Consumer staples"),
+    # ---- energy ----
+    ("XOM", "ExxonMobil", "NYSE", "mega", "Integrated oil & gas"),
+    ("CVX", "Chevron", "NYSE", "large", "Integrated oil & gas"),
+    ("COP", "ConocoPhillips", "NYSE", "large", "E&P oil & gas"),
+    ("EOG", "EOG Resources", "NYSE", "large", "E&P oil & gas"),
+    ("SLB", "Schlumberger", "NYSE", "large", "Oilfield services"),
+    ("OXY", "Occidental Petroleum", "NYSE", "large", "E&P oil & gas"),
+    # ---- telecom ----
+    ("VZ", "Verizon Communications", "NYSE", "large", "Telecom"),
+    ("TMUS", "T-Mobile US", "NASDAQ", "large", "Telecom"),
+    # ---- real estate / REITs ----
+    ("AMT", "American Tower", "NYSE", "large", "Cell tower REIT"),
+    ("CCI", "Crown Castle", "NYSE", "large", "Cell tower REIT"),
+    ("EQIX", "Equinix", "NASDAQ", "large", "Data centre REIT"),
+    ("PLD", "Prologis", "NYSE", "large", "Industrial REIT"),
+    ("O", "Realty Income", "NYSE", "large", "Net-lease REIT"),
+    # ---- transport / travel ----
+    ("DAL", "Delta Air Lines", "NYSE", "large", "Airlines"),
+    ("UAL", "United Airlines", "NASDAQ", "large", "Airlines"),
+    ("AAL", "American Airlines", "NASDAQ", "mid", "Airlines"),
+    ("LUV", "Southwest Airlines", "NYSE", "mid", "Airlines"),
+    ("ABNB", "Airbnb", "NASDAQ", "large", "Short-term rentals"),
+    ("BKNG", "Booking Holdings", "NASDAQ", "large", "Online travel"),
+    ("UBER", "Uber Technologies", "NYSE", "large", "Ride-share / delivery"),
+    # ---- misc widely-traded ----
+    ("STT", "State Street", "NYSE", "large", "Custody bank"),
+    ("F", "Ford Motor", "NYSE", "large", "Auto manufacturer"),
+)
+
+for _t, _n, _x, _c, _s in _MINIMAL:
+    _FACTS.setdefault(_t, TickerFact(
+        ticker=_t, name=_n, exchange=_x, cap=_c, sector=_s,
+    ))
 
 
 def lookup(ticker: str) -> TickerFact | None:
