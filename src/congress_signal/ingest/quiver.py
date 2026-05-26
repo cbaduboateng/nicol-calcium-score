@@ -39,11 +39,39 @@ _AMOUNT_BUCKETS: dict[str, tuple[float, float]] = {
     "$50,000,001 +": (50_000_001, 100_000_000),
 }
 
+# Quiver bulk endpoint reports Trade_Size_USD as the LOWER bound of the
+# disclosure bracket. Map each bracket floor back to the (lo, hi) pair.
+_QUIVER_SIZE_BRACKETS: tuple[tuple[float, float, float], ...] = (
+    (1_001, 1_001, 15_000),
+    (15_001, 15_001, 50_000),
+    (50_001, 50_001, 100_000),
+    (100_001, 100_001, 250_000),
+    (250_001, 250_001, 500_000),
+    (500_001, 500_001, 1_000_000),
+    (1_000_001, 1_000_001, 5_000_000),
+    (5_000_001, 5_000_001, 25_000_000),
+    (25_000_001, 25_000_001, 50_000_000),
+    (50_000_001, 50_000_001, 100_000_000),
+)
+
 
 def _parse_amount(raw: str | None) -> tuple[float, float]:
     if not raw:
         return (0.0, 0.0)
-    return _AMOUNT_BUCKETS.get(raw.strip(), (0.0, 0.0))
+    # House-PTR style "$1,001 - $15,000" bracket strings.
+    bracket = _AMOUNT_BUCKETS.get(raw.strip())
+    if bracket is not None:
+        return bracket
+    # Quiver bulk style: a numeric lower-bound string like "15001.0".
+    try:
+        size = float(raw)
+    except (TypeError, ValueError):
+        return (0.0, 0.0)
+    for floor_, lo, hi in _QUIVER_SIZE_BRACKETS:
+        if abs(size - floor_) < 1.0:
+            return (lo, hi)
+    # Fallback: treat as a single-point estimate.
+    return (size, size)
 
 
 def _parse_date(raw: str | None) -> date | None:
@@ -167,15 +195,29 @@ class QuiverClient:
             return synthetic_trades(end=date.today())
 
         trades: list[Trade] = []
+        skipped_no_date = 0
+        skipped_no_ticker = 0
         for r in raw:
-            txn = _parse_date(r.get("TransactionDate"))
-            disc = _parse_date(r.get("ReportDate")) or txn
+            # Accept both bulk-endpoint field names (Traded / Filed /
+            # Trade_Size_USD / BioGuideID) and the historical-endpoint
+            # field names (TransactionDate / ReportDate / Amount / BioguideID)
+            # so the same parser works across Quiver's variants.
+            txn = _parse_date(r.get("Traded") or r.get("TransactionDate"))
+            disc = _parse_date(r.get("Filed") or r.get("ReportDate")) or txn
             if txn is None or disc is None:
+                skipped_no_date += 1
                 continue
-            lo, hi = _parse_amount(r.get("Amount"))
-            actor_id = r.get("BioguideID") or r.get("Representative") or "UNKNOWN"
+            lo, hi = _parse_amount(r.get("Trade_Size_USD") or r.get("Amount"))
+            actor_id = (
+                r.get("BioGuideID")
+                or r.get("BioguideID")
+                or r.get("Representative")
+                or r.get("Name")
+                or "UNKNOWN"
+            )
             ticker = (r.get("Ticker") or "").upper()
             if not ticker:
+                skipped_no_ticker += 1
                 continue
             trades.append(Trade(
                 trade_id=f"quiver-{actor_id}-{ticker}-{txn}-{r.get('Transaction', '')}",
@@ -191,4 +233,8 @@ class QuiverClient:
                 source="quiver",
                 raw_source=r,
             ))
+        log.info(
+            "Parsed %d Trade objects from %d raw rows (skipped %d no-date, %d no-ticker)",
+            len(trades), len(raw), skipped_no_date, skipped_no_ticker,
+        )
         return trades
