@@ -358,5 +358,38 @@ def phase0(start: str, end: str | None, top_n: int,
     )
 
 
+@main.command()
+@click.option("--start", type=str, default="2018-01-01")
+@click.option("--end", type=str, default=None)
+@click.option("--top-n", type=int, default=50)
+@click.option("--slippage-bps", type=float, default=25.0)
+@click.option("--horizon-days", type=int, default=90)
+@click.option("--output-dir", type=click.Path(), default="docs")
+def diagnose(start: str, end: str | None, top_n: int,
+             slippage_bps: float, horizon_days: int, output_dir: str) -> None:
+    """Path A diagnostic: break down filter performance across actor /
+    sector / direction / disclosure-speed / cluster / signal to find the
+    alpha pocket (or confirm there isn't one)."""
+    from datetime import date as _date
+    from .diagnostics import run_diagnostic
+
+    start_d = _date.fromisoformat(start)
+    end_d = _date.fromisoformat(end) if end else None
+    summary = run_diagnostic(
+        start=start_d, end=end_d,
+        top_n=top_n, slippage_bps=slippage_bps,
+        horizon_days=horizon_days, output_dir=output_dir,
+    )
+    h = summary["headline"]
+    console.print(
+        f"[bold]Diagnostic complete.[/]\n"
+        f"Filtered n={h['n_filtered']}, mean CAR {h['car_filtered'] * 100:+.2f}%, "
+        f"hit {h['hit_filtered'] * 100:.1f}%\n"
+        f"Baseline n={h['n_baseline']:,}, mean CAR {h['car_baseline'] * 100:+.2f}%, "
+        f"hit {h['hit_baseline'] * 100:.1f}%\n"
+        f"Report: {summary['report_path']}"
+    )
+
+
 if __name__ == "__main__":
     main(obj={})
