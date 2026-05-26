@@ -19,7 +19,12 @@ congressional trade in this name is worth a second look.
 
 from __future__ import annotations
 
+import json
+import logging
 from dataclasses import dataclass
+from pathlib import Path
+
+_log = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -654,8 +659,176 @@ def top_level_category(sector: str | None) -> str:
     return "Other"
 
 
+# ---------------------------------------------------------------------------
+# Lazy yfinance fallback + on-disk cache
+# ---------------------------------------------------------------------------
+
+_CACHE_PATH = Path("data/cache/ticker_facts_cache.json")
+_RUNTIME_CACHE: dict[str, TickerFact | None] = {}
+_DISK_CACHE_LOADED = False
+
+# yfinance returns Yahoo's internal exchange codes; map them to common names.
+_EXCHANGE_MAP: dict[str, str] = {
+    "NMS": "NASDAQ", "NCM": "NASDAQ", "NGS": "NASDAQ",
+    "NAS": "NASDAQ", "NGM": "NASDAQ", "NSI": "NASDAQ",
+    "NYQ": "NYSE", "NYE": "NYSE",
+    "ASE": "AMEX", "PCX": "NYSE Arca",
+    "PNK": "OTC", "OEM": "OTC", "OTC": "OTC",
+    "BATS": "BATS", "CBT": "CBOE",
+}
+
+
+def _cap_bucket(market_cap: float | int | None) -> str:
+    """Map a market-cap value to a size bucket compatible with `_FACTS`."""
+    if not market_cap:
+        return "unknown"
+    try:
+        cap = float(market_cap)
+    except (TypeError, ValueError):
+        return "unknown"
+    if cap >= 200_000_000_000:
+        return "mega"
+    if cap >= 10_000_000_000:
+        return "large"
+    if cap >= 2_000_000_000:
+        return "mid"
+    if cap >= 300_000_000:
+        return "small"
+    return "micro"
+
+
+def _load_disk_cache_once() -> None:
+    """Load `_CACHE_PATH` into `_RUNTIME_CACHE` exactly once per process."""
+    global _DISK_CACHE_LOADED
+    if _DISK_CACHE_LOADED:
+        return
+    _DISK_CACHE_LOADED = True
+    if not _CACHE_PATH.exists():
+        return
+    try:
+        with _CACHE_PATH.open("r", encoding="utf-8") as f:
+            payload = json.load(f)
+    except Exception as exc:  # noqa: BLE001
+        _log.warning("Could not read ticker_facts cache (%s)", exc)
+        return
+    for ticker, entry in payload.items():
+        if entry is None:
+            _RUNTIME_CACHE[ticker] = None
+        else:
+            try:
+                _RUNTIME_CACHE[ticker] = TickerFact(**entry)
+            except TypeError:
+                # Schema drift: drop the cached entry rather than crash.
+                continue
+
+
+def _persist_runtime_to_disk() -> None:
+    try:
+        _CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
+        payload: dict = {}
+        for t, fact in _RUNTIME_CACHE.items():
+            payload[t] = None if fact is None else {
+                "ticker": fact.ticker, "name": fact.name,
+                "exchange": fact.exchange, "cap": fact.cap,
+                "sector": fact.sector, "summary": fact.summary,
+                "why_it_matters": fact.why_it_matters,
+            }
+        tmp = _CACHE_PATH.with_suffix(".tmp")
+        with tmp.open("w", encoding="utf-8") as f:
+            json.dump(payload, f, indent=2, sort_keys=True)
+        tmp.replace(_CACHE_PATH)
+    except Exception as exc:  # noqa: BLE001
+        _log.debug("Could not persist ticker_facts cache (%s)", exc)
+
+
+def _fetch_from_yfinance(ticker: str) -> TickerFact | None:
+    """Fetch company metadata for `ticker` via yfinance. Returns None on
+    any failure (rate-limit, delisted, missing fields). Always graceful."""
+    try:
+        import yfinance as yf  # local import: yfinance is optional at runtime
+    except Exception as exc:  # noqa: BLE001
+        _log.debug("yfinance not available (%s)", exc)
+        return None
+    try:
+        info = yf.Ticker(ticker).get_info()
+    except Exception as exc:  # noqa: BLE001
+        _log.debug("yfinance get_info(%s) failed: %s", ticker, exc)
+        return None
+    if not info:
+        return None
+    name = info.get("longName") or info.get("shortName")
+    if not name:
+        return None
+    raw_exchange = info.get("exchange") or info.get("fullExchangeName") or ""
+    exchange = _EXCHANGE_MAP.get(raw_exchange.upper() if isinstance(raw_exchange, str) else "", raw_exchange or "?")
+    cap = _cap_bucket(info.get("marketCap"))
+    sector = info.get("industry") or info.get("sector") or "Other"
+    return TickerFact(
+        ticker=ticker.upper(),
+        name=str(name),
+        exchange=str(exchange),
+        cap=cap,
+        sector=str(sector),
+    )
+
+
 def lookup(ticker: str) -> TickerFact | None:
-    return _FACTS.get((ticker or "").upper())
+    """Tiered ticker-fact lookup.
+
+    1. Curated static `_FACTS` dict (richest, no I/O).
+    2. Disk-cached results from previous yfinance fetches.
+    3. Live yfinance fetch (slow on first call per ticker; cached afterwards).
+
+    Returns None when yfinance can't find the ticker either.
+    """
+    upper = (ticker or "").upper()
+    if not upper:
+        return None
+    if upper in _FACTS:
+        return _FACTS[upper]
+    _load_disk_cache_once()
+    if upper in _RUNTIME_CACHE:
+        return _RUNTIME_CACHE[upper]
+    fact = _fetch_from_yfinance(upper)
+    _RUNTIME_CACHE[upper] = fact
+    _persist_runtime_to_disk()
+    return fact
+
+
+def prewarm(tickers: list[str], max_workers: int = 4) -> int:
+    """Pre-fetch yfinance info for any unknown tickers in `tickers`. Returns
+    the number that were freshly fetched. Call once in the bootstrap so the
+    dashboard never blocks on a per-ticker yfinance call."""
+    _load_disk_cache_once()
+    unknown: list[str] = []
+    seen: set[str] = set()
+    for t in tickers:
+        upper = (t or "").upper()
+        if not upper or upper in seen:
+            continue
+        seen.add(upper)
+        if upper in _FACTS or upper in _RUNTIME_CACHE:
+            continue
+        unknown.append(upper)
+    if not unknown:
+        return 0
+    _log.info(
+        "Prewarming yfinance ticker_facts for %d unknown tickers", len(unknown),
+    )
+
+    def _fetch_one(t: str) -> None:
+        try:
+            _RUNTIME_CACHE[t] = _fetch_from_yfinance(t)
+        except Exception as exc:  # noqa: BLE001
+            _log.debug("prewarm fetch failed for %s: %s", t, exc)
+            _RUNTIME_CACHE[t] = None
+
+    from concurrent.futures import ThreadPoolExecutor
+
+    with ThreadPoolExecutor(max_workers=max_workers) as ex:
+        list(ex.map(_fetch_one, unknown))
+    _persist_runtime_to_disk()
+    return len(unknown)
 
 
 def category_for_ticker(ticker: str) -> str:

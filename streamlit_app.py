@@ -210,6 +210,18 @@ def _bootstrap_data_if_missing() -> None:
     candidate_trade_ids = {c.trade_id for c in result.candidates}
     candidate_trades = [t for t in trades if t.trade_id in candidate_trade_ids]
     candidate_tickers = sorted({t.ticker for t in candidate_trades})
+
+    # Pre-warm yfinance-backed ticker_facts for any candidate tickers not in
+    # the curated static dict, so the dashboard never blocks on a per-ticker
+    # yfinance call when rendering the Company / Exchange / Cap columns.
+    try:
+        from congress_signal.ticker_facts import prewarm as _prewarm_facts
+        n_new = _prewarm_facts(candidate_tickers)
+        if n_new:
+            log.info("Prewarmed ticker_facts cache for %d new tickers", n_new)
+    except Exception as exc:
+        log.warning("ticker_facts prewarm failed (%s); will lazy-fetch on demand", exc)
+
     if candidate_tickers:
         from datetime import timedelta as _td
 
