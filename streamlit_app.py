@@ -194,12 +194,69 @@ def _bootstrap_data_if_missing() -> None:
     )
 
     log.info("Running scoring pipeline on %d trades / %d actors", len(trades), len(actors))
-    # Skip the in-bootstrap yfinance fetch — pulling prices for hundreds of
-    # tickers blows the request timeout on Render's free tier. The residual
-    # scoring layer falls back to a neutral verdict when prices are missing.
+    # Skip the in-bootstrap yfinance fetch for the *full* trade tape — pulling
+    # prices for thousands of tickers blows the request timeout on Render's
+    # free tier. The residual scoring layer falls back to a neutral verdict
+    # when prices are missing, so the asymmetric_score still ranks
+    # meaningfully on the other layers.
     result = run_full_pipeline(cfg, trades, actors, prices=pd.DataFrame())
     log.info("Pipeline produced %d candidates", len(result.candidates))
-    pd.DataFrame([c.model_dump() for c in result.candidates]).to_parquet(
+
+    # Targeted price fetch: only for the tickers that actually became
+    # candidates. Typically 20-80 tickers, ~10-30 seconds of yfinance. With
+    # this we can re-compute the residual filter and populate the real
+    # catalyst_pending flag instead of leaving it False everywhere.
+    candidates_to_persist = list(result.candidates)
+    candidate_trade_ids = {c.trade_id for c in result.candidates}
+    candidate_trades = [t for t in trades if t.trade_id in candidate_trade_ids]
+    candidate_tickers = sorted({t.ticker for t in candidate_trades})
+    if candidate_tickers:
+        from datetime import timedelta as _td
+
+        from congress_signal.ingest.prices import fetch_prices as _fetch_prices
+        from congress_signal.scoring.residual import (
+            compute_residuals as _compute_residuals,
+        )
+
+        log.info(
+            "Targeted price fetch for %d unique candidate tickers",
+            len(candidate_tickers),
+        )
+        try:
+            earliest = min(t.transaction_date for t in candidate_trades)
+            prices, _, _ = _fetch_prices(
+                candidate_tickers,
+                start=earliest - _td(days=10),
+                end=date.today(),
+                cache_dir=Path(cfg["paths"]["cache"]),
+            )
+            residual_cfg = cfg.get("scoring", {}).get("residual", {})
+            residuals = _compute_residuals(
+                candidate_trades, prices,
+                catalyst_threshold_pct=residual_cfg.get("catalyst_threshold_pct", 5.0),
+            )
+            res_by_trade = {r.trade_id: r for r in residuals}
+            patched = []
+            pending = 0
+            for c in result.candidates:
+                r = res_by_trade.get(c.trade_id)
+                if r is not None and r.residual_opportunity:
+                    patched.append(c.model_copy(update={"catalyst_pending": True}))
+                    pending += 1
+                else:
+                    patched.append(c)
+            log.info(
+                "Residual recomputed: %d / %d candidates have catalyst_pending=True",
+                pending, len(patched),
+            )
+            candidates_to_persist = patched
+        except Exception as exc:
+            log.warning(
+                "Targeted price fetch failed (%s); catalyst_pending stays False",
+                exc,
+            )
+
+    pd.DataFrame([c.model_dump() for c in candidates_to_persist]).to_parquet(
         processed / "candidates.parquet"
     )
 
