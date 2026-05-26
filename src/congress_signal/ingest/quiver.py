@@ -59,6 +59,28 @@ def _parse_date(raw: str | None) -> date | None:
     return None
 
 
+_DATE_FIELD_CANDIDATES = (
+    "TransactionDate", "Transaction_Date", "Date", "Traded", "TradeDate",
+    "Trade_Date", "DateTraded", "Date_Traded",
+)
+
+
+def _detect_date_field(rows: list[dict[str, Any]]) -> str | None:
+    """Return the first key in the first row whose value parses as a date.
+    Tries a list of common Quiver field names first, then falls back to any
+    key that contains 'date' or 'traded' case-insensitively."""
+    if not rows:
+        return None
+    sample = rows[0]
+    for k in _DATE_FIELD_CANDIDATES:
+        if k in sample and _parse_date(sample.get(k)):
+            return k
+    for k in sample:
+        if ("date" in k.lower() or "traded" in k.lower()) and _parse_date(sample.get(k)):
+            return k
+    return None
+
+
 def _direction(raw: str | None) -> Direction:
     if not raw:
         return Direction.BUY
@@ -111,19 +133,23 @@ class QuiverClient:
         log.info("Quiver bulk endpoint returned %d total rows", len(rows))
         if rows:
             sample = rows[0]
-            log.info(
-                "Sample row keys: %s; TransactionDate=%r",
-                sorted(sample.keys())[:10], sample.get("TransactionDate"),
-            )
-        # Parse TransactionDate via the multi-format parser before comparing.
-        # The raw API can return MM/DD/YYYY, YYYY-MM-DD, or ISO timestamps;
-        # naive string comparison silently rejects non-ISO formats.
+            log.info("Sample row FULL key list: %s", sorted(sample.keys()))
+            log.info("Sample row FULL values: %s", {k: sample.get(k) for k in sorted(sample.keys())})
+        # Find the transaction-date field in the schema. Quiver has changed
+        # field names over the years and across endpoints (TransactionDate,
+        # Transaction_Date, Traded, Date) — pick the first one that yields a
+        # parseable date in the first row.
+        date_field = _detect_date_field(rows)
+        log.info("Using date field: %r", date_field)
+        if not date_field:
+            log.warning("Could not detect a transaction-date field in Quiver response; returning all rows unfiltered")
+            return rows
         filtered: list[dict[str, Any]] = []
         for r in rows:
-            d = _parse_date(r.get("TransactionDate"))
+            d = _parse_date(r.get(date_field))
             if d is not None and d >= since:
                 filtered.append(r)
-        log.info("After filtering to since=%s: %d rows", since.isoformat(), len(filtered))
+        log.info("After filtering on %r >= %s: %d rows", date_field, since.isoformat(), len(filtered))
         return filtered
 
     def congress_trades(self, since: date | None = None) -> list[Trade]:
