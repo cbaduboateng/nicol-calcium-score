@@ -38,7 +38,8 @@ log = logging.getLogger(__name__)
 
 
 HORIZONS = (30, 60, 90, 180, 365)
-PRIMARY_HORIZON_DAYS = 90
+DEFAULT_PRIMARY_HORIZON_DAYS = 90
+SKILL_CALCULATION_HORIZON_DAYS = 90  # what we use to compute the actor-skill score
 ALPHA_THRESHOLD = 0.02
 
 
@@ -135,10 +136,17 @@ def run_phase0_v2(
     slippage_bps: float = 25.0,
     min_prior_trades: int = 10,
     lookback_days: int = 365,
+    primary_horizon_days: int = DEFAULT_PRIMARY_HORIZON_DAYS,
     output_dir: Path | str = "docs",
 ) -> dict[str, Any]:
     """Run Phase 0 v2: rank trades by walk-forward actor skill, take top-N,
-    backtest at multiple horizons, compare to naive baseline."""
+    backtest at multiple horizons, compare to naive baseline.
+
+    `primary_horizon_days` is the horizon used for the decision gate. It can
+    differ from `SKILL_CALCULATION_HORIZON_DAYS` (the holding period assumed
+    when ranking actors by past performance). The skill horizon stays at 90d
+    by default because longer skill calculations need more history per actor
+    and shrink the usable universe."""
     end = end or date.today()
     cfg = load_config()
     cache_dir = Path(cfg["paths"]["cache"])
@@ -165,17 +173,21 @@ def run_phase0_v2(
         cache_dir=cache_dir,
     )
 
-    # Compute event returns at the primary horizon — needed both for the
-    # walk-forward actor-skill scorer AND for the horizon backtests.
-    log.info("Computing event returns at %d days for skill calculation", PRIMARY_HORIZON_DAYS)
-    primary_event_returns = compute_event_returns(
+    # Compute event returns at the SKILL horizon — needed to build the
+    # walk-forward actor-skill scorer. Validation at primary_horizon_days
+    # uses its own compute_event_returns call inside _horizon_metrics.
+    log.info(
+        "Computing event returns at %d days for skill calculation",
+        SKILL_CALCULATION_HORIZON_DAYS,
+    )
+    skill_event_returns = compute_event_returns(
         trades, price_returns, bench_returns,
-        holding_period_days=PRIMARY_HORIZON_DAYS,
+        holding_period_days=SKILL_CALCULATION_HORIZON_DAYS,
         slippage_bps=slippage_bps,
     )
     log.info(
         "Computed %d event returns (of %d trades — rest lack price data)",
-        len(primary_event_returns), len(trades),
+        len(skill_event_returns), len(trades),
     )
 
     log.info(
@@ -183,9 +195,9 @@ def run_phase0_v2(
         lookback_days, min_prior_trades,
     )
     skill_scores = compute_actor_skill(
-        trades, primary_event_returns,
+        trades, skill_event_returns,
         lookback_days=lookback_days,
-        holding_period_days=PRIMARY_HORIZON_DAYS,
+        holding_period_days=SKILL_CALCULATION_HORIZON_DAYS,
         min_prior_trades=min_prior_trades,
     )
 
@@ -219,7 +231,10 @@ def run_phase0_v2(
             horizon_days=h, slippage_bps=slippage_bps,
         ))
 
-    primary = next(r for r in results if r.horizon_days == PRIMARY_HORIZON_DAYS)
+    primary = next(
+        (r for r in results if r.horizon_days == primary_horizon_days),
+        results[2],  # fall back to 90d if invalid horizon supplied
+    )
     proceed = (
         primary.delta_car >= ALPHA_THRESHOLD
         and primary.delta_ci_lower > 0
@@ -231,8 +246,9 @@ def run_phase0_v2(
         out_path,
         start=start, end=end, top_n=top_n, slippage_bps=slippage_bps,
         min_prior_trades=min_prior_trades, lookback_days=lookback_days,
+        primary_horizon_days=primary_horizon_days,
         n_total_trades=len(trades),
-        n_with_event_returns=len(primary_event_returns),
+        n_with_event_returns=len(skill_event_returns),
         n_with_skill=len(ranked),
         n_filtered=len(filtered_trades),
         n_distinct_actors=len(actor_ids_in_filter),
@@ -259,6 +275,7 @@ def _write_report(
     start: date, end: date,
     top_n: int, slippage_bps: float,
     min_prior_trades: int, lookback_days: int,
+    primary_horizon_days: int,
     n_total_trades: int, n_with_event_returns: int,
     n_with_skill: int, n_filtered: int, n_distinct_actors: int,
     actor_name_lookup: dict[str, str],
@@ -315,7 +332,7 @@ def _write_report(
 
     lines.append("## Decision gate\n")
     lines.append(
-        f"Primary horizon: **{PRIMARY_HORIZON_DAYS} days**. Threshold: "
+        f"Primary horizon: **{primary_horizon_days} days**. Threshold: "
         f"filter must beat baseline by **≥{ALPHA_THRESHOLD * 100:.0f}%** "
         "mean CAR with the 95% bootstrap CI of the delta not crossing zero.\n"
     )

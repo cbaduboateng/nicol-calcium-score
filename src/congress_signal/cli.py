@@ -398,9 +398,13 @@ def diagnose(start: str, end: str | None, top_n: int,
 @click.option("--slippage-bps", type=float, default=25.0)
 @click.option("--min-prior-trades", type=int, default=10)
 @click.option("--lookback-days", type=int, default=365)
+@click.option("--primary-horizon-days", type=int, default=90,
+              help="Horizon used for the PROCEED/KILL decision gate. "
+                   "Skill ranking is always computed at 90d.")
 @click.option("--output-dir", type=click.Path(), default="docs")
 def phase0_v2(start: str, end: str | None, top_n: int, slippage_bps: float,
               min_prior_trades: int, lookback_days: int,
+              primary_horizon_days: int,
               output_dir: str) -> None:
     """Phase 0 v2: rank trades by walk-forward actor skill (trailing
     12m mean CAR per member). Tests the diagnostic-driven hypothesis
@@ -415,6 +419,7 @@ def phase0_v2(start: str, end: str | None, top_n: int, slippage_bps: float,
         top_n=top_n, slippage_bps=slippage_bps,
         min_prior_trades=min_prior_trades,
         lookback_days=lookback_days,
+        primary_horizon_days=primary_horizon_days,
         output_dir=output_dir,
     )
     p = summary["primary"]
