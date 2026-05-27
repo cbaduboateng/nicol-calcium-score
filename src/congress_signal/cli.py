@@ -391,5 +391,45 @@ def diagnose(start: str, end: str | None, top_n: int,
     )
 
 
+@main.command()
+@click.option("--start", type=str, default="2018-01-01")
+@click.option("--end", type=str, default=None)
+@click.option("--top-n", type=int, default=50)
+@click.option("--slippage-bps", type=float, default=25.0)
+@click.option("--min-prior-trades", type=int, default=10)
+@click.option("--lookback-days", type=int, default=365)
+@click.option("--output-dir", type=click.Path(), default="docs")
+def phase0_v2(start: str, end: str | None, top_n: int, slippage_bps: float,
+              min_prior_trades: int, lookback_days: int,
+              output_dir: str) -> None:
+    """Phase 0 v2: rank trades by walk-forward actor skill (trailing
+    12m mean CAR per member). Tests the diagnostic-driven hypothesis
+    that member-level skill is the dominant signal."""
+    from datetime import date as _date
+    from .validation_v2 import run_phase0_v2
+
+    start_d = _date.fromisoformat(start)
+    end_d = _date.fromisoformat(end) if end else None
+    summary = run_phase0_v2(
+        start=start_d, end=end_d,
+        top_n=top_n, slippage_bps=slippage_bps,
+        min_prior_trades=min_prior_trades,
+        lookback_days=lookback_days,
+        output_dir=output_dir,
+    )
+    p = summary["primary"]
+    colour = "green" if summary["verdict"] == "PROCEED" else "red"
+    console.print(
+        f"[bold]Verdict:[/] [{colour}]{summary['verdict']}[/]\n"
+        f"Primary horizon ({p.horizon_days}d): delta CAR = "
+        f"{p.delta_car * 100:+.2f}%, "
+        f"95% CI [{p.delta_ci_lower * 100:+.2f}%, "
+        f"{p.delta_ci_upper * 100:+.2f}%]\n"
+        f"Filtered n={p.n_filtered}, baseline n={p.n_baseline}, "
+        f"distinct actors in filter: {summary['n_distinct_actors']}\n"
+        f"Report: {summary['report_path']}"
+    )
+
+
 if __name__ == "__main__":
     main(obj={})
