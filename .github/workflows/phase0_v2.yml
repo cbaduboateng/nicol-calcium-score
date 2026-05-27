@@ -12,11 +12,15 @@ on:
       top_n:
         description: 'Top-N candidates to keep'
         required: false
-        default: '50'
+        default: '200'
       min_prior_trades:
         description: 'Min prior trades required to score an actor'
         required: false
         default: '10'
+      primary_horizon_days:
+        description: 'Horizon for PROCEED/KILL decision gate (skill ranking always at 90d)'
+        required: false
+        default: '365'
 
 jobs:
   validate:
@@ -52,6 +56,7 @@ jobs:
             --start "${{ github.event.inputs.start_date }}" \
             --top-n ${{ github.event.inputs.top_n }} \
             --min-prior-trades ${{ github.event.inputs.min_prior_trades }} \
+            --primary-horizon-days ${{ github.event.inputs.primary_horizon_days }} \
             --output-dir docs
 
       - name: Upload report artifact
