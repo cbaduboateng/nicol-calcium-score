@@ -11,6 +11,7 @@ from icarus.watchlist_alerts import (
     gap_to_entry_pct,
     map_theme,
     parabolic_rank,
+    pick_winners,
     reward_risk_to_targets,
     theme_heat,
 )
@@ -113,3 +114,174 @@ def test_theme_heat_ranks_ai_above_cannabis():
 def test_parabolic_rank_returns_top_n_by_horizon():
     top = parabolic_rank(_sample_view(), horizon="pct_6m", top_n=2)
     assert list(top["ticker"]) == ["A", "B"]
+
+
+# ---- pick_winners --------------------------------------------------------
+
+
+def _picks_view() -> pd.DataFrame:
+    """View where ticker A is the obvious winner and E is a sell-zone laggard."""
+    return pd.DataFrame([
+        # In buy zone, hot theme, healthy R:R, momentum building, not parabolic
+        {"ticker": "A", "name": "Alpha", "theme": "AI / Big Data",
+         "status": "BUY ZONE", "live_price": 9.0, "target_entry": 10.0,
+         "target_exit": 20.0, "reward_risk": 3.0,
+         "pct_1m": 5.0, "pct_3m": 25.0, "pct_6m": 40.0, "pct_12m": 60.0},
+        # Approaching, same hot theme, weaker R:R
+        {"ticker": "B", "name": "Beta", "theme": "AI / Big Data",
+         "status": "APPROACHING", "live_price": 11.0, "target_entry": 10.0,
+         "target_exit": 13.0, "reward_risk": 0.8,
+         "pct_1m": 3.0, "pct_3m": 15.0, "pct_6m": 25.0, "pct_12m": 40.0},
+        # HOLD, weak theme
+        {"ticker": "C", "name": "Gamma", "theme": "Cannabis",
+         "status": "HOLD", "live_price": 5.0, "target_entry": 3.0,
+         "target_exit": 8.0, "reward_risk": 1.5,
+         "pct_1m": -2.0, "pct_3m": -10.0, "pct_6m": -15.0, "pct_12m": -20.0},
+        # Parabolic blow-off (6m=250%) — should be penalised
+        {"ticker": "D", "name": "Delta", "theme": "AI / Big Data",
+         "status": "HOLD", "live_price": 50.0, "target_entry": 20.0,
+         "target_exit": 60.0, "reward_risk": 0.5,
+         "pct_1m": 30.0, "pct_3m": 120.0, "pct_6m": 250.0, "pct_12m": 400.0},
+        # SELL ZONE — should be filtered out by default
+        {"ticker": "E", "name": "Epsilon", "theme": "Cannabis",
+         "status": "SELL ZONE", "live_price": 30.0, "target_entry": 5.0,
+         "target_exit": 25.0, "reward_risk": 0.0,
+         "pct_1m": 0.0, "pct_3m": 5.0, "pct_6m": 10.0, "pct_12m": 20.0},
+    ])
+
+
+def test_pick_winners_promotes_buy_zone_with_hot_theme():
+    picks = pick_winners(_picks_view(), top_n=5)
+    # A wins: BUY ZONE + hot theme + good R:R + non-parabolic
+    assert picks.iloc[0]["ticker"] == "A"
+    assert picks.iloc[0]["composite"] > picks.iloc[1]["composite"]
+
+
+def test_pick_winners_excludes_sell_zone_by_default():
+    picks = pick_winners(_picks_view(), top_n=10)
+    assert "E" not in set(picks["ticker"])
+
+
+def test_pick_winners_can_include_sell_zone_when_asked():
+    picks = pick_winners(_picks_view(), top_n=10, exclude_sell_zone=False)
+    assert "E" in set(picks["ticker"])
+    # But it should rank near the bottom (analyst score = 0)
+    assert int(picks[picks["ticker"] == "E"]["rank"].iloc[0]) >= 3
+
+
+def test_pick_winners_applies_blowoff_penalty():
+    no_penalty = pick_winners(_picks_view(), top_n=10, blowoff_threshold_pct=500.0)
+    with_penalty = pick_winners(_picks_view(), top_n=10, blowoff_threshold_pct=100.0)
+    d_no = float(no_penalty[no_penalty["ticker"] == "D"]["composite"].iloc[0])
+    d_pen = float(with_penalty[with_penalty["ticker"] == "D"]["composite"].iloc[0])
+    assert d_no > d_pen
+
+
+def test_pick_winners_congress_overlay_boosts_score():
+    base = pick_winners(_picks_view(), top_n=10)
+    boosted = pick_winners(
+        _picks_view(), top_n=10,
+        congress_overlay={"C": 1.0},  # boost Gamma which would otherwise rank low
+    )
+    c_base = float(base[base["ticker"] == "C"]["composite"].iloc[0])
+    c_boost = float(boosted[boosted["ticker"] == "C"]["composite"].iloc[0])
+    assert c_boost > c_base
+
+
+def test_pick_winners_accepts_rich_overlay_dict():
+    rich = {"C": {"score": 1.0, "n_actors": 4, "signal_summary": "4 trading"}}
+    bare = {"C": 1.0}
+    p_rich = pick_winners(_picks_view(), top_n=10, congress_overlay=rich)
+    p_bare = pick_winners(_picks_view(), top_n=10, congress_overlay=bare)
+    c_rich = float(p_rich[p_rich["ticker"] == "C"]["composite"].iloc[0])
+    c_bare = float(p_bare[p_bare["ticker"] == "C"]["composite"].iloc[0])
+    assert abs(c_rich - c_bare) < 1e-9
+
+
+def test_pick_winners_catalyst_overlay_boosts_score():
+    base = pick_winners(_picks_view(), top_n=10)
+    boosted = pick_winners(
+        _picks_view(), top_n=10,
+        catalyst_overlay={"C": {"score": 1.0, "days_until": 5, "category": "pdufa"}},
+    )
+    c_base = float(base[base["ticker"] == "C"]["composite"].iloc[0])
+    c_boost = float(boosted[boosted["ticker"] == "C"]["composite"].iloc[0])
+    assert c_boost > c_base
+    # Picker should carry the catalyst context fields through for UI
+    c_row = boosted[boosted["ticker"] == "C"].iloc[0]
+    assert c_row["catalyst_days"] == 5
+    assert c_row["catalyst_label"] == "pdufa"
+
+
+def test_pick_winners_top_n_limits_output():
+    picks = pick_winners(_picks_view(), top_n=2)
+    assert len(picks) == 2
+    assert list(picks["rank"]) == [1, 2]
+
+
+def test_pick_winners_empty_view_returns_empty():
+    picks = pick_winners(pd.DataFrame())
+    assert picks.empty
+
+
+# ---- overlay loaders -----------------------------------------------------
+
+
+def test_load_catalyst_overlay_returns_empty_when_missing(tmp_path):
+    from icarus.watchlist_alerts import load_catalyst_overlay
+    overlay = load_catalyst_overlay(tmp_path / "missing.parquet")
+    assert overlay == {}
+
+
+def test_load_catalyst_overlay_keeps_nearest_event_per_ticker(tmp_path):
+    from datetime import date as _date
+
+    from icarus.watchlist_alerts import load_catalyst_overlay
+    today = _date(2024, 6, 1)
+    df = pd.DataFrame([
+        {"ticker": "LMT", "event_date": "2024-07-01",
+         "category": "dod_obligation_cycle", "source": "x", "rationale": "Q3 cycle"},
+        {"ticker": "LMT", "event_date": "2024-09-30",
+         "category": "dod_obligation_cycle", "source": "x", "rationale": "Q4 cycle"},
+        {"ticker": "BMY", "event_date": "2024-06-15",
+         "category": "pdufa", "source": "fda", "rationale": "PDUFA decision"},
+        # Past event — should be filtered out
+        {"ticker": "OLD", "event_date": "2023-01-01",
+         "category": "x", "source": "x", "rationale": "stale"},
+    ])
+    p = tmp_path / "catalysts.parquet"
+    df.to_parquet(p)
+    overlay = load_catalyst_overlay(p, horizon_days=180, as_of=today)
+    assert set(overlay.keys()) == {"LMT", "BMY"}
+    # Nearest event for LMT is the July one, not September
+    assert overlay["LMT"]["next_date"].isoformat() == "2024-07-01"
+    # Proximity score is higher for the closer BMY event
+    assert overlay["BMY"]["score"] > overlay["LMT"]["score"]
+
+
+def test_load_congress_overlay_returns_empty_when_missing(tmp_path):
+    from icarus.watchlist_alerts import load_congress_overlay
+    overlay = load_congress_overlay(tmp_path / "missing.parquet")
+    assert overlay == {}
+
+
+def test_load_congress_overlay_returns_rich_dict(tmp_path):
+    from icarus.watchlist_alerts import load_congress_overlay
+    cand = pd.DataFrame([
+        {"trade_id": "t1", "ticker": "LMT", "actor_id": "A1",
+         "asymmetry_score": 0.9, "signal_types": [], "cluster_size": 3,
+         "catalyst_pending": True, "rationale": "..."},
+        {"trade_id": "t2", "ticker": "LMT", "actor_id": "A2",
+         "asymmetry_score": 0.6, "signal_types": [], "cluster_size": 3,
+         "catalyst_pending": True, "rationale": "..."},
+    ])
+    p = tmp_path / "candidates.parquet"
+    cand.to_parquet(p)
+    overlay = load_congress_overlay(
+        p, trades_path=tmp_path / "nope.parquet", actors_path=tmp_path / "nope.parquet",
+    )
+    assert "LMT" in overlay
+    entry = overlay["LMT"]
+    assert entry["score"] == pytest.approx(0.9, abs=1e-6)
+    assert entry["n_actors"] == 2
+    assert entry["cluster_size"] == 3

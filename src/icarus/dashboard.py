@@ -216,8 +216,11 @@ def _render_watchlist_tab(st) -> None:
         WATCHLIST_PATH,
         build_watchlist_view,
         fetch_price_history,
+        load_catalyst_overlay,
+        load_congress_overlay,
         load_watchlist,
         parabolic_rank,
+        pick_winners,
         theme_heat,
     )
 
@@ -227,6 +230,26 @@ def _render_watchlist_tab(st) -> None:
         "Live prices compared every page load; themes ranked by 3-month "
         "median momentum; parabolic ranking by raw 6-month gain."
     )
+
+    # Data-freshness caption so the user can tell whether the bootstrap fired
+    freshness_bits: list[str] = []
+    for label, path in (
+        ("watchlist", "data/watchlist.csv"),
+        ("congress trades", "data/processed/trades.parquet"),
+        ("catalysts", "data/processed/catalysts.parquet"),
+    ):
+        p = Path(path)
+        if p.exists():
+            import time as _time
+            age_h = (_time.time() - p.stat().st_mtime) / 3600.0
+            if age_h < 1:
+                freshness_bits.append(f"{label} {int(age_h * 60)}m ago")
+            elif age_h < 48:
+                freshness_bits.append(f"{label} {age_h:.0f}h ago")
+            else:
+                freshness_bits.append(f"{label} {age_h / 24:.0f}d ago")
+    if freshness_bits:
+        st.caption("**Data refreshed:** " + " · ".join(freshness_bits))
 
     watchlist = load_watchlist(WATCHLIST_PATH)
     if watchlist.empty:
@@ -252,6 +275,123 @@ def _render_watchlist_tab(st) -> None:
     view = build_watchlist_view(watchlist, history)
     n_with_price = int(view["live_price"].notna().sum())
     st.caption(f"Live price available for **{n_with_price} / {len(view)}**.")
+
+    # ---- 🏆 Top picks today (composite winner ranker) ----------------------
+    congress_overlay = load_congress_overlay()
+    catalyst_overlay = load_catalyst_overlay()
+    st.markdown("### 🏆 Top picks today")
+    st.caption(
+        "Composite of analyst signal (30%), reward-to-risk (20%), theme momentum (15%), "
+        "personal 12-1 momentum (15%), congressional overlay (10%), and upcoming-catalyst "
+        "proximity (10%). Blow-off penalty subtracted when 6-month gain exceeds the threshold "
+        "below (don't chase parabolic tops). Click any row to expand the full company card."
+    )
+    with st.expander("Tune the picker", expanded=False):
+        tc = st.columns(3)
+        with tc[0]:
+            picks_n = st.slider("How many picks", 5, 50, 15, step=5)
+        with tc[1]:
+            blowoff = st.slider(
+                "Blow-off threshold (6m %)", 30, 300, 100, step=10,
+                help="6-month returns above this start subtracting from the composite.",
+            )
+        with tc[2]:
+            exclude_sell = st.checkbox("Exclude SELL ZONE", value=True)
+        overlay_notes = []
+        if congress_overlay:
+            overlay_notes.append(
+                f"Congress overlay: **{len(congress_overlay)} tickers** with "
+                "asymmetry scores from `candidates.parquet`."
+            )
+        else:
+            overlay_notes.append(
+                "Congress overlay inactive (no `candidates.parquet` yet). "
+                "Set `QUIVER_API_KEY` and redeploy to enable it."
+            )
+        if catalyst_overlay:
+            overlay_notes.append(
+                f"Catalyst overlay: **{len(catalyst_overlay)} tickers** with "
+                "upcoming events in the next 180 days."
+            )
+        else:
+            overlay_notes.append("Catalyst overlay inactive (no `catalysts.parquet`).")
+        for n in overlay_notes:
+            st.caption(n)
+
+    picks = pick_winners(
+        view,
+        top_n=picks_n,
+        blowoff_threshold_pct=float(blowoff),
+        exclude_sell_zone=exclude_sell,
+        congress_overlay=congress_overlay or None,
+        catalyst_overlay=catalyst_overlay or None,
+    )
+    if picks.empty:
+        st.info("No picks meet the criteria. Loosen the filters or check that prices loaded.")
+    else:
+        picks_cols = [
+            "rank", "ticker", "name", "theme", "status",
+            "composite", "score_analyst", "score_rr", "score_theme",
+            "score_momentum", "score_congress", "score_catalyst",
+            "catalyst_days", "blowoff_penalty",
+            "live_price", "target_entry", "target_exit",
+            "reward_risk", "pct_3m", "pct_6m",
+        ]
+        picks_cols = [c for c in picks_cols if c in picks.columns]
+        picks_event = st.dataframe(
+            picks[picks_cols],
+            use_container_width=True,
+            hide_index=True,
+            on_select="rerun",
+            selection_mode="single-row",
+            key="top_picks_table",
+            column_config={
+                "rank": st.column_config.NumberColumn("#", format="%d"),
+                "ticker": "Ticker",
+                "name": "Name",
+                "theme": "Theme",
+                "status": "Status",
+                "composite": st.column_config.ProgressColumn(
+                    "Composite", min_value=0.0, max_value=1.0, format="%.2f",
+                ),
+                "score_analyst": st.column_config.NumberColumn("Analyst", format="%.2f"),
+                "score_rr": st.column_config.NumberColumn("R:R sub", format="%.2f"),
+                "score_theme": st.column_config.NumberColumn("Theme", format="%.2f"),
+                "score_momentum": st.column_config.NumberColumn("12-1 mo", format="%.2f"),
+                "score_congress": st.column_config.NumberColumn(
+                    "Cong", format="%.2f",
+                    help="Max asymmetry_score from congress candidates parquet (0 if no overlay).",
+                ),
+                "score_catalyst": st.column_config.NumberColumn(
+                    "Cat", format="%.2f",
+                    help="Proximity to the next upcoming catalyst (1.0 at 0 days, 0 at 180d).",
+                ),
+                "catalyst_days": st.column_config.NumberColumn(
+                    "Cat in", format="%d d",
+                    help="Days until the next upcoming catalyst.",
+                ),
+                "blowoff_penalty": st.column_config.NumberColumn(
+                    "Penalty", format="%.2f",
+                    help="Subtracted from the composite for runaway 6m returns.",
+                ),
+                "live_price": st.column_config.NumberColumn("Live", format="%.2f"),
+                "target_entry": st.column_config.NumberColumn("Buy ≤", format="%.2f"),
+                "target_exit": st.column_config.NumberColumn("Sell ≥", format="%.2f"),
+                "reward_risk": st.column_config.NumberColumn("R:R", format="%.2f"),
+                "pct_3m": st.column_config.NumberColumn("3m", format="%+.1f%%"),
+                "pct_6m": st.column_config.NumberColumn("6m", format="%+.1f%%"),
+            },
+        )
+        if picks_event is not None and picks_event.selection.rows:
+            sel_ticker = str(picks.iloc[picks_event.selection.rows[0]]["ticker"])
+            sel_row = view[view["ticker"] == sel_ticker].iloc[0]
+            _render_watchlist_ticker_card(
+                st, sel_row,
+                congress_overlay=congress_overlay,
+                catalyst_overlay=catalyst_overlay,
+            )
+
+    st.divider()
 
     # ---- Filter bar --------------------------------------------------------
     with st.expander("Filters", expanded=True):
@@ -303,10 +443,15 @@ def _render_watchlist_tab(st) -> None:
         "description",
     ]
     display_cols = [c for c in display_cols if c in cut.columns]
-    st.dataframe(
-        cut[display_cols],
+    st.caption("👇 Click any row to expand the company description below.")
+    cut_display = cut[display_cols].reset_index(drop=True)
+    main_event = st.dataframe(
+        cut_display,
         use_container_width=True,
         hide_index=True,
+        on_select="rerun",
+        selection_mode="single-row",
+        key="watchlist_main_table",
         column_config={
             "status": "Status",
             "ticker": "Ticker",
@@ -331,17 +476,33 @@ def _render_watchlist_tab(st) -> None:
             "description": "Notes",
         },
     )
+    if main_event is not None and main_event.selection.rows:
+        selected_idx = main_event.selection.rows[0]
+        # The main table is filtered + sorted, so go through the displayed
+        # ticker rather than positional index from `view`.
+        selected_ticker = str(cut_display.iloc[selected_idx]["ticker"])
+        selected_row = view[view["ticker"] == selected_ticker].iloc[0]
+        _render_watchlist_ticker_card(
+            st, selected_row,
+            congress_overlay=congress_overlay,
+            catalyst_overlay=catalyst_overlay,
+        )
 
     # ---- Theme heat + parabolic ranking ------------------------------------
     cols = st.columns(2)
+    heat_event = None
+    heat = theme_heat(view)
     with cols[0]:
         st.markdown("#### 🔥 Theme heat (3m median %)")
-        heat = theme_heat(view)
+        st.caption("Click a row to see the tickers in that theme below.")
         if heat.empty:
             st.info("Not enough price history to rank themes yet.")
         else:
-            st.dataframe(
+            heat_event = st.dataframe(
                 heat, use_container_width=True, hide_index=True,
+                on_select="rerun",
+                selection_mode="single-row",
+                key="theme_heat_table",
                 column_config={
                     "theme": "Theme",
                     "n": "Tickers",
@@ -350,15 +511,20 @@ def _render_watchlist_tab(st) -> None:
                     "median_12m": st.column_config.NumberColumn("12m", format="%+.1f%%"),
                 },
             )
+    para_event = None
+    para = parabolic_rank(view, horizon="pct_6m", top_n=25)
     with cols[1]:
         st.markdown("#### 🚀 Parabolic winners (6m gain)")
-        para = parabolic_rank(view, horizon="pct_6m", top_n=25)
+        st.caption("Click a row to expand the company info below.")
         if para.empty:
             st.info("No price history available to rank.")
         else:
-            st.dataframe(
+            para_event = st.dataframe(
                 para[["ticker", "name", "theme", "pct_6m", "pct_12m", "status"]],
                 use_container_width=True, hide_index=True,
+                on_select="rerun",
+                selection_mode="single-row",
+                key="parabolic_winners_table",
                 column_config={
                     "ticker": "Ticker",
                     "name": "Name",
@@ -369,11 +535,159 @@ def _render_watchlist_tab(st) -> None:
                 },
             )
 
+    if para_event is not None and para_event.selection.rows:
+        sel_idx = para_event.selection.rows[0]
+        sel_ticker = str(para.iloc[sel_idx]["ticker"])
+        sel_row = view[view["ticker"] == sel_ticker].iloc[0]
+        _render_watchlist_ticker_card(
+            st, sel_row,
+            congress_overlay=congress_overlay,
+            catalyst_overlay=catalyst_overlay,
+        )
+
+    # ---- Theme drill-down --------------------------------------------------
+    selected_theme: str | None = None
+    if heat_event is not None and getattr(heat_event, "selection", None):
+        selected_rows = heat_event.selection.rows
+        if selected_rows:
+            selected_theme = str(heat.iloc[selected_rows[0]]["theme"])
+
+    if selected_theme:
+        drill = view[view["theme"] == selected_theme].copy()
+        drill = drill.sort_values(by="pct_3m", ascending=False, na_position="last")
+        st.markdown(f"### 🔍 {selected_theme} — {len(drill)} tickers")
+        st.caption(
+            "Sorted by 3-month momentum. Company description and signal-worthy "
+            "context pulled from the curated facts file (yfinance fallback)."
+        )
+        for _, row in drill.iterrows():
+            _render_watchlist_ticker_card(
+                st, row,
+                congress_overlay=congress_overlay,
+                catalyst_overlay=catalyst_overlay,
+            )
+    else:
+        st.info(
+            "👆 Pick a theme above to drill into its tickers with company "
+            "descriptions and catalyst notes."
+        )
+
     st.caption(
         "Status definitions — **BUY ZONE**: live ≤ analyst buy target. "
         "**APPROACHING**: within 15% above buy target. **SELL ZONE**: live ≥ analyst sell target. "
         "**HOLD**: between zones. **WATCH**: no targets set yet."
     )
+
+
+def _render_watchlist_ticker_card(
+    st,
+    row: pd.Series,
+    *,
+    congress_overlay: dict | None = None,
+    catalyst_overlay: dict | None = None,
+) -> None:
+    """Compact card for a single watchlist ticker: name, live vs targets,
+    short company description, and any catalyst hook. Falls back to the
+    analyst note from the CSV when curated facts are missing.
+
+    When `congress_overlay` / `catalyst_overlay` are passed, surfaces the
+    matching ticker's detail (who, when, upcoming events) inside the card."""
+    ticker = str(row.get("ticker", "?"))
+    fact = ticker_lookup(ticker)
+    display_name = (fact.name if fact else None) or row.get("name") or ticker
+
+    status = row.get("status") or ""
+    badge = {
+        "BUY ZONE": "🟢", "APPROACHING": "🟡", "HOLD": "⚪",
+        "SELL ZONE": "🔴", "WATCH": "⚫", "PRICE MISSING": "❔",
+    }.get(status, "")
+
+    live = row.get("live_price")
+    entry = row.get("target_entry")
+    exit_ = row.get("target_exit")
+    pct_3m = row.get("pct_3m")
+    pct_6m = row.get("pct_6m")
+
+    def _fmt(v, suffix=""):
+        if v is None or pd.isna(v):
+            return "—"
+        return f"{v:,.2f}{suffix}"
+
+    def _fmt_pct(v):
+        if v is None or pd.isna(v):
+            return "—"
+        return f"{v:+.1f}%"
+
+    with st.container(border=True):
+        header_l, header_r = st.columns([3, 2])
+        with header_l:
+            st.markdown(f"#### {badge} {display_name}  ·  `{ticker}`")
+            meta_bits = []
+            if fact:
+                meta_bits.extend([fact.exchange, CAP_LABEL.get(fact.cap, fact.cap.title()), fact.sector])
+            theme = row.get("theme")
+            if theme:
+                meta_bits.append(f"Theme: {theme}")
+            if meta_bits:
+                st.caption(" · ".join(b for b in meta_bits if b))
+        with header_r:
+            st.markdown(
+                f"**Live** {_fmt(live)}  ·  **Buy ≤** {_fmt(entry)}  ·  **Sell ≥** {_fmt(exit_)}  \n"
+                f"3m {_fmt_pct(pct_3m)}  ·  6m {_fmt_pct(pct_6m)}  ·  Status **{status or '—'}**"
+            )
+
+        # What they do
+        summary = (fact.summary if fact else "") or ""
+        if summary:
+            st.markdown(f"**What they do.** {summary}")
+        elif row.get("description"):
+            st.markdown(f"**Analyst note.** {row['description']}")
+
+        # Why it tends to be signal-worthy (catalysts / setup)
+        why = (fact.why_it_matters if fact else "") or ""
+        if why:
+            st.markdown(f"**Signal-worthy because.** {why}")
+        # If we had a curated summary but also have an analyst note, still surface it
+        if summary and row.get("description"):
+            st.markdown(f"**Analyst note.** {row['description']}")
+
+        # ---- Congress signal -------------------------------------------------
+        ck = ticker.upper()
+        cong = (congress_overlay or {}).get(ck)
+        if cong:
+            bits: list[str] = []
+            if cong.get("n_actors"):
+                bits.append(
+                    f"**{int(cong['n_actors'])} member"
+                    f"{'s' if cong['n_actors'] != 1 else ''}** trading"
+                )
+            if cong.get("days_ago") is not None:
+                bits.append(f"last buy **{int(cong['days_ago'])}d ago**")
+            if cong.get("cluster_size", 0) and cong["cluster_size"] >= 3:
+                bits.append(f"cluster size **{int(cong['cluster_size'])}**")
+            score = cong.get("score") or 0.0
+            if score:
+                bits.append(f"asymmetry **{score:.2f}**")
+            actors = cong.get("top_actors") or []
+            actors_str = (" — " + ", ".join(actors)) if actors else ""
+            st.markdown(
+                f"**🏛️ Congress signal.** "
+                f"{' · '.join(bits) if bits else 'tracked'}{actors_str}."
+            )
+
+        # ---- Upcoming catalyst ----------------------------------------------
+        cat = (catalyst_overlay or {}).get(ck)
+        if cat:
+            d = cat.get("days_until")
+            when = cat.get("next_date")
+            cat_label = cat.get("category") or "event"
+            rationale = cat.get("rationale") or ""
+            head = (
+                f"**📅 Upcoming catalyst.** {cat_label.replace('_', ' ').title()} in "
+                f"**{int(d)}d** ({when})" if d is not None and when
+                else f"**📅 Upcoming catalyst.** {cat_label}"
+            )
+            st.markdown(f"{head}. {rationale}" if rationale else head + ".")
 
 
 def main() -> None:
