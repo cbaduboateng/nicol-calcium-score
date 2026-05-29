@@ -314,11 +314,12 @@ _STATUS_SCORE: dict[str, float] = {
 
 
 DEFAULT_PICK_WEIGHTS: dict[str, float] = {
-    "analyst": 0.35,
+    "analyst": 0.30,
     "reward_risk": 0.20,
-    "theme_momentum": 0.20,
-    "personal_momentum": 0.20,
-    "congress": 0.05,
+    "theme_momentum": 0.15,
+    "personal_momentum": 0.15,
+    "congress": 0.10,
+    "catalyst": 0.10,
 }
 
 
@@ -353,22 +354,193 @@ def _blowoff_penalty(pct_6m: float | None, threshold_pct: float = 100.0) -> floa
 
 def load_congress_overlay(
     candidates_path: Path | str = "data/processed/candidates.parquet",
-) -> dict[str, float]:
-    """Map each ticker to a 0-1 overlay score derived from the existing
-    congress-trading candidates parquet. Returns {} if the file is missing
-    (so the dashboard degrades cleanly when run without the pipeline)."""
-    p = Path(candidates_path)
+    trades_path: Path | str = "data/processed/trades.parquet",
+    actors_path: Path | str = "data/processed/actors.parquet",
+    *,
+    recency_window_days: int = 180,
+) -> dict[str, dict]:
+    """Map each ticker to a rich overlay dict derived from the congress-
+    trading pipeline. Returns {} if the candidates file is missing (so the
+    dashboard degrades cleanly when run without the pipeline).
+
+    Each value is a dict with:
+      score          float, 0-1 — max asymmetry_score for the ticker
+      n_actors       int        — distinct actors trading the ticker
+      cluster_size   int        — max cluster_size from candidates
+      last_trade     date|None  — most recent transaction_date
+      days_ago       int|None   — days since last_trade
+      top_actors     list[str]  — up to 3 actor names sorted by recency
+      signal_summary str        — one-line UI string
+    """
+    p_cand = Path(candidates_path)
+    if not p_cand.exists():
+        return {}
+    try:
+        cand = pd.read_parquet(p_cand)
+    except Exception as exc:
+        log.warning("Could not load congress candidates (%s)", exc)
+        return {}
+    if cand.empty or "ticker" not in cand.columns or "asymmetry_score" not in cand.columns:
+        return {}
+
+    cand = cand.copy()
+    cand["ticker"] = cand["ticker"].astype(str).str.upper()
+
+    trades = pd.DataFrame()
+    p_tr = Path(trades_path)
+    if p_tr.exists():
+        try:
+            trades = pd.read_parquet(p_tr)
+        except Exception as exc:
+            log.warning("Could not load trades (%s)", exc)
+    if not trades.empty:
+        trades = trades.copy()
+        trades["ticker"] = trades["ticker"].astype(str).str.upper()
+        if "transaction_date" in trades.columns:
+            trades["transaction_date"] = pd.to_datetime(
+                trades["transaction_date"], errors="coerce",
+            )
+
+    name_by_id: dict[str, str] = {}
+    p_act = Path(actors_path)
+    if p_act.exists():
+        try:
+            actors = pd.read_parquet(p_act)
+            if not actors.empty and {"actor_id", "name"}.issubset(actors.columns):
+                name_by_id = dict(zip(
+                    actors["actor_id"].astype(str),
+                    actors["name"].astype(str),
+                ))
+        except Exception as exc:
+            log.warning("Could not load actors (%s)", exc)
+
+    today = pd.Timestamp(date.today())
+    overlay: dict[str, dict] = {}
+
+    for ticker, sub in cand.groupby("ticker"):
+        score = float(np.clip(sub["asymmetry_score"].max(), 0.0, 1.0))
+        n_actors = int(sub["actor_id"].astype(str).nunique()) if "actor_id" in sub.columns else 0
+        cluster_size = int(sub["cluster_size"].max()) if "cluster_size" in sub.columns else 0
+
+        last_trade: date | None = None
+        days_ago: int | None = None
+        top_actors: list[str] = []
+
+        if not trades.empty:
+            cand_trade_ids = set(sub["trade_id"].astype(str)) if "trade_id" in sub.columns else set()
+            ticker_trades = trades[trades["ticker"] == ticker]
+            if cand_trade_ids and "trade_id" in ticker_trades.columns:
+                ticker_trades = ticker_trades[
+                    ticker_trades["trade_id"].astype(str).isin(cand_trade_ids)
+                ]
+            if not ticker_trades.empty:
+                # Only count trades within the recency window
+                if "transaction_date" in ticker_trades.columns:
+                    cutoff = today - pd.Timedelta(days=recency_window_days)
+                    in_window = ticker_trades[ticker_trades["transaction_date"] >= cutoff]
+                    if not in_window.empty:
+                        most_recent = in_window["transaction_date"].max()
+                        if pd.notna(most_recent):
+                            last_trade = most_recent.date()
+                            days_ago = int((today - most_recent).days)
+
+                        ranked = in_window.sort_values("transaction_date", ascending=False)
+                        if "actor_id" in ranked.columns:
+                            seen: list[str] = []
+                            for aid in ranked["actor_id"].astype(str):
+                                nm = name_by_id.get(aid, aid)
+                                if nm not in seen:
+                                    seen.append(nm)
+                                if len(seen) >= 3:
+                                    break
+                            top_actors = seen
+
+        summary_bits: list[str] = []
+        if n_actors:
+            summary_bits.append(
+                f"{n_actors} member{'s' if n_actors != 1 else ''} trading"
+            )
+        if days_ago is not None:
+            summary_bits.append(f"last buy {days_ago}d ago")
+        signal_summary = " · ".join(summary_bits)
+
+        overlay[ticker] = {
+            "score": score,
+            "n_actors": n_actors,
+            "cluster_size": cluster_size,
+            "last_trade": last_trade,
+            "days_ago": days_ago,
+            "top_actors": top_actors,
+            "signal_summary": signal_summary,
+        }
+    return overlay
+
+
+def load_catalyst_overlay(
+    catalysts_path: Path | str = "data/processed/catalysts.parquet",
+    *,
+    horizon_days: int = 180,
+    as_of: date | None = None,
+) -> dict[str, dict]:
+    """Map each ticker to its NEXT upcoming catalyst within `horizon_days`.
+
+    Each value is a dict:
+      score        float, 0-1 — proximity score (1.0 at 0 days, 0 at horizon)
+      next_date    date       — event date
+      days_until   int        — days from `as_of` to event
+      category     str        — e.g. 'dod_obligation_cycle', 'pdufa'
+      rationale    str        — short human-readable hook
+
+    Returns {} when the file is missing or empty.
+    """
+    p = Path(catalysts_path)
     if not p.exists():
         return {}
     try:
         df = pd.read_parquet(p)
     except Exception as exc:
-        log.warning("Could not load congress overlay (%s)", exc)
+        log.warning("Could not load catalysts (%s)", exc)
         return {}
-    if df.empty or "ticker" not in df.columns or "asymmetry_score" not in df.columns:
+    if df.empty or "ticker" not in df.columns or "event_date" not in df.columns:
         return {}
-    grp = df.groupby(df["ticker"].astype(str).str.upper())["asymmetry_score"].max()
-    return {k: float(np.clip(v, 0.0, 1.0)) for k, v in grp.items() if pd.notna(v)}
+
+    df = df.copy()
+    df["ticker"] = df["ticker"].astype(str).str.upper()
+    df["event_date"] = pd.to_datetime(df["event_date"], errors="coerce")
+    df = df.dropna(subset=["event_date"])
+    today = pd.Timestamp(as_of or date.today())
+    horizon = today + pd.Timedelta(days=horizon_days)
+    upcoming = df[(df["event_date"] >= today) & (df["event_date"] <= horizon)]
+    if upcoming.empty:
+        return {}
+
+    # Keep only the *nearest* upcoming event per ticker
+    upcoming = upcoming.sort_values("event_date").drop_duplicates("ticker", keep="first")
+
+    overlay: dict[str, dict] = {}
+    for _, row in upcoming.iterrows():
+        days_until = int((row["event_date"] - today).days)
+        score = float(max(0.0, 1.0 - days_until / max(horizon_days, 1)))
+        overlay[str(row["ticker"])] = {
+            "score": score,
+            "next_date": row["event_date"].date(),
+            "days_until": days_until,
+            "category": str(row.get("category") or ""),
+            "rationale": str(row.get("rationale") or ""),
+        }
+    return overlay
+
+
+def _overlay_score(entry) -> float:
+    """Coerce an overlay entry (dict or bare float) into its 0-1 score."""
+    if entry is None:
+        return 0.0
+    if isinstance(entry, dict):
+        return float(entry.get("score", 0.0) or 0.0)
+    try:
+        return float(entry)
+    except (TypeError, ValueError):
+        return 0.0
 
 
 def pick_winners(
@@ -378,11 +550,12 @@ def pick_winners(
     blowoff_threshold_pct: float = 100.0,
     exclude_sell_zone: bool = True,
     weights: dict[str, float] | None = None,
-    congress_overlay: dict[str, float] | None = None,
+    congress_overlay: dict[str, dict | float] | None = None,
+    catalyst_overlay: dict[str, dict | float] | None = None,
 ) -> pd.DataFrame:
     """Composite winner-picker.
 
-    Combines five normalised sub-scores per ticker into a single 0-1
+    Combines six normalised sub-scores per ticker into a single 0-1
     composite, subtracts a blow-off penalty (cap on chasing parabolic
     tops), sorts descending, and returns the top N.
 
@@ -393,11 +566,18 @@ def pick_winners(
       personal_momentum — (12m - 1m) % through the same logistic
       congress          — max asymmetry_score from candidates.parquet
                           (0 when no overlay supplied)
+      catalyst          — proximity to the next upcoming catalyst within
+                          the horizon (1.0 at 0 days, 0 at horizon)
+
+    Overlays accept either a bare 0-1 float per ticker or a rich dict
+    with a 'score' key — the latter lets the UI surface contextual detail
+    without forcing a second lookup.
     """
     w = dict(DEFAULT_PICK_WEIGHTS)
     if weights:
         w.update(weights)
-    overlay = congress_overlay or {}
+    c_overlay = congress_overlay or {}
+    k_overlay = catalyst_overlay or {}
 
     if view.empty:
         return pd.DataFrame()
@@ -428,7 +608,8 @@ def pick_winners(
         s_rr = _rr_score(r.get("reward_risk"))
         s_theme = _logistic_pct(theme_3m.get(theme))
         s_mom = _logistic_pct(mom_pct)
-        s_congress = float(overlay.get(ticker, 0.0))
+        s_congress = _overlay_score(c_overlay.get(ticker))
+        s_catalyst = _overlay_score(k_overlay.get(ticker))
         penalty = _blowoff_penalty(r.get("pct_6m"), blowoff_threshold_pct)
 
         composite = (
@@ -437,8 +618,25 @@ def pick_winners(
             + w["theme_momentum"] * s_theme
             + w["personal_momentum"] * s_mom
             + w["congress"] * s_congress
+            + w["catalyst"] * s_catalyst
         ) - penalty
         composite = float(np.clip(composite, 0.0, 1.0))
+
+        # Optional context fields for UI rendering (catalyst countdown etc.)
+        cat_entry = k_overlay.get(ticker)
+        catalyst_days = (
+            cat_entry.get("days_until")
+            if isinstance(cat_entry, dict) else None
+        )
+        catalyst_label = (
+            cat_entry.get("category")
+            if isinstance(cat_entry, dict) else None
+        )
+        cong_entry = c_overlay.get(ticker)
+        congress_summary = (
+            cong_entry.get("signal_summary")
+            if isinstance(cong_entry, dict) else None
+        )
 
         rows.append({
             "ticker": ticker,
@@ -458,8 +656,12 @@ def pick_winners(
             "score_theme": s_theme,
             "score_momentum": s_mom,
             "score_congress": s_congress,
+            "score_catalyst": s_catalyst,
             "blowoff_penalty": penalty,
             "composite": composite,
+            "catalyst_days": catalyst_days,
+            "catalyst_label": catalyst_label,
+            "congress_summary": congress_summary,
         })
 
     out = (
