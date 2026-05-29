@@ -32,7 +32,7 @@ from ..schema import AssetType, Direction, Owner, Trade
 log = logging.getLogger(__name__)
 
 BASE_URL = "https://efdsearch.senate.gov"
-USER_AGENT = "congress-signal/0.1 (research)"
+USER_AGENT = "icarus/0.1 (research)"
 
 
 class SenateEFDClient:

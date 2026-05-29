@@ -4,13 +4,13 @@ from __future__ import annotations
 
 from datetime import date, timedelta
 
-from congress_signal.ingest.synthetic import (
+from icarus.ingest.synthetic import (
     synthetic_actors,
     synthetic_prices,
     synthetic_trades,
 )
-from congress_signal.pipeline import run_full_pipeline
-from congress_signal.backtest.engine import run_backtest
+from icarus.pipeline import run_full_pipeline
+from icarus.backtest.engine import run_backtest
 
 
 CFG = {

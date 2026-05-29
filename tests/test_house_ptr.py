@@ -5,7 +5,7 @@ import zipfile
 from pathlib import Path
 from unittest.mock import patch
 
-from congress_signal.ingest import house_ptr
+from icarus.ingest import house_ptr
 
 
 def _build_zip(tmp_path: Path, xml_body: str) -> Path:

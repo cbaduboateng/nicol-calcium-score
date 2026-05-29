@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from datetime import date, datetime, timedelta, timezone
 
-from congress_signal.schema import (
+from icarus.schema import (
     ActorScore,
     AssetType,
     Direction,
     Owner,
     Trade,
 )
-from congress_signal.scoring.clustering import find_clusters
+from icarus.scoring.clustering import find_clusters
 
 
 def _trade(actor_id: str, ticker: str, days_offset: int) -> Trade:

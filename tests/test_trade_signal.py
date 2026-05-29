@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from datetime import date, timedelta
 
-from congress_signal.schema import Actor, AssetType, Chamber, Direction, Owner, Trade
-from congress_signal.scoring.trade_signal import score_trades
+from icarus.schema import Actor, AssetType, Chamber, Direction, Owner, Trade
+from icarus.scoring.trade_signal import score_trades
 
 
 def _stock(actor_id: str, amount: float, lag_days: int = 30) -> Trade:

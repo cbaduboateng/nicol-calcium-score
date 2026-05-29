@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 import requests
 
-from congress_signal.ingest.quiver import QuiverClient
+from icarus.ingest.quiver import QuiverClient
 
 
 FAKE_ROWS = [

@@ -16,8 +16,8 @@ status-bar style, custom app title).
 
 from __future__ import annotations
 
-APP_TITLE = "Congress Signal"
-APP_ICON_EMOJI = "🏛️"
+APP_TITLE = "Icarus"
+APP_ICON_EMOJI = "🪶"
 
 
 # We use the favicon Streamlit hosts at /favicon.ico as the apple-touch-icon
@@ -36,7 +36,7 @@ _PWA_HEAD_INJECTION = """
     parentDoc.head.appendChild(m);
   };
   meta('apple-mobile-web-app-capable', 'yes');
-  meta('apple-mobile-web-app-title', 'Congress Signal');
+  meta('apple-mobile-web-app-title', 'Icarus');
   meta('apple-mobile-web-app-status-bar-style', 'black-translucent');
   meta('mobile-web-app-capable', 'yes');
   meta('theme-color', '#0ea5e9');
@@ -77,10 +77,10 @@ div[data-baseweb="tab-list"] {
 }
 
 /* The detail card on mobile reads better as a vertical stack. */
-.csig-card { padding: 0.5rem 0; }
-.csig-card h4 { margin: 0 0 0.25rem 0; }
-.csig-card .meta { color: rgba(250,250,250,0.65); font-size: 0.85em; margin-bottom: 0.5rem; }
-.csig-card .narrative p { margin: 0.4rem 0; }
+.icarus-card { padding: 0.5rem 0; }
+.icarus-card h4 { margin: 0 0 0.25rem 0; }
+.icarus-card .meta { color: rgba(250,250,250,0.65); font-size: 0.85em; margin-bottom: 0.5rem; }
+.icarus-card .narrative p { margin: 0.4rem 0; }
 </style>
 """
 

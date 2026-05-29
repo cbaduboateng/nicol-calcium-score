@@ -50,7 +50,7 @@ jobs:
           PYTHONUNBUFFERED: '1'
         run: |
           mkdir -p docs data/cache
-          csig phase0 \
+          icarus phase0 \
             --start "${{ github.event.inputs.start_date }}" \
             --top-n ${{ github.event.inputs.top_n }} \
             --output-dir docs

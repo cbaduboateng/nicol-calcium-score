@@ -1,4 +1,4 @@
-# congress-signal configuration
+# icarus configuration
 # Environment overrides: CONGRESS_SIGNAL_<DOTTED__KEY>=value
 # (use double-underscore to descend into nested keys)
 

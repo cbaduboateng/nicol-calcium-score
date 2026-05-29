@@ -22,7 +22,7 @@ from pathlib import Path
 # Streamlit Cloud logs panel. Root logger is at WARNING by default.
 logging.basicConfig(
     level=logging.INFO,
-    format="[csig] %(levelname)s %(name)s: %(message)s",
+    format="[icarus] %(levelname)s %(name)s: %(message)s",
     stream=sys.stdout,
     force=True,
 )
@@ -76,12 +76,12 @@ def _bootstrap_data_if_missing() -> None:
 
     import pandas as pd
 
-    from congress_signal.config import load_config
-    from congress_signal.ingest.committees import load_committee_actors
-    from congress_signal.ingest.quiver import QuiverClient
-    from congress_signal.ingest.synthetic import synthetic_actors, synthetic_trades
-    from congress_signal.pipeline import run_full_pipeline
-    from congress_signal.scoring.catalyst import build_calendar
+    from icarus.config import load_config
+    from icarus.ingest.committees import load_committee_actors
+    from icarus.ingest.quiver import QuiverClient
+    from icarus.ingest.synthetic import synthetic_actors, synthetic_trades
+    from icarus.pipeline import run_full_pipeline
+    from icarus.scoring.catalyst import build_calendar
 
     cfg = load_config()
 
@@ -148,7 +148,7 @@ def _bootstrap_data_if_missing() -> None:
             log.warning("Committee load failed (%s); using synthetic actors", exc)
             actors = []
 
-        from congress_signal.schema import Actor, Chamber
+        from icarus.schema import Actor, Chamber
 
         actor_by_id: dict[str, Actor] = {a.actor_id: a for a in actors}
 
@@ -215,7 +215,7 @@ def _bootstrap_data_if_missing() -> None:
     # the curated static dict, so the dashboard never blocks on a per-ticker
     # yfinance call when rendering the Company / Exchange / Cap columns.
     try:
-        from congress_signal.ticker_facts import prewarm as _prewarm_facts
+        from icarus.ticker_facts import prewarm as _prewarm_facts
         n_new = _prewarm_facts(candidate_tickers)
         if n_new:
             log.info("Prewarmed ticker_facts cache for %d new tickers", n_new)
@@ -225,8 +225,8 @@ def _bootstrap_data_if_missing() -> None:
     if candidate_tickers:
         from datetime import timedelta as _td
 
-        from congress_signal.ingest.prices import fetch_prices as _fetch_prices
-        from congress_signal.scoring.residual import (
+        from icarus.ingest.prices import fetch_prices as _fetch_prices
+        from icarus.scoring.residual import (
             compute_residuals as _compute_residuals,
         )
 
@@ -283,6 +283,6 @@ def _bootstrap_data_if_missing() -> None:
 
 _bootstrap_data_if_missing()
 
-from congress_signal.dashboard import main as _main  # noqa: E402
+from icarus.dashboard import main as _main  # noqa: E402
 
 _main()

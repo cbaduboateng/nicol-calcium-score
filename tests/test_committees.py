@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 import pytest
 
-from congress_signal.ingest import committees
+from icarus.ingest import committees
 
 
 FAKE_LEGISLATORS = [

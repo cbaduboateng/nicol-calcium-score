@@ -17,7 +17,7 @@ from hypothesis import strategies as st  # noqa: E402
 
 from datetime import date, timedelta  # noqa: E402
 
-from congress_signal.schema import (  # noqa: E402
+from icarus.schema import (  # noqa: E402
     Actor,
     AssetType,
     Chamber,
@@ -25,7 +25,7 @@ from congress_signal.schema import (  # noqa: E402
     Owner,
     Trade,
 )
-from congress_signal.scoring.actor_quality import score_actors
+from icarus.scoring.actor_quality import score_actors
 
 
 def _trade(actor_id: str, ticker: str, amount: float, days_ago: int = 30) -> Trade:

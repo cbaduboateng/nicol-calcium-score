@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import date, timedelta
 from unittest.mock import patch
 
-from congress_signal.scoring import catalyst
+from icarus.scoring import catalyst
 
 
 def test_dod_calendar_emits_year_end_events():

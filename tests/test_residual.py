@@ -4,8 +4,8 @@ from datetime import date, timedelta
 
 import pandas as pd
 
-from congress_signal.schema import AssetType, Direction, Owner, Trade
-from congress_signal.scoring.residual import compute_residuals
+from icarus.schema import AssetType, Direction, Owner, Trade
+from icarus.scoring.residual import compute_residuals
 
 
 def _trade(ticker: str) -> Trade:

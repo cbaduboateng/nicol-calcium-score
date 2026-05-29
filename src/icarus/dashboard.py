@@ -2,12 +2,12 @@
 
 Run with:
 
-    streamlit run -m congress_signal.dashboard
+    streamlit run -m icarus.dashboard
 
 Or via the convenience entry point:
 
-    csig-dashboard          # if installed via [project.scripts]
-    streamlit run $(python -c "import congress_signal.dashboard as d; print(d.__file__)")
+    icarus-dashboard          # if installed via [project.scripts]
+    streamlit run $(python -c "import icarus.dashboard as d; print(d.__file__)")
 
 The dashboard reads from `data/processed/` only and never writes back. The
 spec is firm on this: surveillance / alerting is a business decision and
@@ -201,7 +201,7 @@ def _render_ticker_card(st, row: pd.Series) -> None:
     else:
         st.info(
             f"No reference data on file for {ticker}. Add it to "
-            "`congress_signal/ticker_facts.py` to enrich this view."
+            "`icarus/ticker_facts.py` to enrich this view."
         )
 
     st.markdown("**Why this specific trade was flagged:**")
@@ -209,8 +209,8 @@ def _render_ticker_card(st, row: pd.Series) -> None:
         st.markdown(_narrative(row))
 
 
-def _render_icarus_tab(st) -> None:
-    """Render the Icarus watchlist tab: curated analyst picks with live
+def _render_watchlist_tab(st) -> None:
+    """Render the Watchlist tab: curated analyst picks with live
     alerts, theme momentum, and a parabolic-winners ranking."""
     from .watchlist_alerts import (
         WATCHLIST_PATH,
@@ -221,7 +221,7 @@ def _render_icarus_tab(st) -> None:
         theme_heat,
     )
 
-    st.subheader("🪶 Icarus — analyst-curated watchlist")
+    st.subheader("Watchlist — analyst-curated picks with live alerts")
     st.caption(
         "Hand-picked tickers with analyst buy / sell targets. "
         "Live prices compared every page load; themes ranked by 3-month "
@@ -382,7 +382,7 @@ def main() -> None:
     except ImportError:
         raise SystemExit(
             "streamlit is not installed. Install with "
-            "`pip install congress-signal[dashboard]`."
+            "`pip install icarus[dashboard]`."
         )
 
     processed = Path("data/processed")
@@ -412,7 +412,7 @@ def main() -> None:
     if candidates.empty:
         st.warning(
             "No candidates yet. Run: "
-            "`csig ingest --source synthetic && csig score`"
+            "`icarus ingest --source synthetic && icarus score`"
         )
         return
 
@@ -440,13 +440,13 @@ def main() -> None:
 
     enriched = _enrich_candidates(candidates, trades, actors)
 
-    tab_icarus, tab_top, tab_actors, tab_clusters, tab_catalysts = st.tabs(
-        ["🪶 Icarus", "Top candidates", "Actor leaderboard", "Clusters", "Catalyst calendar"],
+    tab_watchlist, tab_top, tab_actors, tab_clusters, tab_catalysts = st.tabs(
+        ["Watchlist", "Top candidates", "Actor leaderboard", "Clusters", "Catalyst calendar"],
     )
 
-    # ---- Icarus: analyst-curated watchlist with live alerts ---------------
-    with tab_icarus:
-        _render_icarus_tab(st)
+    # ---- Watchlist: analyst-curated picks with live alerts ----------------
+    with tab_watchlist:
+        _render_watchlist_tab(st)
 
 
     with tab_top:
@@ -695,7 +695,7 @@ def main() -> None:
         )
         if catalysts.empty:
             st.info(
-                "No catalysts loaded. Run `csig catalysts` to build the "
+                "No catalysts loaded. Run `icarus catalysts` to build the "
                 "forward calendar (DoD obligation cycle is offline-safe)."
             )
         else:

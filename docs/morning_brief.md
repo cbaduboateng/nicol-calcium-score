@@ -25,7 +25,7 @@ not to give up yet:
 
 ### Phase 0 diagnostic workflow ready to run
 
-`csig diagnose` + `.github/workflows/diagnose.yml`. Slices the 85k
+`icarus diagnose` + `.github/workflows/diagnose.yml`. Slices the 85k
 trade tape on **every dimension we have** and reports per-slice mean
 CAR, hit rate, and delta-vs-in-group-baseline at 90 days:
 
@@ -36,14 +36,14 @@ CAR, hit rate, and delta-vs-in-group-baseline at 90 days:
 - Per-signal-type breakdown (which actual filter triggers add value)
 
 **Trigger it the same way as Phase 0:** Actions tab → "Phase 0
-diagnostic" → Run workflow → branch `congress-signal-extract`.
+diagnostic" → Run workflow → branch `icarus-extract`.
 
 Runs in ~6-10 min. Output lands at `docs/phase0_diagnostic.md` on
 the branch.
 
 ### Phase 1 scoring layers (Lakonishok-Lee, Jegadeesh-Titman, AQR)
 
-Three new pure scoring modules in `src/congress_signal/scoring/`:
+Three new pure scoring modules in `src/icarus/scoring/`:
 
 - **`insider.py`** — clustered insider buying. Composite of (1) distinct
   buyer cluster, (2) C-suite / chairman / founder share, (3) net buying
@@ -145,6 +145,6 @@ Each is testable in the diagnostic output.
 
 ---
 
-Current commit: 925714d on branch `congress-signal-extract`.
+Current commit: 925714d on branch `icarus-extract`.
 Tests: 59 passing.
-Dashboard URL: <https://congress-signal.onrender.com>
+Dashboard URL: <https://icarus.onrender.com>

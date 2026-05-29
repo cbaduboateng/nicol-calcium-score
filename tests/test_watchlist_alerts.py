@@ -5,7 +5,7 @@ from __future__ import annotations
 import pandas as pd
 import pytest
 
-from congress_signal.watchlist_alerts import (
+from icarus.watchlist_alerts import (
     APPROACHING_PCT_ABOVE_ENTRY,
     compute_status,
     gap_to_entry_pct,

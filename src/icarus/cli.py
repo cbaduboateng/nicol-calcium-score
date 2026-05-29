@@ -1,13 +1,13 @@
-"""Command-line interface for congress-signal.
+"""Command-line interface for icarus.
 
-Entry point: `csig` (declared in pyproject.toml).
+Entry point: `icarus` (declared in pyproject.toml).
 
 Commands:
-    csig ingest --source {quiver,house_ptr} --days 90
-    csig prices --since 2020-01-01
-    csig score --output data/processed/signals.parquet
-    csig rank --top 20
-    csig backtest --start 2018-01-01 --end 2024-12-31 --holding-period 90
+    icarus ingest --source {quiver,house_ptr} --days 90
+    icarus prices --since 2020-01-01
+    icarus score --output data/processed/signals.parquet
+    icarus rank --top 20
+    icarus backtest --start 2018-01-01 --end 2024-12-31 --holding-period 90
 """
 
 from __future__ import annotations
@@ -65,7 +65,7 @@ def _clean_record(record: dict) -> dict:
 @click.option("--log-level", default="INFO")
 @click.pass_context
 def main(ctx: click.Context, config_path: str | None, log_level: str) -> None:
-    """congress-signal: asymmetric-winner identification from disclosures."""
+    """icarus: asymmetric-winner identification from disclosures."""
     _setup_logging(log_level)
     ctx.ensure_object(dict)
     ctx.obj["config"] = load_config(config_path)

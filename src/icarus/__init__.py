@@ -1,4 +1,4 @@
-"""congress-signal: asymmetric-winner identification from disclosures."""
+"""icarus: asymmetric-winner identification from disclosures."""
 
 from .schema import (
     Actor,

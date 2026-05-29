@@ -9,8 +9,8 @@ from __future__ import annotations
 
 from datetime import date, timedelta
 
-from congress_signal.schema import Actor, AssetType, Chamber, Direction, Owner, Trade
-from congress_signal.scoring.actor_quality import score_actors
+from icarus.schema import Actor, AssetType, Chamber, Direction, Owner, Trade
+from icarus.scoring.actor_quality import score_actors
 
 
 def _trade(actor_id: str, ticker: str, amount: float, days_ago: int = 30) -> Trade:

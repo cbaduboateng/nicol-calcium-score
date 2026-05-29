@@ -35,7 +35,7 @@ from ..scoring.insider import InsiderTransaction
 log = logging.getLogger(__name__)
 
 BASE_URL = "https://openinsider.com/screener"
-USER_AGENT = "congress-signal/0.1 (research)"
+USER_AGENT = "icarus/0.1 (research)"
 
 
 @retry(

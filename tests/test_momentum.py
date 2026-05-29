@@ -7,7 +7,7 @@ from datetime import date
 import numpy as np
 import pandas as pd
 
-from congress_signal.scoring.momentum import score_momentum
+from icarus.scoring.momentum import score_momentum
 
 
 def _make_prices(start: str, end: str, returns: dict[str, float]) -> pd.DataFrame:

@@ -9,7 +9,7 @@ the filter does add alpha — and to spot where it actively destroys value.
 Output: a thorough markdown report at `docs/phase0_diagnostic.md`.
 
 Usage:
-    csig diagnose --start 2018-01-01
+    icarus diagnose --start 2018-01-01
 """
 
 from __future__ import annotations

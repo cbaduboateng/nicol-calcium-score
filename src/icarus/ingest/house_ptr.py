@@ -13,7 +13,7 @@ This adapter:
 3. For each PTR PDF, extracts trade rows via `pdfplumber` (optional).
 4. Normalises to `Trade`.
 
-PDF parsing requires `pip install congress-signal[pdf]`. Without
+PDF parsing requires `pip install icarus[pdf]`. Without
 pdfplumber the iterator still yields metadata-only rows from the index so
 downstream code can see which actors filed, just without ticker/amount.
 """

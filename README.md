@@ -1,4 +1,4 @@
-# congress-signal
+# icarus
 
 Identify asymmetric-payoff opportunities in congressional and executive-branch
 trading disclosures. Re-ranks the obvious mega-cap cluster down and surfaces
@@ -14,18 +14,18 @@ pip install -e .
 ## Demo (offline, no API keys)
 
 ```bash
-csig ingest --source synthetic --days 2555
-csig score
-csig rank --top 10
-csig backtest --start 2018-01-01 --end 2024-12-31 --holding-period 90 \
+icarus ingest --source synthetic --days 2555
+icarus score
+icarus rank --top 10
+icarus backtest --start 2018-01-01 --end 2024-12-31 --holding-period 90 \
   --filter-stack actor_quality,trade_signal,clustering
 ```
 
 ## Real data
 
 Set `QUIVER_API_KEY` for the QuiverQuant adapter, or run
-`csig ingest --source house_ptr --year 2024` to pull from the House Clerk
-archive. `csig committees` populates actors from
+`icarus ingest --source house_ptr --year 2024` to pull from the House Clerk
+archive. `icarus committees` populates actors from
 `unitedstates/congress-legislators`.
 
 ## Dashboard
@@ -34,7 +34,7 @@ Local:
 
 ```bash
 pip install -e ".[dashboard]"
-csig-dashboard            # opens http://localhost:8501
+icarus-dashboard            # opens http://localhost:8501
 # or:
 streamlit run streamlit_app.py
 ```

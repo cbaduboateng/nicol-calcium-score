@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from congress_signal.scoring.quality import QualityInputs, score_quality
+from icarus.scoring.quality import QualityInputs, score_quality
 
 
 def _q(**overrides) -> QualityInputs:

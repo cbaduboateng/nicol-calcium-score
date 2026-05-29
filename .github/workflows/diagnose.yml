@@ -45,7 +45,7 @@ jobs:
           PYTHONUNBUFFERED: '1'
         run: |
           mkdir -p docs data/cache
-          csig diagnose \
+          icarus diagnose \
             --start "${{ github.event.inputs.start_date }}" \
             --top-n ${{ github.event.inputs.top_n }} \
             --output-dir docs

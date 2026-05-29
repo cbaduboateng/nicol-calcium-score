@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import date, timedelta
 
-from congress_signal.scoring.insider import (
+from icarus.scoring.insider import (
     InsiderTransaction,
     score_insider_buying,
 )

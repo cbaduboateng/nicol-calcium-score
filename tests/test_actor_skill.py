@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from datetime import date, timedelta
 
-from congress_signal.backtest.engine import EventReturn
-from congress_signal.schema import AssetType, Direction, Owner, Trade
-from congress_signal.scoring.actor_skill import compute_actor_skill
+from icarus.backtest.engine import EventReturn
+from icarus.schema import AssetType, Direction, Owner, Trade
+from icarus.scoring.actor_skill import compute_actor_skill
 
 
 def _trade(actor: str, ticker: str, day_offset: int, trade_id: str | None = None) -> Trade:

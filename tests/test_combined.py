@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from congress_signal.scoring.combined import CompositeScoreInputs, score_composite
+from icarus.scoring.combined import CompositeScoreInputs, score_composite
 
 
 def test_all_high_yields_high_composite():

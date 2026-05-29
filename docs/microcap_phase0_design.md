@@ -172,25 +172,25 @@ Estimated effort: **3–5 working days** to first validation run.
 
 ### Day 1: Universe + fundamentals ingest
 
-- `src/congress_signal/microcap/universe.py` — point-in-time universe
+- `src/icarus/microcap/universe.py` — point-in-time universe
   builder (price, mkt cap, listing age, exchange filter).
-- `src/congress_signal/ingest/fundamentals.py` — SimFin bulk download +
+- `src/icarus/ingest/fundamentals.py` — SimFin bulk download +
   parser. Output: parquet of (ticker, date, cash, debt, current_ratio, book
   value, etc.).
 - Universe assembly across 2018-01-01 → today, monthly snapshots.
 
 ### Day 2: Listing-pressure detection
 
-- `src/congress_signal/microcap/listing_pressure.py` — universe of names
+- `src/icarus/microcap/listing_pressure.py` — universe of names
   with deficiency notices (from SEC 8-K item 3.01 filings).
 - EDGAR full-text search + filing parser.
 - Output: parquet of (ticker, deficiency_date, deficiency_type).
 
 ### Day 3: Signal composition + backtest harness
 
-- `src/congress_signal/microcap/scoring.py` — composite of the five
+- `src/icarus/microcap/scoring.py` — composite of the five
   layers above. Pure function.
-- `src/congress_signal/microcap/validation.py` — like `validation_v2.py`
+- `src/icarus/microcap/validation.py` — like `validation_v2.py`
   but for the microcap strategy. Monthly rebalance, top-50 hold, 365-day
   forward returns vs IWC benchmark.
 
@@ -211,7 +211,7 @@ Estimated effort: **3–5 working days** to first validation run.
 
 ---
 
-## What's reusable from congress-signal
+## What's reusable from icarus
 
 | Component | Reuse status |
 |---|---|

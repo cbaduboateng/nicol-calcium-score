@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import date
 from unittest.mock import patch
 
-from congress_signal.ingest import usaspending
+from icarus.ingest import usaspending
 
 
 def test_normalise_recipient_known():

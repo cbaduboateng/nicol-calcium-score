@@ -76,12 +76,12 @@ API key and a yfinance-enabled environment.
 ## How to reproduce
 
 ```bash
-cd congress_signal
+cd icarus
 pip install -e .
-csig ingest --source synthetic --days 2555
-csig score
-csig rank --top 20
-csig backtest --start 2018-01-01 --end 2024-12-31 \
+icarus ingest --source synthetic --days 2555
+icarus score
+icarus rank --top 20
+icarus backtest --start 2018-01-01 --end 2024-12-31 \
   --holding-period 90 \
   --filter-stack actor_quality,trade_signal,clustering
 ```
@@ -91,13 +91,13 @@ For real data (requires network):
 ```bash
 export QUIVER_API_KEY=...
 export CONGRESS_API_KEY=...   # optional, for Congress.gov hearings
-csig committees                # build actors.parquet from unitedstates/congress-legislators
-csig ingest --source quiver --days 180
-csig prices --since 2018-01-01
-csig score
-csig catalysts --horizon-days 90
-csig rank --top 20
-csig backtest --start 2018-01-01 --end 2024-12-31 --holding-period 90
+icarus committees                # build actors.parquet from unitedstates/congress-legislators
+icarus ingest --source quiver --days 180
+icarus prices --since 2018-01-01
+icarus score
+icarus catalysts --horizon-days 90
+icarus rank --top 20
+icarus backtest --start 2018-01-01 --end 2024-12-31 --holding-period 90
 ```
 
 ## Known limitations

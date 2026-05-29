@@ -79,7 +79,7 @@ Currently stubbed. Pull from:
 ### 6. Run the validation backtest
 
 After ingest is working, run:
-  csig backtest --start 2018-01-01 --end 2024-12-31 \\
+  icarus backtest --start 2018-01-01 --end 2024-12-31 \\
                 --holding-period 90 \\
                 --filter-stack actor_quality,trade_signal,clustering
 

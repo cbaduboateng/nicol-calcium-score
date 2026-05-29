@@ -52,7 +52,7 @@ jobs:
           PYTHONUNBUFFERED: '1'
         run: |
           mkdir -p docs data/cache
-          csig phase0-v2 \
+          icarus phase0-v2 \
             --start "${{ github.event.inputs.start_date }}" \
             --top-n ${{ github.event.inputs.top_n }} \
             --min-prior-trades ${{ github.event.inputs.min_prior_trades }} \

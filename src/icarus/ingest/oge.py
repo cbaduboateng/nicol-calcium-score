@@ -6,7 +6,7 @@ posted at:
 https://extapps2.oge.gov/Web/278eFile.nsf/PAS+Index
 
 The index pages list individuals and link to PDF disclosures. PDF parsing
-requires `pdfplumber`; install via `pip install congress-signal[pdf]`.
+requires `pdfplumber`; install via `pip install icarus[pdf]`.
 
 This adapter:
 1. Downloads the PAS index HTML, caches it
@@ -99,7 +99,7 @@ def parse_oge_pdf(pdf_path: Path) -> list[Trade]:
     except BaseException as exc:  # noqa: BLE001 - native deps can panic, not raise
         log.warning(
             "pdfplumber unavailable (%s); cannot parse %s. "
-            "Install with `pip install congress-signal[pdf]`",
+            "Install with `pip install icarus[pdf]`",
             exc, pdf_path,
         )
         return []
