@@ -1,4 +1,4 @@
-"""Hubris watchlist alert engine.
+"""Icarus watchlist alert engine.
 
 Reads the curated watchlist (analyst entry / exit targets), fetches live
 prices, and surfaces:

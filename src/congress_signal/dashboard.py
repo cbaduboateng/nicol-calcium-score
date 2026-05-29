@@ -209,8 +209,8 @@ def _render_ticker_card(st, row: pd.Series) -> None:
         st.markdown(_narrative(row))
 
 
-def _render_hubris_tab(st) -> None:
-    """Render the Hubris watchlist tab: curated analyst picks with live
+def _render_icarus_tab(st) -> None:
+    """Render the Icarus watchlist tab: curated analyst picks with live
     alerts, theme momentum, and a parabolic-winners ranking."""
     from .watchlist_alerts import (
         WATCHLIST_PATH,
@@ -221,7 +221,7 @@ def _render_hubris_tab(st) -> None:
         theme_heat,
     )
 
-    st.subheader("🪶 Hubris — analyst-curated watchlist")
+    st.subheader("🪶 Icarus — analyst-curated watchlist")
     st.caption(
         "Hand-picked tickers with analyst buy / sell targets. "
         "Live prices compared every page load; themes ranked by 3-month "
@@ -440,13 +440,13 @@ def main() -> None:
 
     enriched = _enrich_candidates(candidates, trades, actors)
 
-    tab_hubris, tab_top, tab_actors, tab_clusters, tab_catalysts = st.tabs(
-        ["🪶 Hubris", "Top candidates", "Actor leaderboard", "Clusters", "Catalyst calendar"],
+    tab_icarus, tab_top, tab_actors, tab_clusters, tab_catalysts = st.tabs(
+        ["🪶 Icarus", "Top candidates", "Actor leaderboard", "Clusters", "Catalyst calendar"],
     )
 
-    # ---- Hubris: analyst-curated watchlist with live alerts ---------------
-    with tab_hubris:
-        _render_hubris_tab(st)
+    # ---- Icarus: analyst-curated watchlist with live alerts ---------------
+    with tab_icarus:
+        _render_icarus_tab(st)
 
 
     with tab_top:
