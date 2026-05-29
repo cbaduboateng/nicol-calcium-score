@@ -34,6 +34,15 @@ CAP_LABEL = {
 }
 
 
+def _fmt_cap_short(mcap: float | None) -> str:
+    """Compact market-cap label for tables: $50M, $1.2B, $850M, '—' for unknown."""
+    if mcap is None or not pd.notna(mcap) or mcap <= 0:
+        return "—"
+    if mcap >= 1_000_000_000:
+        return f"${mcap / 1e9:.1f}B"
+    return f"${mcap / 1e6:.0f}M"
+
+
 def _read_parquet(path: Path) -> pd.DataFrame:
     if not path.exists():
         return pd.DataFrame()
@@ -388,9 +397,12 @@ def _render_watchlist_tab(st) -> None:
     if picks.empty:
         st.info("No picks meet the criteria. Loosen the filters or check that prices loaded.")
     else:
+        picks = picks.copy()
+        if "market_cap_usd" in picks.columns:
+            picks["mkt_cap"] = picks["market_cap_usd"].apply(_fmt_cap_short)
         picks_cols = [
             "rank", "ticker", "name", "theme", "status",
-            "market_cap_usd", "composite",
+            "mkt_cap", "composite",
             "score_analyst", "score_rr", "score_theme",
             "score_momentum", "score_congress", "score_catalyst",
             "catalyst_days", "blowoff_penalty",
@@ -411,8 +423,9 @@ def _render_watchlist_tab(st) -> None:
                 "name": "Name",
                 "theme": "Theme",
                 "status": "Status",
-                "market_cap_usd": st.column_config.NumberColumn(
-                    "Mkt cap", format="$%.0f", help="Raw market cap in USD; blank if not yet in the cache.",
+                "mkt_cap": st.column_config.TextColumn(
+                    "Mkt cap",
+                    help="Compact market cap: $50M, $1.2B, '—' for unknown.",
                 ),
                 "composite": st.column_config.ProgressColumn(
                     "Composite", min_value=0.0, max_value=1.0, format="%.2f",
@@ -498,8 +511,11 @@ def _render_watchlist_tab(st) -> None:
     cols[3].metric("Total tracked", len(view))
 
     # ---- Main table --------------------------------------------------------
+    cut = cut.copy()
+    if "market_cap_usd" in cut.columns:
+        cut["mkt_cap"] = cut["market_cap_usd"].apply(_fmt_cap_short)
     display_cols = [
-        "status", "ticker", "name", "theme", "market_cap_usd",
+        "status", "ticker", "name", "theme", "mkt_cap",
         "live_price", "target_entry", "target_exit",
         "gap_to_entry_pct", "reward_risk",
         "pct_1m", "pct_3m", "pct_6m", "pct_12m",
@@ -520,9 +536,9 @@ def _render_watchlist_tab(st) -> None:
             "ticker": "Ticker",
             "name": "Name",
             "theme": "Theme",
-            "market_cap_usd": st.column_config.NumberColumn(
-                "Mkt cap", format="$%.0f",
-                help="Raw market cap in USD; blank when not in the cache.",
+            "mkt_cap": st.column_config.TextColumn(
+                "Mkt cap",
+                help="Compact market cap: $50M, $1.2B, '—' for unknown.",
             ),
             "live_price": st.column_config.NumberColumn("Live", format="%.2f"),
             "target_entry": st.column_config.NumberColumn("Buy ≤", format="%.2f"),
@@ -696,11 +712,9 @@ def _render_watchlist_ticker_card(
             if theme:
                 meta_bits.append(f"Theme: {theme}")
             mcap = row.get("market_cap_usd")
-            if mcap and pd.notna(mcap) and mcap > 0:
-                if mcap >= 1_000_000_000:
-                    meta_bits.append(f"Mkt cap **${mcap/1e9:.1f}B**")
-                else:
-                    meta_bits.append(f"Mkt cap **${mcap/1e6:.0f}M**")
+            cap_short = _fmt_cap_short(mcap)
+            if cap_short != "—":
+                meta_bits.append(f"Mkt cap **{cap_short}**")
             if meta_bits:
                 st.caption(" · ".join(b for b in meta_bits if b))
         with header_r:
