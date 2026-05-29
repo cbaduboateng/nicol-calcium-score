@@ -303,10 +303,15 @@ def _render_watchlist_tab(st) -> None:
         "description",
     ]
     display_cols = [c for c in display_cols if c in cut.columns]
-    st.dataframe(
-        cut[display_cols],
+    st.caption("👇 Click any row to expand the company description below.")
+    cut_display = cut[display_cols].reset_index(drop=True)
+    main_event = st.dataframe(
+        cut_display,
         use_container_width=True,
         hide_index=True,
+        on_select="rerun",
+        selection_mode="single-row",
+        key="watchlist_main_table",
         column_config={
             "status": "Status",
             "ticker": "Ticker",
@@ -331,6 +336,13 @@ def _render_watchlist_tab(st) -> None:
             "description": "Notes",
         },
     )
+    if main_event is not None and main_event.selection.rows:
+        selected_idx = main_event.selection.rows[0]
+        # The main table is filtered + sorted, so go through the displayed
+        # ticker rather than positional index from `view`.
+        selected_ticker = str(cut_display.iloc[selected_idx]["ticker"])
+        selected_row = view[view["ticker"] == selected_ticker].iloc[0]
+        _render_watchlist_ticker_card(st, selected_row)
 
     # ---- Theme heat + parabolic ranking ------------------------------------
     cols = st.columns(2)
@@ -355,15 +367,20 @@ def _render_watchlist_tab(st) -> None:
                     "median_12m": st.column_config.NumberColumn("12m", format="%+.1f%%"),
                 },
             )
+    para_event = None
+    para = parabolic_rank(view, horizon="pct_6m", top_n=25)
     with cols[1]:
         st.markdown("#### 🚀 Parabolic winners (6m gain)")
-        para = parabolic_rank(view, horizon="pct_6m", top_n=25)
+        st.caption("Click a row to expand the company info below.")
         if para.empty:
             st.info("No price history available to rank.")
         else:
-            st.dataframe(
+            para_event = st.dataframe(
                 para[["ticker", "name", "theme", "pct_6m", "pct_12m", "status"]],
                 use_container_width=True, hide_index=True,
+                on_select="rerun",
+                selection_mode="single-row",
+                key="parabolic_winners_table",
                 column_config={
                     "ticker": "Ticker",
                     "name": "Name",
@@ -373,6 +390,12 @@ def _render_watchlist_tab(st) -> None:
                     "status": "Status",
                 },
             )
+
+    if para_event is not None and para_event.selection.rows:
+        sel_idx = para_event.selection.rows[0]
+        sel_ticker = str(para.iloc[sel_idx]["ticker"])
+        sel_row = view[view["ticker"] == sel_ticker].iloc[0]
+        _render_watchlist_ticker_card(st, sel_row)
 
     # ---- Theme drill-down --------------------------------------------------
     selected_theme: str | None = None
