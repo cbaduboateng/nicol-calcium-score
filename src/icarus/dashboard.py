@@ -426,7 +426,20 @@ def _render_watchlist_tab(st) -> None:
         picks = picks.copy()
         if "market_cap_usd" in picks.columns:
             picks["mkt_cap"] = picks["market_cap_usd"].apply(_fmt_cap_short)
-        picks_cols = [
+        # Compact default for phones — fewer columns means no horizontal scroll.
+        # Power users can flip the toggle to see every sub-score.
+        show_all_picks = st.toggle(
+            "🔬 Show all score columns",
+            value=False,
+            key="picks_show_all_cols",
+            help="Reveals the per-layer sub-scores and target prices. Off by default for phone-friendly width.",
+        )
+        compact_picks_cols = [
+            "rank", "ticker", "name", "status",
+            "mkt_cap", "composite",
+            "reward_risk", "pct_3m", "pct_6m",
+        ]
+        full_picks_cols = [
             "rank", "ticker", "name", "theme", "status",
             "mkt_cap", "composite",
             "score_analyst", "score_rr", "score_theme",
@@ -435,6 +448,7 @@ def _render_watchlist_tab(st) -> None:
             "live_price", "target_entry", "target_exit",
             "reward_risk", "pct_3m", "pct_6m",
         ]
+        picks_cols = full_picks_cols if show_all_picks else compact_picks_cols
         picks_cols = [c for c in picks_cols if c in picks.columns]
         picks_event = st.dataframe(
             picks[picks_cols],
@@ -540,13 +554,25 @@ def _render_watchlist_tab(st) -> None:
     cut = cut.copy()
     if "market_cap_usd" in cut.columns:
         cut["mkt_cap"] = cut["market_cap_usd"].apply(_fmt_cap_short)
-    display_cols = [
+    show_all_main = st.toggle(
+        "📊 Show all columns",
+        value=False,
+        key="main_show_all_cols",
+        help="Reveals theme, exit target, all four momentum periods, and the analyst note. Off for phone-friendly width.",
+    )
+    compact_main_cols = [
+        "status", "ticker", "mkt_cap",
+        "live_price", "target_entry", "gap_to_entry_pct",
+        "pct_3m",
+    ]
+    full_main_cols = [
         "status", "ticker", "name", "theme", "mkt_cap",
         "live_price", "target_entry", "target_exit",
         "gap_to_entry_pct", "reward_risk",
         "pct_1m", "pct_3m", "pct_6m", "pct_12m",
         "description",
     ]
+    display_cols = full_main_cols if show_all_main else compact_main_cols
     display_cols = [c for c in display_cols if c in cut.columns]
     st.caption("👇 Click any row to expand the company description below.")
     cut_display = cut[display_cols].reset_index(drop=True)

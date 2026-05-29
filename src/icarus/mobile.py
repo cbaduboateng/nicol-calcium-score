@@ -50,16 +50,60 @@ _MOBILE_CSS = """
 /* Reduce side padding on phones so tables/cards use the full viewport. */
 @media (max-width: 640px) {
   section.main > div.block-container {
-    padding-left: 0.75rem !important;
-    padding-right: 0.75rem !important;
-    padding-top: 1rem !important;
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+    padding-top: 0.75rem !important;
   }
   /* Slightly smaller body type so tables don't overflow horizontally. */
   html, body, [class*="st-"] {
-    font-size: 14px !important;
+    font-size: 13.5px !important;
   }
-  h1 { font-size: 1.4rem !important; }
-  h2, h3 { font-size: 1.15rem !important; }
+  h1 { font-size: 1.35rem !important; line-height: 1.25; }
+  h2, h3 { font-size: 1.1rem !important; line-height: 1.3; }
+  h4 { font-size: 1rem !important; }
+  /* Tighter caption / paragraph spacing — phones reward density. */
+  .stCaption, .stMarkdown p { margin-bottom: 0.4rem; }
+
+  /* Streamlit st.columns() are flex rows by default and squish on phones.
+     Force them to stack vertically below 640px so each filter / slider /
+     metric gets the full screen width. */
+  div[data-testid="stHorizontalBlock"] {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+  }
+  div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
+    width: 100% !important;
+    flex: 1 1 100% !important;
+    min-width: 0 !important;
+  }
+
+  /* Dataframes get a tiny font + tight padding so more columns fit before
+     horizontal scrolling kicks in. */
+  div[data-testid="stDataFrame"] {
+    font-size: 12.5px !important;
+  }
+  div[data-testid="stDataFrame"] table {
+    font-size: 12.5px !important;
+  }
+
+  /* Tighten metric cards: phone screens don't have room for the giant
+     default font on metric values. */
+  div[data-testid="stMetric"] label { font-size: 0.8rem !important; }
+  div[data-testid="stMetric"] div[data-testid="stMetricValue"] {
+    font-size: 1.4rem !important;
+  }
+
+  /* Native-looking sticky tabs with horizontal scroll for the 5-tab row. */
+  div[data-baseweb="tab-list"] {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  div[data-baseweb="tab-list"] button { flex-shrink: 0; }
+
+  /* Expander headers a bit chunkier — easier to tap. */
+  div[data-testid="stExpander"] summary {
+    padding: 0.55rem 0.5rem !important;
+  }
 }
 
 /* Make tabs sticky at the top so they're reachable while scrolling. */
@@ -73,7 +117,9 @@ div[data-baseweb="tab-list"] {
 
 /* Larger tap targets for buttons and selectboxes on touch screens. */
 @media (pointer: coarse) {
-  button, .stSelectbox, .stSlider { min-height: 44px; }
+  button, .stSelectbox, .stSlider, .stCheckbox { min-height: 44px; }
+  /* Wider tap zone for checkboxes specifically (the box itself is tiny). */
+  label[data-testid="stCheckbox"] { padding: 0.35rem 0; }
 }
 
 /* The detail card on mobile reads better as a vertical stack. */
