@@ -334,14 +334,19 @@ def _render_watchlist_tab(st) -> None:
 
     # ---- Theme heat + parabolic ranking ------------------------------------
     cols = st.columns(2)
+    heat_event = None
+    heat = theme_heat(view)
     with cols[0]:
         st.markdown("#### 🔥 Theme heat (3m median %)")
-        heat = theme_heat(view)
+        st.caption("Click a row to see the tickers in that theme below.")
         if heat.empty:
             st.info("Not enough price history to rank themes yet.")
         else:
-            st.dataframe(
+            heat_event = st.dataframe(
                 heat, use_container_width=True, hide_index=True,
+                on_select="rerun",
+                selection_mode="single-row",
+                key="theme_heat_table",
                 column_config={
                     "theme": "Theme",
                     "n": "Tickers",
@@ -369,11 +374,98 @@ def _render_watchlist_tab(st) -> None:
                 },
             )
 
+    # ---- Theme drill-down --------------------------------------------------
+    selected_theme: str | None = None
+    if heat_event is not None and getattr(heat_event, "selection", None):
+        selected_rows = heat_event.selection.rows
+        if selected_rows:
+            selected_theme = str(heat.iloc[selected_rows[0]]["theme"])
+
+    if selected_theme:
+        drill = view[view["theme"] == selected_theme].copy()
+        drill = drill.sort_values(by="pct_3m", ascending=False, na_position="last")
+        st.markdown(f"### 🔍 {selected_theme} — {len(drill)} tickers")
+        st.caption(
+            "Sorted by 3-month momentum. Company description and signal-worthy "
+            "context pulled from the curated facts file (yfinance fallback)."
+        )
+        for _, row in drill.iterrows():
+            _render_watchlist_ticker_card(st, row)
+    else:
+        st.info(
+            "👆 Pick a theme above to drill into its tickers with company "
+            "descriptions and catalyst notes."
+        )
+
     st.caption(
         "Status definitions — **BUY ZONE**: live ≤ analyst buy target. "
         "**APPROACHING**: within 15% above buy target. **SELL ZONE**: live ≥ analyst sell target. "
         "**HOLD**: between zones. **WATCH**: no targets set yet."
     )
+
+
+def _render_watchlist_ticker_card(st, row: pd.Series) -> None:
+    """Compact card for a single watchlist ticker: name, live vs targets,
+    short company description, and any catalyst hook. Falls back to the
+    analyst note from the CSV when curated facts are missing."""
+    ticker = str(row.get("ticker", "?"))
+    fact = ticker_lookup(ticker)
+    display_name = (fact.name if fact else None) or row.get("name") or ticker
+
+    status = row.get("status") or ""
+    badge = {
+        "BUY ZONE": "🟢", "APPROACHING": "🟡", "HOLD": "⚪",
+        "SELL ZONE": "🔴", "WATCH": "⚫", "PRICE MISSING": "❔",
+    }.get(status, "")
+
+    live = row.get("live_price")
+    entry = row.get("target_entry")
+    exit_ = row.get("target_exit")
+    pct_3m = row.get("pct_3m")
+    pct_6m = row.get("pct_6m")
+
+    def _fmt(v, suffix=""):
+        if v is None or pd.isna(v):
+            return "—"
+        return f"{v:,.2f}{suffix}"
+
+    def _fmt_pct(v):
+        if v is None or pd.isna(v):
+            return "—"
+        return f"{v:+.1f}%"
+
+    with st.container(border=True):
+        header_l, header_r = st.columns([3, 2])
+        with header_l:
+            st.markdown(f"#### {badge} {display_name}  ·  `{ticker}`")
+            meta_bits = []
+            if fact:
+                meta_bits.extend([fact.exchange, CAP_LABEL.get(fact.cap, fact.cap.title()), fact.sector])
+            theme = row.get("theme")
+            if theme:
+                meta_bits.append(f"Theme: {theme}")
+            if meta_bits:
+                st.caption(" · ".join(b for b in meta_bits if b))
+        with header_r:
+            st.markdown(
+                f"**Live** {_fmt(live)}  ·  **Buy ≤** {_fmt(entry)}  ·  **Sell ≥** {_fmt(exit_)}  \n"
+                f"3m {_fmt_pct(pct_3m)}  ·  6m {_fmt_pct(pct_6m)}  ·  Status **{status or '—'}**"
+            )
+
+        # What they do
+        summary = (fact.summary if fact else "") or ""
+        if summary:
+            st.markdown(f"**What they do.** {summary}")
+        elif row.get("description"):
+            st.markdown(f"**Analyst note.** {row['description']}")
+
+        # Why it tends to be signal-worthy (catalysts / setup)
+        why = (fact.why_it_matters if fact else "") or ""
+        if why:
+            st.markdown(f"**Signal-worthy because.** {why}")
+        # If we had a curated summary but also have an analyst note, still surface it
+        if summary and row.get("description"):
+            st.markdown(f"**Analyst note.** {row['description']}")
 
 
 def main() -> None:
