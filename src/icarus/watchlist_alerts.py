@@ -67,56 +67,142 @@ def load_watchlist(path: Path | str = WATCHLIST_PATH) -> pd.DataFrame:
 
 
 _THEME_RULES: tuple[tuple[str, tuple[str, ...]], ...] = (
-    ("AI / Big Data",      ("ai", "artificial intelligence", "big data", "data mgt",
-                            "machine learning", "voice ai")),
-    ("Quantum",            ("quantum",)),
-    ("Nuclear / Uranium",  ("nuclear", "uranium", "smr")),
-    ("Crypto / Blockchain", ("crypto", "bitcoin", "ethereum", "blockchain",
-                             "btc", "eth", "mining")),
-    ("Cybersecurity",      ("cyber", "cybersec", "security", "cybersecurity")),
-    ("EV / Battery",       ("ev", "electric vehicle", "battery", "charging",
-                            "lithium", "tesla")),
-    ("Renewables / Solar", ("renewable", "solar", "wind", "clean energy")),
+    # Order matters: more specific industries before broad-tech labels so a
+    # "AI-driven Medicare insurer" description ends up under Health, not AI.
     ("Biotech / Pharma",   ("biotech", "pharma", "gene", "therapeutics",
                             "oncology", "cancer", "vaccine", "crispr",
                             "diagnostic", "clinical")),
     ("Med devices / Health", ("medical", "med devices", "med dev",
-                              "health", "telemed", "telehealth", "surgery")),
+                              "health", "telemed", "telehealth", "surgery",
+                              "medicare", "hospital", "clinic", "physician",
+                              "wellness", "insurer", "patient")),
     ("Cannabis",           ("cannabis", "cbd", "marijuana")),
+    ("Defence",            ("defence", "defense", "military", "armed")),
     ("Space / Aerospace",  ("space", "satellite", "rocket", "aerospace",
                             "aviation", "drone")),
-    ("Defence",            ("defence", "defense", "military", "armed")),
+    ("Nuclear / Uranium",  ("nuclear", "uranium", "smr")),
+    ("Crypto / Blockchain", ("crypto", "bitcoin", "ethereum", "blockchain",
+                             "btc", "eth")),
+    ("EV / Battery",       ("ev", "electric vehicle", "battery", "charging",
+                            "lithium", "tesla")),
+    ("Renewables / Solar", ("renewable", "solar", "wind", "clean energy")),
+    ("Quantum",            ("quantum",)),
     ("Semiconductors",     ("semi", "semiconductor", "chip", "5g", "nanotech",
                             "photonics")),
-    ("Cloud / SaaS",       ("saas", "cloud", "software", "platform",
-                            "enterprise", "devops")),
+    ("Cybersecurity",      ("cyber", "cybersec", "security", "cybersecurity")),
+    ("Energy / Oil & Gas", ("oil", "gas", "energy", "petroleum")),
+    ("Mining / Metals",    ("mining", "metals", "gold", "silver", "copper",
+                            "rare earth")),
+    ("Real estate / REIT", ("reit", "real estate", "property", "warehouse",
+                            "datacentre", "data centre")),
     ("Fintech / Payments", ("fintech", "payment", "bank", "broker",
                             "exchange", "trading", "insurance")),
+    ("Cloud / SaaS",       ("saas", "cloud", "software", "platform",
+                            "enterprise", "devops")),
+    # AI / Big Data is intentionally broad and goes LATE so more specific
+    # business categories win the match.
+    ("AI / Big Data",      ("ai", "artificial intelligence", "big data",
+                            "data mgt", "machine learning", "voice ai",
+                            "llm", "nlp")),
     ("Gaming / Esports",   ("gaming", "esports", "game", "casino", "betting")),
     ("Media / Streaming",  ("streaming", "media", "video", "music", "podcast",
                             "social media", "content")),
     ("E-commerce / Retail", ("e-commerce", "ecommerce", "retail", "shop",
                              "consumer")),
-    ("Real estate / REIT", ("reit", "real estate", "property", "warehouse",
-                            "datacentre", "data centre")),
-    ("Mining / Metals",    ("mining", "metals", "gold", "silver", "copper",
-                            "rare earth")),
-    ("Energy / Oil & Gas", ("oil", "gas", "energy", "petroleum")),
-    ("Cars / Auto",        ("auto", "car", "vehicle", "motor")),
     ("Travel / Hospitality", ("travel", "hotel", "airline", "cruise",
                               "restaurant", "hospitality")),
     ("Food / Beverage",    ("food", "beverage", "snack", "drink", "coffee")),
     ("Apparel / Fashion",  ("apparel", "fashion", "clothing", "footwear")),
+    ("Cars / Auto",        ("auto", "car", "vehicle", "motor")),
 )
 
 
-def map_theme(description: str | None) -> str:
-    """Return the first matching theme label for a description, or 'Other'."""
+# Short keywords like "ai", "ev", "5g" are wrapped in word boundaries so
+# "wait" and "save" don't get mapped to AI. Longer multi-word phrases use
+# plain substring because "med dev" needs to also match "med devices".
+def _compile_theme_pattern(needles: tuple[str, ...]):
+    parts: list[str] = []
+    for n in needles:
+        if len(n) <= 4 and " " not in n:
+            parts.append(rf"\b{re.escape(n)}\b")
+        else:
+            parts.append(re.escape(n))
+    return re.compile("|".join(parts), re.IGNORECASE)
+
+
+_THEME_PATTERNS: list[tuple[str, "re.Pattern[str]"]] = [
+    (label, _compile_theme_pattern(needles)) for label, needles in _THEME_RULES
+]
+
+
+# Sector-derived themes take priority over the description: when yfinance
+# tells us a ticker is "Healthcare Plans" we trust that over the analyst's
+# "AI play" shorthand. Keys are matched against the lower-cased sector
+# string with substring containment.
+_SECTOR_THEME_MAP: tuple[tuple[str, str], ...] = (
+    ("healthcare plans",           "Med devices / Health"),
+    ("medical care",               "Med devices / Health"),
+    ("medical devices",            "Med devices / Health"),
+    ("medical instruments",        "Med devices / Health"),
+    ("diagnostics",                "Med devices / Health"),
+    ("biotechnology",              "Biotech / Pharma"),
+    ("drug manufacturers",         "Biotech / Pharma"),
+    ("pharmaceutical",             "Biotech / Pharma"),
+    ("oil & gas",                  "Energy / Oil & Gas"),
+    ("uranium",                    "Nuclear / Uranium"),
+    ("solar",                      "Renewables / Solar"),
+    ("renewable",                  "Renewables / Solar"),
+    ("semiconductor",              "Semiconductors"),
+    ("software—application",       "Cloud / SaaS"),
+    ("software—infrastructure",    "Cloud / SaaS"),
+    ("information technology",     "Cloud / SaaS"),
+    ("gold",                       "Mining / Metals"),
+    ("silver",                     "Mining / Metals"),
+    ("copper",                     "Mining / Metals"),
+    ("metals & mining",            "Mining / Metals"),
+    ("reit",                       "Real estate / REIT"),
+    ("real estate",                "Real estate / REIT"),
+    ("aerospace",                  "Space / Aerospace"),
+    ("defense",                    "Defence"),
+    ("insurance",                  "Fintech / Payments"),
+    ("banks",                      "Fintech / Payments"),
+    ("capital markets",            "Fintech / Payments"),
+    ("specialty retail",           "E-commerce / Retail"),
+    ("internet retail",            "E-commerce / Retail"),
+    ("restaurants",                "Travel / Hospitality"),
+    ("lodging",                    "Travel / Hospitality"),
+    ("airlines",                   "Travel / Hospitality"),
+    ("packaged foods",             "Food / Beverage"),
+    ("beverages",                  "Food / Beverage"),
+    ("apparel",                    "Apparel / Fashion"),
+    ("entertainment",              "Media / Streaming"),
+    ("gambling",                   "Gaming / Esports"),
+    ("auto manufacturers",         "Cars / Auto"),
+    ("auto parts",                 "Cars / Auto"),
+)
+
+
+def map_theme(description: str | None, sector: str | None = None) -> str:
+    """Return the first matching theme label.
+
+    Strategy:
+      1. If ``sector`` matches a known industry slot, use that — sector
+         data from yfinance is more reliable than the analyst's free-text
+         description (which often just says "AI play" for any name with
+         AI in the elevator pitch).
+      2. Otherwise, fall back to keyword-matching the description using
+         pre-compiled regexes with word boundaries for short tokens.
+      3. Otherwise, "Other".
+    """
+    if isinstance(sector, str) and sector:
+        s = sector.lower()
+        for needle, theme in _SECTOR_THEME_MAP:
+            if needle in s:
+                return theme
     if not isinstance(description, str) or not description:
         return "Other"
-    d = description.lower()
-    for label, needles in _THEME_RULES:
-        if any(n in d for n in needles):
+    for label, pat in _THEME_PATTERNS:
+        if pat.search(description):
             return label
     return "Other"
 
@@ -264,7 +350,10 @@ def build_watchlist_view(
             "ticker": ticker,
             "name": row["name"],
             "description": row["description"],
-            "theme": map_theme(row["description"]),
+            "theme": map_theme(
+                row["description"],
+                sector=(fact.sector if fact else None),
+            ),
             "target_entry": entry,
             "target_exit": exit_,
             "live_price": snap.live_price,

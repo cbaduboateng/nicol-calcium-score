@@ -90,6 +90,26 @@ def test_map_theme_unknown_defaults_to_other():
     assert map_theme("") == "Other"
 
 
+def test_map_theme_word_boundary_avoids_ai_in_wait():
+    # Bug fix: substring matching used to map any text containing "ai" to AI.
+    assert map_theme("wait for the analysis") != "AI / Big Data"
+    assert map_theme("savings account") != "AI / Big Data"
+
+
+def test_map_theme_sector_overrides_description():
+    # CLOV (Clover Health) is "Ai play" in the analyst note but is actually
+    # a Medicare Advantage insurer. Sector wins.
+    assert map_theme("Ai play", sector="Healthcare Plans") == "Med devices / Health"
+    # AI label persists when sector isn't given.
+    assert map_theme("Ai play") == "AI / Big Data"
+
+
+def test_map_theme_sector_routes_biotech_and_energy():
+    assert map_theme("growth play", sector="Biotechnology") == "Biotech / Pharma"
+    assert map_theme("anything", sector="Oil & Gas E&P") == "Energy / Oil & Gas"
+    assert map_theme("anything", sector="Semiconductors") == "Semiconductors"
+
+
 # ---- aggregation helpers -------------------------------------------------
 
 
