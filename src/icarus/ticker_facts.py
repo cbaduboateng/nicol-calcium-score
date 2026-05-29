@@ -845,6 +845,104 @@ def prewarm(tickers: list[str], max_workers: int = 4) -> int:
     return len(unknown)
 
 
+def quick_market_caps(
+    tickers: list[str],
+    *,
+    max_workers: int = 16,
+    progress_cb=None,
+) -> int:
+    """Fast market-cap-only fetch using yfinance ``fast_info``.
+
+    Designed for the watchlist tab where we need market caps for hundreds
+    of tickers but don't care about the full info payload. About 10x
+    faster than ``prewarm`` because ``fast_info`` skips the bulky JSON
+    fetch.
+
+    Existing entries that already have a known ``market_cap_usd`` are
+    skipped. Entries that lack a cap (or no entry at all) are populated
+    with a lightweight ``TickerFact`` (placeholders for name/sector when
+    we don't already know them — the watchlist supplies its own names).
+
+    Returns the number of tickers freshly populated.
+    """
+    try:
+        import yfinance as yf
+    except Exception as exc:  # noqa: BLE001
+        _log.warning("yfinance unavailable; cannot quick-fetch caps (%s)", exc)
+        return 0
+
+    _load_disk_cache_once()
+
+    todo: list[str] = []
+    seen: set[str] = set()
+    for raw in tickers:
+        t = (raw or "").upper()
+        if not t or t in seen:
+            continue
+        seen.add(t)
+        if t in _FACTS and _FACTS[t].market_cap_usd is not None:
+            continue
+        cached = _RUNTIME_CACHE.get(t)
+        if cached is not None and cached.market_cap_usd is not None:
+            continue
+        todo.append(t)
+
+    if not todo:
+        return 0
+
+    _log.info("quick_market_caps: fetching %d tickers via fast_info", len(todo))
+
+    def _one(t: str) -> tuple[str, float | None]:
+        try:
+            fi = yf.Ticker(t).fast_info
+            mc = getattr(fi, "market_cap", None)
+            if mc is None and isinstance(fi, dict):
+                mc = fi.get("market_cap") or fi.get("marketCap")
+            return t, (float(mc) if mc else None)
+        except Exception as exc:  # noqa: BLE001
+            _log.debug("fast_info(%s) failed: %s", t, exc)
+            return t, None
+
+    from concurrent.futures import ThreadPoolExecutor
+
+    n_new = 0
+    with ThreadPoolExecutor(max_workers=max_workers) as ex:
+        for i, (t, mc) in enumerate(ex.map(_one, todo)):
+            if mc is None or not (mc > 0):
+                continue
+            cap_bucket = _cap_bucket(mc)
+            existing = _RUNTIME_CACHE.get(t)
+            if existing is not None:
+                _RUNTIME_CACHE[t] = TickerFact(
+                    ticker=existing.ticker,
+                    name=existing.name,
+                    exchange=existing.exchange,
+                    cap=cap_bucket,
+                    sector=existing.sector,
+                    summary=existing.summary,
+                    why_it_matters=existing.why_it_matters,
+                    market_cap_usd=mc,
+                )
+            else:
+                _RUNTIME_CACHE[t] = TickerFact(
+                    ticker=t,
+                    name=t,
+                    exchange="?",
+                    cap=cap_bucket,
+                    sector="Other",
+                    market_cap_usd=mc,
+                )
+            n_new += 1
+            if progress_cb is not None:
+                try:
+                    progress_cb(i + 1, len(todo))
+                except Exception:  # noqa: BLE001
+                    pass
+    _persist_runtime_to_disk()
+    _log.info("quick_market_caps: populated %d / %d new caps", n_new, len(todo))
+    return n_new
+
+
 def category_for_ticker(ticker: str) -> str:
     f = lookup(ticker)
     return top_level_category(f.sector) if f else "Other"

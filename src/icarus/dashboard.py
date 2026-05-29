@@ -300,10 +300,38 @@ def _render_watchlist_tab(st) -> None:
 
         # Market-cap filter row
         cap_known = int(view["market_cap_usd"].notna().sum()) if "market_cap_usd" in view.columns else 0
+        cap_pct = (cap_known / max(len(view), 1)) * 100
         st.caption(
             f"Market caps known for **{cap_known} / {len(view)}** tickers "
-            "(populated by the bootstrap prewarm; uncached tickers show '—')."
+            f"({cap_pct:.0f}%). Uncached tickers show '—' until fetched."
         )
+        if cap_known < len(view) * 0.75:
+            cap_btn_cols = st.columns([3, 2])
+            with cap_btn_cols[0]:
+                st.warning(
+                    "Many caps are still uncached. Click to fetch them now "
+                    "(~30-90 s for the full watchlist via yfinance `fast_info`)."
+                )
+            with cap_btn_cols[1]:
+                if st.button("🔄 Fetch missing market caps", use_container_width=True):
+                    from .ticker_facts import quick_market_caps
+                    tickers_to_fetch = view["ticker"].astype(str).tolist()
+                    progress = st.progress(0.0, text="Fetching market caps…")
+                    total = len(tickers_to_fetch)
+
+                    def _cb(done: int, total_: int) -> None:
+                        try:
+                            progress.progress(min(1.0, done / total_),
+                                              text=f"Fetching market caps… {done}/{total_}")
+                        except Exception:  # noqa: BLE001
+                            pass
+
+                    with st.spinner("Hitting yfinance fast_info in parallel…"):
+                        n_new = quick_market_caps(
+                            tickers_to_fetch, max_workers=16, progress_cb=_cb,
+                        )
+                    st.success(f"Fetched {n_new} new market caps. Refreshing view…")
+                    st.rerun()
         cap_row = st.columns([3, 2])
         with cap_row[0]:
             cap_options = {
@@ -316,14 +344,14 @@ def _render_watchlist_tab(st) -> None:
             }
             cap_label = st.selectbox(
                 "Market cap filter", list(cap_options.keys()), index=0,
-                help="Tickers with unknown caps still appear unless 'Require known cap' is set.",
+                help="When 'Require known cap' is on, tickers without a known cap are excluded.",
             )
             min_cap, max_cap = cap_options[cap_label]
         with cap_row[1]:
             require_known = st.checkbox(
-                "Require known cap", value=False,
+                "Require known cap", value=True,
                 help="Excludes tickers we don't have a market cap for. "
-                     "Use this when hunting microcaps so the list isn't padded with unknowns.",
+                     "On by default so the cap filter actually filters.",
             )
         overlay_notes = []
         if congress_overlay:

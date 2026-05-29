@@ -302,6 +302,32 @@ def _bootstrap_data_if_missing() -> None:
 
 _bootstrap_data_if_missing()
 
+
+def _prewarm_watchlist_caps_once() -> None:
+    """Always populate market caps for the watchlist tickers on cold start.
+    Runs outside the gated bootstrap (which is skipped when processed/
+    parquets look fresh) so the Mkt cap column doesn't stay empty when
+    candidates.parquet was checked into git."""
+    try:
+        from pathlib import Path as _Path
+
+        from icarus.ticker_facts import quick_market_caps
+        from icarus.watchlist_alerts import WATCHLIST_PATH, load_watchlist
+
+        _Path("data/cache").mkdir(parents=True, exist_ok=True)
+        df = load_watchlist(WATCHLIST_PATH)
+        if df.empty:
+            return
+        tickers = sorted(set(df["ticker"].tolist()))
+        log.info("Cap-only prewarm: %d watchlist tickers", len(tickers))
+        n_new = quick_market_caps(tickers, max_workers=16)
+        log.info("Cap-only prewarm complete: %d new caps", n_new)
+    except Exception as exc:
+        log.warning("Cap-only prewarm failed (%s); button in UI can retry", exc)
+
+
+_prewarm_watchlist_caps_once()
+
 from icarus.dashboard import main as _main  # noqa: E402
 
 _main()
