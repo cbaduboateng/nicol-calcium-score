@@ -1,4 +1,4 @@
-"""Badger watchlist alert engine.
+"""Hubris watchlist alert engine.
 
 Reads the curated watchlist (analyst entry / exit targets), fetches live
 prices, and surfaces:
