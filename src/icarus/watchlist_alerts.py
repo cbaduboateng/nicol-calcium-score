@@ -297,6 +297,181 @@ def parabolic_rank(
     return valid.sort_values(horizon, ascending=False).head(top_n).reset_index(drop=True)
 
 
+# ---------------------------------------------------------------------------
+# Winner-picking composite (reuses the Jegadeesh-Titman logistic from
+# scoring/momentum.py and the layered combiner pattern from scoring/combined.py)
+# ---------------------------------------------------------------------------
+
+
+_STATUS_SCORE: dict[str, float] = {
+    "BUY ZONE": 1.0,
+    "APPROACHING": 0.65,
+    "HOLD": 0.4,
+    "WATCH": 0.5,
+    "SELL ZONE": 0.0,
+    "PRICE MISSING": 0.0,
+}
+
+
+DEFAULT_PICK_WEIGHTS: dict[str, float] = {
+    "analyst": 0.35,
+    "reward_risk": 0.20,
+    "theme_momentum": 0.20,
+    "personal_momentum": 0.20,
+    "congress": 0.05,
+}
+
+
+def _logistic_pct(pct: float | None, steepness: float = 3.0) -> float:
+    """Map a percentage return through a logistic centred at 0%.
+    +20% -> ~0.65, -20% -> ~0.35. Same shape as scoring/momentum.py."""
+    if pct is None or not np.isfinite(pct):
+        return 0.5
+    import math
+    return 1.0 / (1.0 + math.exp(-steepness * (float(pct) / 100.0)))
+
+
+def _analyst_status_score(status: str | None) -> float:
+    if not status:
+        return 0.5
+    return _STATUS_SCORE.get(str(status), 0.5)
+
+
+def _rr_score(rr: float | None) -> float:
+    if rr is None or not np.isfinite(rr) or rr <= 0:
+        return 0.5
+    return float(min(rr / 5.0, 1.0))
+
+
+def _blowoff_penalty(pct_6m: float | None, threshold_pct: float = 100.0) -> float:
+    """Linear penalty above a runaway 6-month return. Capped at 0.2 so a
+    single hot name doesn't get instantly zeroed."""
+    if pct_6m is None or not np.isfinite(pct_6m) or pct_6m <= threshold_pct:
+        return 0.0
+    return float(min(0.2, 0.002 * (pct_6m - threshold_pct)))
+
+
+def load_congress_overlay(
+    candidates_path: Path | str = "data/processed/candidates.parquet",
+) -> dict[str, float]:
+    """Map each ticker to a 0-1 overlay score derived from the existing
+    congress-trading candidates parquet. Returns {} if the file is missing
+    (so the dashboard degrades cleanly when run without the pipeline)."""
+    p = Path(candidates_path)
+    if not p.exists():
+        return {}
+    try:
+        df = pd.read_parquet(p)
+    except Exception as exc:
+        log.warning("Could not load congress overlay (%s)", exc)
+        return {}
+    if df.empty or "ticker" not in df.columns or "asymmetry_score" not in df.columns:
+        return {}
+    grp = df.groupby(df["ticker"].astype(str).str.upper())["asymmetry_score"].max()
+    return {k: float(np.clip(v, 0.0, 1.0)) for k, v in grp.items() if pd.notna(v)}
+
+
+def pick_winners(
+    view: pd.DataFrame,
+    *,
+    top_n: int = 15,
+    blowoff_threshold_pct: float = 100.0,
+    exclude_sell_zone: bool = True,
+    weights: dict[str, float] | None = None,
+    congress_overlay: dict[str, float] | None = None,
+) -> pd.DataFrame:
+    """Composite winner-picker.
+
+    Combines five normalised sub-scores per ticker into a single 0-1
+    composite, subtracts a blow-off penalty (cap on chasing parabolic
+    tops), sorts descending, and returns the top N.
+
+    Sub-scores (each 0-1):
+      analyst           — derived from BUY ZONE / APPROACHING / ... status
+      reward_risk       — R:R to the analyst exit target, clipped at 5
+      theme_momentum    — the theme's 3m median % through a logistic
+      personal_momentum — (12m - 1m) % through the same logistic
+      congress          — max asymmetry_score from candidates.parquet
+                          (0 when no overlay supplied)
+    """
+    w = dict(DEFAULT_PICK_WEIGHTS)
+    if weights:
+        w.update(weights)
+    overlay = congress_overlay or {}
+
+    if view.empty:
+        return pd.DataFrame()
+
+    heat = theme_heat(view)
+    theme_3m: dict[str, float] = (
+        dict(zip(heat["theme"], heat["median_3m"])) if not heat.empty else {}
+    )
+
+    rows: list[dict] = []
+    for _, r in view.iterrows():
+        status = r.get("status")
+        if exclude_sell_zone and status == "SELL ZONE":
+            continue
+
+        ticker = str(r.get("ticker") or "").upper()
+        theme = r.get("theme")
+        pct_12m = r.get("pct_12m")
+        pct_1m = r.get("pct_1m")
+        # 12m-1m skips short-term reversal noise (Asness 2010)
+        if pct_12m is not None and np.isfinite(pct_12m):
+            skip = pct_1m if (pct_1m is not None and np.isfinite(pct_1m)) else 0.0
+            mom_pct = float(pct_12m) - float(skip)
+        else:
+            mom_pct = None
+
+        s_analyst = _analyst_status_score(status)
+        s_rr = _rr_score(r.get("reward_risk"))
+        s_theme = _logistic_pct(theme_3m.get(theme))
+        s_mom = _logistic_pct(mom_pct)
+        s_congress = float(overlay.get(ticker, 0.0))
+        penalty = _blowoff_penalty(r.get("pct_6m"), blowoff_threshold_pct)
+
+        composite = (
+            w["analyst"] * s_analyst
+            + w["reward_risk"] * s_rr
+            + w["theme_momentum"] * s_theme
+            + w["personal_momentum"] * s_mom
+            + w["congress"] * s_congress
+        ) - penalty
+        composite = float(np.clip(composite, 0.0, 1.0))
+
+        rows.append({
+            "ticker": ticker,
+            "name": r.get("name"),
+            "theme": theme,
+            "status": status,
+            "live_price": r.get("live_price"),
+            "target_entry": r.get("target_entry"),
+            "target_exit": r.get("target_exit"),
+            "reward_risk": r.get("reward_risk"),
+            "pct_1m": pct_1m,
+            "pct_3m": r.get("pct_3m"),
+            "pct_6m": r.get("pct_6m"),
+            "pct_12m": pct_12m,
+            "score_analyst": s_analyst,
+            "score_rr": s_rr,
+            "score_theme": s_theme,
+            "score_momentum": s_mom,
+            "score_congress": s_congress,
+            "blowoff_penalty": penalty,
+            "composite": composite,
+        })
+
+    out = (
+        pd.DataFrame(rows)
+        .sort_values("composite", ascending=False)
+        .head(top_n)
+        .reset_index(drop=True)
+    )
+    out.insert(0, "rank", out.index + 1)
+    return out
+
+
 def fetch_price_history(
     tickers: list[str],
     *,

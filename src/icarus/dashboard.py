@@ -216,8 +216,10 @@ def _render_watchlist_tab(st) -> None:
         WATCHLIST_PATH,
         build_watchlist_view,
         fetch_price_history,
+        load_congress_overlay,
         load_watchlist,
         parabolic_rank,
+        pick_winners,
         theme_heat,
     )
 
@@ -252,6 +254,98 @@ def _render_watchlist_tab(st) -> None:
     view = build_watchlist_view(watchlist, history)
     n_with_price = int(view["live_price"].notna().sum())
     st.caption(f"Live price available for **{n_with_price} / {len(view)}**.")
+
+    # ---- 🏆 Top picks today (composite winner ranker) ----------------------
+    congress_overlay = load_congress_overlay()
+    st.markdown("### 🏆 Top picks today")
+    st.caption(
+        "Composite of analyst signal (35%), reward-to-risk (20%), theme momentum (20%), "
+        "personal 12-1 momentum (20%), and an optional congressional-overlay boost (5%). "
+        "Blow-off penalty subtracted when 6-month gain exceeds the threshold below "
+        "(don't chase parabolic tops). Click any row to expand the company card."
+    )
+    with st.expander("Tune the picker", expanded=False):
+        tc = st.columns(3)
+        with tc[0]:
+            picks_n = st.slider("How many picks", 5, 50, 15, step=5)
+        with tc[1]:
+            blowoff = st.slider(
+                "Blow-off threshold (6m %)", 30, 300, 100, step=10,
+                help="6-month returns above this start subtracting from the composite.",
+            )
+        with tc[2]:
+            exclude_sell = st.checkbox("Exclude SELL ZONE", value=True)
+        if congress_overlay:
+            st.caption(
+                f"Congress overlay active: {len(congress_overlay)} tickers with "
+                "asymmetry scores from `data/processed/candidates.parquet`."
+            )
+        else:
+            st.caption(
+                "Congress overlay inactive (no `candidates.parquet` yet). "
+                "Picks rely on watchlist signals only."
+            )
+
+    picks = pick_winners(
+        view,
+        top_n=picks_n,
+        blowoff_threshold_pct=float(blowoff),
+        exclude_sell_zone=exclude_sell,
+        congress_overlay=congress_overlay or None,
+    )
+    if picks.empty:
+        st.info("No picks meet the criteria. Loosen the filters or check that prices loaded.")
+    else:
+        picks_cols = [
+            "rank", "ticker", "name", "theme", "status",
+            "composite", "score_analyst", "score_rr", "score_theme",
+            "score_momentum", "score_congress", "blowoff_penalty",
+            "live_price", "target_entry", "target_exit",
+            "reward_risk", "pct_3m", "pct_6m",
+        ]
+        picks_cols = [c for c in picks_cols if c in picks.columns]
+        picks_event = st.dataframe(
+            picks[picks_cols],
+            use_container_width=True,
+            hide_index=True,
+            on_select="rerun",
+            selection_mode="single-row",
+            key="top_picks_table",
+            column_config={
+                "rank": st.column_config.NumberColumn("#", format="%d"),
+                "ticker": "Ticker",
+                "name": "Name",
+                "theme": "Theme",
+                "status": "Status",
+                "composite": st.column_config.ProgressColumn(
+                    "Composite", min_value=0.0, max_value=1.0, format="%.2f",
+                ),
+                "score_analyst": st.column_config.NumberColumn("Analyst", format="%.2f"),
+                "score_rr": st.column_config.NumberColumn("R:R sub", format="%.2f"),
+                "score_theme": st.column_config.NumberColumn("Theme", format="%.2f"),
+                "score_momentum": st.column_config.NumberColumn("12-1 mo", format="%.2f"),
+                "score_congress": st.column_config.NumberColumn(
+                    "Cong", format="%.2f",
+                    help="Max asymmetry_score from congress candidates parquet (0 if no overlay).",
+                ),
+                "blowoff_penalty": st.column_config.NumberColumn(
+                    "Penalty", format="%.2f",
+                    help="Subtracted from the composite for runaway 6m returns.",
+                ),
+                "live_price": st.column_config.NumberColumn("Live", format="%.2f"),
+                "target_entry": st.column_config.NumberColumn("Buy ≤", format="%.2f"),
+                "target_exit": st.column_config.NumberColumn("Sell ≥", format="%.2f"),
+                "reward_risk": st.column_config.NumberColumn("R:R", format="%.2f"),
+                "pct_3m": st.column_config.NumberColumn("3m", format="%+.1f%%"),
+                "pct_6m": st.column_config.NumberColumn("6m", format="%+.1f%%"),
+            },
+        )
+        if picks_event is not None and picks_event.selection.rows:
+            sel_ticker = str(picks.iloc[picks_event.selection.rows[0]]["ticker"])
+            sel_row = view[view["ticker"] == sel_ticker].iloc[0]
+            _render_watchlist_ticker_card(st, sel_row)
+
+    st.divider()
 
     # ---- Filter bar --------------------------------------------------------
     with st.expander("Filters", expanded=True):
