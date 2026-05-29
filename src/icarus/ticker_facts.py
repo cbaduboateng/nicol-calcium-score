@@ -36,6 +36,7 @@ class TickerFact:
     sector: str
     summary: str = ""        # one-paragraph plain-English description (optional)
     why_it_matters: str = "" # one sentence: why this name is signal-worthy
+    market_cap_usd: float | None = None  # raw market cap from yfinance, if known
 
 
 _FACTS: dict[str, TickerFact] = {
@@ -732,6 +733,7 @@ def _persist_runtime_to_disk() -> None:
                 "exchange": fact.exchange, "cap": fact.cap,
                 "sector": fact.sector, "summary": fact.summary,
                 "why_it_matters": fact.why_it_matters,
+                "market_cap_usd": fact.market_cap_usd,
             }
         tmp = _CACHE_PATH.with_suffix(".tmp")
         with tmp.open("w", encoding="utf-8") as f:
@@ -761,7 +763,12 @@ def _fetch_from_yfinance(ticker: str) -> TickerFact | None:
         return None
     raw_exchange = info.get("exchange") or info.get("fullExchangeName") or ""
     exchange = _EXCHANGE_MAP.get(raw_exchange.upper() if isinstance(raw_exchange, str) else "", raw_exchange or "?")
-    cap = _cap_bucket(info.get("marketCap"))
+    raw_cap = info.get("marketCap")
+    try:
+        market_cap_usd = float(raw_cap) if raw_cap not in (None, "") else None
+    except (TypeError, ValueError):
+        market_cap_usd = None
+    cap = _cap_bucket(market_cap_usd)
     sector = info.get("industry") or info.get("sector") or "Other"
     return TickerFact(
         ticker=ticker.upper(),
@@ -769,15 +776,20 @@ def _fetch_from_yfinance(ticker: str) -> TickerFact | None:
         exchange=str(exchange),
         cap=cap,
         sector=str(sector),
+        market_cap_usd=market_cap_usd,
     )
 
 
-def lookup(ticker: str) -> TickerFact | None:
+def lookup(ticker: str, *, cache_only: bool = False) -> TickerFact | None:
     """Tiered ticker-fact lookup.
 
     1. Curated static `_FACTS` dict (richest, no I/O).
     2. Disk-cached results from previous yfinance fetches.
     3. Live yfinance fetch (slow on first call per ticker; cached afterwards).
+
+    When ``cache_only=True``, step 3 is skipped — callers that need to
+    enrich hundreds of tickers per render (the watchlist view) use this
+    mode and rely on the bootstrap to pre-populate the disk cache.
 
     Returns None when yfinance can't find the ticker either.
     """
@@ -789,6 +801,8 @@ def lookup(ticker: str) -> TickerFact | None:
     _load_disk_cache_once()
     if upper in _RUNTIME_CACHE:
         return _RUNTIME_CACHE[upper]
+    if cache_only:
+        return None
     fact = _fetch_from_yfinance(upper)
     _RUNTIME_CACHE[upper] = fact
     _persist_runtime_to_disk()

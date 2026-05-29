@@ -214,13 +214,32 @@ def _bootstrap_data_if_missing() -> None:
     # Pre-warm yfinance-backed ticker_facts for any candidate tickers not in
     # the curated static dict, so the dashboard never blocks on a per-ticker
     # yfinance call when rendering the Company / Exchange / Cap columns.
+    # Also pre-warm the watchlist tickers so the market_cap_usd column on the
+    # Watchlist tab is populated from the cache.
     try:
         from icarus.ticker_facts import prewarm as _prewarm_facts
         n_new = _prewarm_facts(candidate_tickers)
         if n_new:
-            log.info("Prewarmed ticker_facts cache for %d new tickers", n_new)
+            log.info("Prewarmed ticker_facts cache for %d new candidate tickers", n_new)
     except Exception as exc:
         log.warning("ticker_facts prewarm failed (%s); will lazy-fetch on demand", exc)
+
+    try:
+        from icarus.ticker_facts import prewarm as _prewarm_facts
+        from icarus.watchlist_alerts import WATCHLIST_PATH, load_watchlist
+        watchlist_df = load_watchlist(WATCHLIST_PATH)
+        if not watchlist_df.empty:
+            watchlist_tickers = sorted(set(watchlist_df["ticker"].tolist()))
+            log.info(
+                "Prewarming ticker_facts for %d watchlist tickers (parallel)",
+                len(watchlist_tickers),
+            )
+            n_new = _prewarm_facts(watchlist_tickers, max_workers=12)
+            log.info("Watchlist prewarm complete: %d new tickers cached", n_new)
+    except Exception as exc:
+        log.warning(
+            "Watchlist prewarm failed (%s); market caps will populate lazily", exc,
+        )
 
     if candidate_tickers:
         from datetime import timedelta as _td

@@ -220,6 +220,8 @@ def momentum_snapshot(ticker: str, history: pd.Series) -> MomentumSnapshot:
 def build_watchlist_view(
     watchlist: pd.DataFrame,
     price_history: dict[str, pd.Series],
+    *,
+    enrich_market_cap: bool = True,
 ) -> pd.DataFrame:
     """Take the raw watchlist + a {ticker -> daily close series} dict and
     return a single DataFrame ready to render in the dashboard.
@@ -227,8 +229,23 @@ def build_watchlist_view(
     Output columns:
       ticker, name, description, theme, target_entry, target_exit,
       live_price, status, gap_to_entry_pct, reward_risk,
-      pct_1m, pct_3m, pct_6m, pct_12m
+      pct_1m, pct_3m, pct_6m, pct_12m, market_cap_usd, cap_bucket
     """
+    # Cache-only lookups: the watchlist has hundreds of tickers and we can't
+    # block the dashboard rendering on synchronous yfinance fetches. The
+    # bootstrap pre-warms the disk cache; un-cached tickers get None.
+    if enrich_market_cap:
+        try:
+            from .ticker_facts import lookup as _ticker_lookup
+            def _lookup(t):
+                return _ticker_lookup(t, cache_only=True)
+        except Exception:  # noqa: BLE001
+            def _lookup(_t):
+                return None
+    else:
+        def _lookup(_t):
+            return None
+
     rows: list[dict] = []
     for _, row in watchlist.iterrows():
         ticker = row["ticker"]
@@ -242,6 +259,7 @@ def build_watchlist_view(
         entry = row["target_entry"] if pd.notna(row["target_entry"]) else None
         exit_ = row["target_exit"]  if pd.notna(row["target_exit"])  else None
         status = compute_status(snap.live_price, entry, exit_)
+        fact = _lookup(ticker)
         rows.append({
             "ticker": ticker,
             "name": row["name"],
@@ -263,6 +281,8 @@ def build_watchlist_view(
             "pct_3m": snap.pct_3m,
             "pct_6m": snap.pct_6m,
             "pct_12m": snap.pct_12m,
+            "market_cap_usd": (fact.market_cap_usd if fact else None),
+            "cap_bucket": (fact.cap if fact else None),
         })
     df = pd.DataFrame(rows)
     return df
@@ -552,6 +572,9 @@ def pick_winners(
     weights: dict[str, float] | None = None,
     congress_overlay: dict[str, dict | float] | None = None,
     catalyst_overlay: dict[str, dict | float] | None = None,
+    min_market_cap_usd: float | None = None,
+    max_market_cap_usd: float | None = None,
+    require_known_cap: bool = False,
 ) -> pd.DataFrame:
     """Composite winner-picker.
 
@@ -588,10 +611,29 @@ def pick_winners(
     )
 
     rows: list[dict] = []
+    cap_filter_active = (
+        min_market_cap_usd is not None or max_market_cap_usd is not None
+    )
     for _, r in view.iterrows():
         status = r.get("status")
         if exclude_sell_zone and status == "SELL ZONE":
             continue
+
+        mcap = r.get("market_cap_usd")
+        mcap_known = mcap is not None and np.isfinite(mcap) and mcap > 0
+        if cap_filter_active:
+            if not mcap_known and require_known_cap:
+                continue
+            if mcap_known:
+                if min_market_cap_usd is not None and mcap < float(min_market_cap_usd):
+                    continue
+                if max_market_cap_usd is not None and mcap > float(max_market_cap_usd):
+                    continue
+            elif min_market_cap_usd is not None or max_market_cap_usd is not None:
+                # Unknown caps slip through unless require_known_cap is set;
+                # we'd rather show a candidate with no cap data than silently
+                # hide it.
+                pass
 
         ticker = str(r.get("ticker") or "").upper()
         theme = r.get("theme")
@@ -643,6 +685,8 @@ def pick_winners(
             "name": r.get("name"),
             "theme": theme,
             "status": status,
+            "market_cap_usd": mcap if mcap_known else None,
+            "cap_bucket": r.get("cap_bucket"),
             "live_price": r.get("live_price"),
             "target_entry": r.get("target_entry"),
             "target_exit": r.get("target_exit"),

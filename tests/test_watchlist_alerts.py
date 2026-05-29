@@ -285,3 +285,45 @@ def test_load_congress_overlay_returns_rich_dict(tmp_path):
     assert entry["score"] == pytest.approx(0.9, abs=1e-6)
     assert entry["n_actors"] == 2
     assert entry["cluster_size"] == 3
+
+
+# ---- market-cap filter ---------------------------------------------------
+
+
+def _capped_view() -> pd.DataFrame:
+    base = _picks_view()
+    # A: $50M micro, B: $250M small, C: $5B mid, D: $50B large, E: unknown
+    caps = {"A": 50_000_000.0, "B": 250_000_000.0, "C": 5_000_000_000.0,
+            "D": 50_000_000_000.0, "E": None}
+    base["market_cap_usd"] = base["ticker"].map(caps)
+    return base
+
+
+def test_pick_winners_microcap_filter_keeps_sub_100m_only():
+    picks = pick_winners(
+        _capped_view(), top_n=10,
+        max_market_cap_usd=100_000_000,
+        require_known_cap=True,
+    )
+    assert set(picks["ticker"]) == {"A"}
+
+
+def test_pick_winners_cap_range_filter():
+    picks = pick_winners(
+        _capped_view(), top_n=10,
+        min_market_cap_usd=100_000_000,
+        max_market_cap_usd=10_000_000_000,
+        require_known_cap=True,
+    )
+    assert set(picks["ticker"]) == {"B", "C"}
+
+
+def test_pick_winners_unknown_caps_pass_through_unless_required():
+    picks = pick_winners(
+        _capped_view(), top_n=10,
+        max_market_cap_usd=100_000_000,
+        require_known_cap=False,
+        exclude_sell_zone=False,  # E is SELL ZONE in the fixture
+    )
+    # A (microcap) and E (unknown cap) both pass; B/C/D excluded by cap.
+    assert set(picks["ticker"]) == {"A", "E"}

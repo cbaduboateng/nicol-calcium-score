@@ -297,6 +297,34 @@ def _render_watchlist_tab(st) -> None:
             )
         with tc[2]:
             exclude_sell = st.checkbox("Exclude SELL ZONE", value=True)
+
+        # Market-cap filter row
+        cap_known = int(view["market_cap_usd"].notna().sum()) if "market_cap_usd" in view.columns else 0
+        st.caption(
+            f"Market caps known for **{cap_known} / {len(view)}** tickers "
+            "(populated by the bootstrap prewarm; uncached tickers show '—')."
+        )
+        cap_row = st.columns([3, 2])
+        with cap_row[0]:
+            cap_options = {
+                "No filter": (None, None),
+                "Microcap < $100M (parabolic hunting)": (None, 100_000_000),
+                "Small cap < $300M": (None, 300_000_000),
+                "Sub-$1B": (None, 1_000_000_000),
+                "Sub-$5B": (None, 5_000_000_000),
+                "$100M – $1B": (100_000_000, 1_000_000_000),
+            }
+            cap_label = st.selectbox(
+                "Market cap filter", list(cap_options.keys()), index=0,
+                help="Tickers with unknown caps still appear unless 'Require known cap' is set.",
+            )
+            min_cap, max_cap = cap_options[cap_label]
+        with cap_row[1]:
+            require_known = st.checkbox(
+                "Require known cap", value=False,
+                help="Excludes tickers we don't have a market cap for. "
+                     "Use this when hunting microcaps so the list isn't padded with unknowns.",
+            )
         overlay_notes = []
         if congress_overlay:
             overlay_notes.append(
@@ -325,13 +353,17 @@ def _render_watchlist_tab(st) -> None:
         exclude_sell_zone=exclude_sell,
         congress_overlay=congress_overlay or None,
         catalyst_overlay=catalyst_overlay or None,
+        min_market_cap_usd=min_cap,
+        max_market_cap_usd=max_cap,
+        require_known_cap=require_known,
     )
     if picks.empty:
         st.info("No picks meet the criteria. Loosen the filters or check that prices loaded.")
     else:
         picks_cols = [
             "rank", "ticker", "name", "theme", "status",
-            "composite", "score_analyst", "score_rr", "score_theme",
+            "market_cap_usd", "composite",
+            "score_analyst", "score_rr", "score_theme",
             "score_momentum", "score_congress", "score_catalyst",
             "catalyst_days", "blowoff_penalty",
             "live_price", "target_entry", "target_exit",
@@ -351,6 +383,9 @@ def _render_watchlist_tab(st) -> None:
                 "name": "Name",
                 "theme": "Theme",
                 "status": "Status",
+                "market_cap_usd": st.column_config.NumberColumn(
+                    "Mkt cap", format="$%.0f", help="Raw market cap in USD; blank if not yet in the cache.",
+                ),
                 "composite": st.column_config.ProgressColumn(
                     "Composite", min_value=0.0, max_value=1.0, format="%.2f",
                 ),
@@ -436,7 +471,7 @@ def _render_watchlist_tab(st) -> None:
 
     # ---- Main table --------------------------------------------------------
     display_cols = [
-        "status", "ticker", "name", "theme",
+        "status", "ticker", "name", "theme", "market_cap_usd",
         "live_price", "target_entry", "target_exit",
         "gap_to_entry_pct", "reward_risk",
         "pct_1m", "pct_3m", "pct_6m", "pct_12m",
@@ -457,6 +492,10 @@ def _render_watchlist_tab(st) -> None:
             "ticker": "Ticker",
             "name": "Name",
             "theme": "Theme",
+            "market_cap_usd": st.column_config.NumberColumn(
+                "Mkt cap", format="$%.0f",
+                help="Raw market cap in USD; blank when not in the cache.",
+            ),
             "live_price": st.column_config.NumberColumn("Live", format="%.2f"),
             "target_entry": st.column_config.NumberColumn("Buy ≤", format="%.2f"),
             "target_exit": st.column_config.NumberColumn("Sell ≥", format="%.2f"),
@@ -628,6 +667,12 @@ def _render_watchlist_ticker_card(
             theme = row.get("theme")
             if theme:
                 meta_bits.append(f"Theme: {theme}")
+            mcap = row.get("market_cap_usd")
+            if mcap and pd.notna(mcap) and mcap > 0:
+                if mcap >= 1_000_000_000:
+                    meta_bits.append(f"Mkt cap **${mcap/1e9:.1f}B**")
+                else:
+                    meta_bits.append(f"Mkt cap **${mcap/1e6:.0f}M**")
             if meta_bits:
                 st.caption(" · ".join(b for b in meta_bits if b))
         with header_r:
