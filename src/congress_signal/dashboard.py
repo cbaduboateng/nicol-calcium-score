@@ -209,6 +209,173 @@ def _render_ticker_card(st, row: pd.Series) -> None:
         st.markdown(_narrative(row))
 
 
+def _render_badger_tab(st) -> None:
+    """Render the Badger watchlist tab: curated analyst picks with live
+    alerts, theme momentum, and a parabolic-winners ranking."""
+    from .watchlist_alerts import (
+        WATCHLIST_PATH,
+        build_watchlist_view,
+        fetch_price_history,
+        load_watchlist,
+        parabolic_rank,
+        theme_heat,
+    )
+
+    st.subheader("🦡 Badger — analyst-curated watchlist")
+    st.caption(
+        "Hand-picked tickers with analyst buy / sell targets. "
+        "Live prices compared every page load; themes ranked by 3-month "
+        "median momentum; parabolic ranking by raw 6-month gain."
+    )
+
+    watchlist = load_watchlist(WATCHLIST_PATH)
+    if watchlist.empty:
+        st.warning(
+            f"No watchlist file found at `{WATCHLIST_PATH}`. "
+            "Add tickers + target_entry / target_exit columns to the CSV."
+        )
+        return
+    st.caption(
+        f"**{len(watchlist)} tickers** in the watchlist; "
+        f"**{int(watchlist['target_entry'].notna().sum())} with a buy target**, "
+        f"**{int(watchlist['target_exit'].notna().sum())} with a sell target**."
+    )
+
+    # ---- Live price fetch (cached 24h to keep page fast) -------------------
+    tickers = sorted(set(watchlist["ticker"].tolist()))
+    with st.spinner(f"Loading prices for {len(tickers)} tickers..."):
+        try:
+            history = fetch_price_history(tickers, period="1y")
+        except Exception as exc:
+            st.error(f"Price fetch failed: {exc}")
+            history = {}
+    view = build_watchlist_view(watchlist, history)
+    n_with_price = int(view["live_price"].notna().sum())
+    st.caption(f"Live price available for **{n_with_price} / {len(view)}**.")
+
+    # ---- Filter bar --------------------------------------------------------
+    with st.expander("Filters", expanded=True):
+        cols = st.columns(3)
+        with cols[0]:
+            f_status = st.multiselect(
+                "Status",
+                options=["BUY ZONE", "APPROACHING", "HOLD", "SELL ZONE", "WATCH"],
+                default=["BUY ZONE", "APPROACHING"],
+                help="Default shows only actionable rows.",
+            )
+        with cols[1]:
+            f_themes = st.multiselect(
+                "Themes",
+                options=sorted(view["theme"].dropna().unique().tolist()),
+                default=[],
+            )
+        with cols[2]:
+            f_ticker = st.text_input("Ticker contains", placeholder="e.g. NVDA")
+
+    cut = view.copy()
+    if f_status:
+        cut = cut[cut["status"].isin(f_status)]
+    if f_themes:
+        cut = cut[cut["theme"].isin(f_themes)]
+    if f_ticker.strip():
+        needle = f_ticker.strip().upper()
+        cut = cut[cut["ticker"].str.contains(needle, na=False)]
+    cut = cut.sort_values(
+        by=["status", "gap_to_entry_pct"], ascending=[True, True],
+    )
+
+    # ---- Headline counts ---------------------------------------------------
+    n_buy = int((view["status"] == "BUY ZONE").sum())
+    n_appr = int((view["status"] == "APPROACHING").sum())
+    n_sell = int((view["status"] == "SELL ZONE").sum())
+    cols = st.columns(4)
+    cols[0].metric("🟢 In buy zone", n_buy)
+    cols[1].metric("🟡 Approaching", n_appr)
+    cols[2].metric("🔴 In sell zone", n_sell)
+    cols[3].metric("Total tracked", len(view))
+
+    # ---- Main table --------------------------------------------------------
+    display_cols = [
+        "status", "ticker", "name", "theme",
+        "live_price", "target_entry", "target_exit",
+        "gap_to_entry_pct", "reward_risk",
+        "pct_1m", "pct_3m", "pct_6m", "pct_12m",
+        "description",
+    ]
+    display_cols = [c for c in display_cols if c in cut.columns]
+    st.dataframe(
+        cut[display_cols],
+        use_container_width=True,
+        hide_index=True,
+        column_config={
+            "status": "Status",
+            "ticker": "Ticker",
+            "name": "Name",
+            "theme": "Theme",
+            "live_price": st.column_config.NumberColumn("Live", format="%.2f"),
+            "target_entry": st.column_config.NumberColumn("Buy ≤", format="%.2f"),
+            "target_exit": st.column_config.NumberColumn("Sell ≥", format="%.2f"),
+            "gap_to_entry_pct": st.column_config.NumberColumn(
+                "Gap to buy",
+                format="%+.1f%%",
+                help="How far above the buy target the live price is. Negative = in buy zone.",
+            ),
+            "reward_risk": st.column_config.NumberColumn(
+                "R:R", format="%.2f",
+                help="Upside-to-exit divided by downside-to-entry, from current price.",
+            ),
+            "pct_1m": st.column_config.NumberColumn("1m", format="%+.1f%%"),
+            "pct_3m": st.column_config.NumberColumn("3m", format="%+.1f%%"),
+            "pct_6m": st.column_config.NumberColumn("6m", format="%+.1f%%"),
+            "pct_12m": st.column_config.NumberColumn("12m", format="%+.1f%%"),
+            "description": "Notes",
+        },
+    )
+
+    # ---- Theme heat + parabolic ranking ------------------------------------
+    cols = st.columns(2)
+    with cols[0]:
+        st.markdown("#### 🔥 Theme heat (3m median %)")
+        heat = theme_heat(view)
+        if heat.empty:
+            st.info("Not enough price history to rank themes yet.")
+        else:
+            st.dataframe(
+                heat, use_container_width=True, hide_index=True,
+                column_config={
+                    "theme": "Theme",
+                    "n": "Tickers",
+                    "median_3m": st.column_config.NumberColumn("3m", format="%+.1f%%"),
+                    "median_6m": st.column_config.NumberColumn("6m", format="%+.1f%%"),
+                    "median_12m": st.column_config.NumberColumn("12m", format="%+.1f%%"),
+                },
+            )
+    with cols[1]:
+        st.markdown("#### 🚀 Parabolic winners (6m gain)")
+        para = parabolic_rank(view, horizon="pct_6m", top_n=25)
+        if para.empty:
+            st.info("No price history available to rank.")
+        else:
+            st.dataframe(
+                para[["ticker", "name", "theme", "pct_6m", "pct_12m", "status"]],
+                use_container_width=True, hide_index=True,
+                column_config={
+                    "ticker": "Ticker",
+                    "name": "Name",
+                    "theme": "Theme",
+                    "pct_6m": st.column_config.NumberColumn("6m", format="%+.1f%%"),
+                    "pct_12m": st.column_config.NumberColumn("12m", format="%+.1f%%"),
+                    "status": "Status",
+                },
+            )
+
+    st.caption(
+        "Status definitions — **BUY ZONE**: live ≤ analyst buy target. "
+        "**APPROACHING**: within 15% above buy target. **SELL ZONE**: live ≥ analyst sell target. "
+        "**HOLD**: between zones. **WATCH**: no targets set yet."
+    )
+
+
 def main() -> None:
     try:
         import streamlit as st
@@ -273,9 +440,14 @@ def main() -> None:
 
     enriched = _enrich_candidates(candidates, trades, actors)
 
-    tab_top, tab_actors, tab_clusters, tab_catalysts = st.tabs(
-        ["Top candidates", "Actor leaderboard", "Clusters", "Catalyst calendar"],
+    tab_badger, tab_top, tab_actors, tab_clusters, tab_catalysts = st.tabs(
+        ["🦡 Badger", "Top candidates", "Actor leaderboard", "Clusters", "Catalyst calendar"],
     )
+
+    # ---- Badger: analyst-curated watchlist with live alerts ---------------
+    with tab_badger:
+        _render_badger_tab(st)
+
 
     with tab_top:
         st.subheader("Top asymmetric candidates")

@@ -1,0 +1,538 @@
+ticker,name,description,target_entry,target_exit
+7DIG,7digital Group,Music tech,1.5,3
+AAF.L,Airtel Africa,Telecom Africa,40,
+AAXN,Axon Enterprise,Public safety,40,
+ABBV,AbbVie Common Stock,Pharma,,
+ABNB,Airbnb Inc,Short-term rentals,100,
+ACTC,ArcLight Clean Transition,SPAC,,
+ADA-USD,Cardano,Crypto,0.5,3
+ADI,Analog Devices Inc,5G,100,
+ADOM,ADM Tronics Unlimited,N/A,,
+ADSK,Autodesk Inc,3D medical animation,150,
+AGGP,WisdomTree Agriculture ETF,ETF Grains,,
+AHT,Apollo Hospitality Trust,REIT,,
+AI,C3.ai Inc,Big Data AI,20,50
+AIKI,AIkido Pharma,Psychedelics/Crypto,1,
+AIM,AIM ImmunoTech,Immunotech,,
+AIT,Applied Industrial Technologies,Med logistics,55,
+AJAX,AFC Ajax NV,Football,,
+AMGN,Amgen Inc,Biotech,,
+AMGO,Amigo Resources PLC,Insolvency loans,0.3,3
+AMS:AVTX,Avantium NV,Biofuel,,
+AMTX,Aemetis Inc,Carbon solar,,
+AMWL,American Well Corp,Telemed,,
+ANAB,AnaptysBio Inc,Pharma,14,
+ANDV,Andeavor,Oil refining,,
+ANET,Arista Networks,Networking,,
+ANIC,Agronomics Ltd,Cultivated meat,5,15
+ANTE,AirNet Technology,Crypto mining,,
+AONE,One Inc,N/A,,
+API,Agora Inc,Clubhouse client,,
+APO,Apollo Global Management,PE,,
+APPS,Digital Turbine Inc,Mobile ads,4.5,
+APT,Alpha Pro Tech,PPE,,
+ARCO,Arcos Dorados Holdings,Restaurants,,
+ASTC,Astrotech Corp,Tech,3,15
+ASTI,Ascent Solar Technologies,Solar clean energy,3,
+ATHA,Athena Gold Corp,Gold,,
+ATIF,ATIF Holdings,NFTs,,
+ATOS,Atossa Therapeutics,Ovarian cancer,,
+ATVI,Activision,Acquired by MSFT,60,100
+AVAV,AeroVironment Inc,Drones,,
+AVAX-USD,Avalanche,Crypto,30,100
+AVB,AvalonBay Communities Inc,REIT,,
+AVON,Avon Technologies PLC,Defence equipment,,
+AZPN,Aspen Technology Inc,Industrial software,,
+AZRE,Azure Power Global,Solar,20,
+BARC,Barclays PLC,UK bank,90,300
+BATT,Amplify Lithium & Battery Tech,Battery ETF,10,
+BAVA,Bitwise Avalanche ETF,Mpox vaccine,,
+BAYRY,Bayer AG,Pharma,30,75
+BB,BlackBerry Ltd,EV tech,,
+BBOX,Tritax Big Box REIT PLC,Warehouse REIT,120,160
+BETZ,Roundhill Sports Betting ETF,Sports betting ETF,18.78,
+BHP,BHP Group Ltd,Mining,35,
+BHVN,Biohaven Ltd,Biotech,,
+BIDU,Baidu Inc,E-commerce China,80,300
+BIFF,BiffaWaste Management,Waste mgmt,170,
+BIIB,Biogen Inc,Biotech,,
+BIOL,BioLase Inc,Med devices,,
+BIRD,Allbirds,Apparel,10,
+BIT:EMC,Energica Motor,Electric scooters,,
+BLNK,Blink Charging Co,EV charging,3,
+BLUE,bluebird bio,Sickle cell CRISPR,,20
+BMIX,Borg Industries,EV materials,,
+BMNR,Bitmine Immersion Technologies,Bitcoin mining,30,
+BNB-USD,Binance Coin,Crypto,300,1000
+BOSC,BOS Better Online Solutions,Electronics telecom,,
+BOWL,Hollywood Bowl Group,Bowling,307.5,
+BRNT,WisdomTree Brent Crude ETC,Oil ETF,,
+BRQS,Borqs Technologies,Cloud tech / 5G ind,2.5,6
+BTC-USD,Bitcoin,Tier 1 crypto,60000,100000
+BUD,Anheuser-Busch InBev,Beverages,,
+BUI,BlackRock Utility Infrastructure,Infrastructure,,
+BXP,BXP Inc,REIT,,
+BYG,Big Yellow Group plc,Storage,800,2000
+BYND,Beyond Meat Inc,Veganism,10,50
+CACI,CACI International,Defence,,
+CCJ,Cameco Corp,Nuclear,20,
+CELH,Celsius Holdings Inc,Energy drinks,30,50
+CHPT,ChargePoint Holdings,EV Charging,,
+CHRG,WisdomTree Battery Solutions UCITS,Battery Value Chain,,
+CHWY,Chewy Inc,Pets,20,
+CINE,Cineworld Group,Cinema,40,65
+CINGF,Coinsilium Group,Crypto,,
+CLLS,Cellectis SA,Gene Editing,,
+CLNE,Clean Energy Fuels Corp,Clean energy,2,
+CLSK,CleanSpark Inc,Crypto mining,6,
+CLVS,Clovis Oncology,Pharma oncology,5,
+CMCX,CMC Markets Plc,Trading platform,77,400
+CNSL,Consolidated Communications,Telecom,,
+COIN,Coinbase Global Inc,Crypto Exchange,150,500
+COST,Costco Wholesale Corp,Membership retail,500,1000
+COUR,Coursera Inc,Ed Tech,10,
+CPG,Compass Group plc,Immig catering,,
+CPI,Carlton Precious Inc,Immig admin/visas,,
+CPNG,Coupang Inc,Amazon South Korea,,
+CREE,Cree Inc,Semiconductors,,
+CRM,Salesforce Inc,Enterprise software,100,
+CRNT,Ceragon Networks,5G,,
+CRSP,CRISPR Therapeutics,Gene editing,40,100
+CRTO,Criteo SA,Ad tech,20,
+CRWD,CrowdStrike Holdings Inc,Internet Sec,70,
+CSCO,Cisco Systems Inc,Networking,30,
+CSCW,Color Star Technology,N/A,,
+CSPX,iShares Core S&P 500 UCITS ETF,ETF S&P500,,
+CWBR,CohBar Inc,Anti-ageing research,0.7,1.5
+CWRK,CWRK SPAC,NFTs,3,
+CYRN,Cyren Ltd,SaaS,,
+DARE,Daré Bioscience,Female Viagra,,
+DASH,DoorDash Inc,Delivery,,
+DATA,GlobalData PLC,Data,200,
+DEBS,Direxion Daily S&P Biotech Bear,ETF,50,400
+DEFI,Hashdex Bitcoin ETF,Bitcoin ETF,,
+DIS,Walt Disney Co,Media,100,200
+DKNG,DraftKings Inc,Sports betting,16,
+DLR,Digital Realty Trust Inc,Datacentre REIT,105,200
+DNN,Denison Mines Corp,Uranium,0.6,
+DOCU,Docusign Inc,SaaS,60,100
+DOGE-USD,Dogecoin,Crypto,,
+DOYU,Douyu International,Chinese video streaming,3,
+DSS,DSS Inc,Health/security,,
+DUKE,Duke Capital Ltd,Royalty financing,,
+DUOL,Duolingo Inc,Ed tech,200,
+DVRG,DvRG,Skincare AI waste mgmt,25,50
+EA71,EA71,N/A,,
+EB,Eventbrite,Events,8,20
+EBNB,Bumble Inc,Dating app,4,
+ECAR,iShares Electric Vehicles ETF,ETF Electric Vehicles,4,12
+ECOR,electroCore Inc,Biotech,,
+EDIT,Editas Medicine Inc,CRISPR,,
+EHTH,eHealth Inc,Health insurance,,
+EMQQ,EMQQ Emerging Markets Internet,ETF EM China Tech,,
+ENVB,Enveric Biosciences,Cancer,,
+ENZC,Enzolytics Inc,Virus cures,,
+EONR,EON Resources Inc,Energy,0.5,
+EPA:AIR,Airbus SE,Aerospace,100,
+EPA:RMS,Hermes International SCA,Luxury,1000,
+EPA:SOP,Sopra Steria Group,UK govt eVisas,150,
+EPA:SU,Schneider Electric SE,Solar Electric,60,
+EPR,EPR Properties,REIT Tourism,22,
+EQOS,EQOS SPAC,Crypto SPAC Diginex,,
+ESGC,Eros STX Global,Media,1,
+ESPO,VanEck Video Gaming and eSports,ETF Gaming/esports,40,
+ESSITY-A.ST,Essity AB,Global Hygiene,200,
+ESTC,Elastic NV,Search SaaS,,
+ETH-USD,Ethereum,Tier 1 crypto,1000,10000
+ETHE,Grayscale Ethereum Trust,Ethereum Fund,20,
+ETR:DPW,Deutsche Pfandbriefbank,Logistics,30,
+FCX,Freeport-McMoRan Inc,Copper,50,
+FET-USD,FET,Ai crypto,1,
+FEYE,FireEye,Cybersecurity,12,20
+FFWD,FuelCell Energy,Life sciences cannabis,,
+FIG,Figma Inc,Design SaaS,45,
+FIVN,Five9 Inc,Ai Business spend,50,
+FLGT,Fulgent Genetics Inc,Genetics,10,
+FLIR,FLIR Systems,Thermal imaging,,
+FLL,Full House Resorts,Gaming,,
+FLT,FleetCor Technologies,Payments,,
+FLTA,Floor & Decor Holdings,Cleaning,75,180
+FRA:SEN,Senvion,Wind energy,,
+FTAI,FTAI Aviation,Aviation leasing,,
+FTCV,FTCV SPAC,Etoro SPAC,,
+FTNT,Fortinet Inc,Cybersec,,
+FUBO,fuboTV Inc,Streaming,2,10
+FULT,Fulton Financial,Regional bank,,
+FVE,Five Star Senior Living,Care home,4.5,10
+GBOXP,Globus Maritime,Marine cargo,1,3
+GBT,Global Blood Therapeutics,Biotech,,
+GLBS,Globus Maritime,Marine cargo,1,3
+GLD,SPDR Gold Trust,Gold ETF,300,
+GLEN,Glencore PLC,Mining,125,400
+GMBL,Esports Entertainment Group,Esports,,
+GME,GameStop Corp,Gaming,15,
+GNPX,Genprex Inc,Biotech,0.25,
+GOOG,Alphabet Inc Class C,Big tech,150,
+GPS,Great Plains Metals Corp,Metals,10,25
+GRAB,Grab Holdings Ltd,Ride share,4,
+GRPN,Groupon,E-commerce,10,30
+GRWG,GrowGeneration Corp,Cannabis,,
+GS,Goldman Sachs Group Inc,Investment bank,140,1000
+GTCH,GBT Technologies Inc,Microchip Mobile Tech,,
+GTI,Gratify Ltd,N/A,,
+GTLB,Gitlab Inc,DevOps,20,
+GVP,GSE Systems,Engineering,,
+GWAC,GWAC SPAC,Crypto SPAC Cipher,,
+HEIO,Heineken Holding NV,Beverages,,
+HEMO,Hemogenyx Pharmaceuticals,Biotech blood,1.5,
+HERO,Global X Video Games & Esports ETF,Gaming esports,1,
+HIMS,Hims & Hers Health Inc,Telehealth,10,60
+HMCH,HSBC MSCI China UCITS ETF USD,China ETF,,
+HNST,The Honest Company,Consumer,2,
+HOFV,Hall of Fame Resort,NFTs,,
+HOOD,Robinhood Markets Inc,Brokerage,40,
+HSY,Hershey,Snacks,,
+HUMA,Humacyte Inc,Biotech,2,
+HUT,Hut 8 Corp,Bitcoin mining,10,20
+HYRE,HyreCar,Car rental,7.5,
+HYVE,Hyve Group plc,Conferences & exhibitions,100,
+IASH,iShares MSCI China A UCITS ETF,China ETF,,
+IBIT,iShares Bitcoin Trust ETF,Bitcoin ETF,30,
+ICVT,iShares Convertible Bond ETF,Bond ETF,30,
+IDEX,IDEX Corporation,EV,1,
+IHG,InterContinental Hotels Group,Hotels,30,
+IIPR,Innovative Industrial Properties,REIT Cannabis Industrial,70,200
+INCY,Incyte Corp,Biotech,,105
+INGN,Inogen Inc,Medical,,
+INRG,iShares Global Clean Energy ETF,Clean energy ETF,600,1000
+INTC,Intel Corp,Semiconductors,40,
+IONQ,IONQ Inc,Quantum Computing,5,
+IR,Ingersoll-Rand Inc,Industrial,,
+ISPY,iShares Cybersecurity ETF,Cybersecurity ETF,,
+IT,Gartner Inc,Research,150,
+IUKD,iShares UK Dividend UCITS ETF,ETF UK Income,,
+IWMD,iShares World ETF,World ETF,80,
+IWMO,iShares Edge MSCI World Momentum,ETF Momentum MSCI,80,
+IZEA,IZEA Worldwide Inc,Influencer marketing,3,10
+JAGX,Jaguar Health,Pharma,,
+JD,JD.com Inc,E-Commerce,30,100
+JKS,JinkoSolar Holding,Solar,30,
+JMIA,Jumia Technologies AG,African e-commerce,2,
+JOBY,Joby Aviation Inc,EV aviation,8,
+JP,Jupai Holdings,Wealth mgmt,,
+KLAR,Klarna Group PLC,Fintech,10,
+KLXE,KLX Energy Services Holdings,Energy,,
+KMI,Kinder Morgan Inc,Pipeline,,
+KMPH,KemPharm,Pharma pain relief,,
+KO,Coca-Cola Co,Beverages,40,
+KODK,Eastman Kodak Co,Imaging,,
+KOPN,Kopin Corp,VR/AR,,
+KOSS,Koss Corp,Audio,,
+KSS,Kohl's Corp,Retail,,
+KWEB,KraneShares CSI China Internet ETF,China ETF,,
+LAIX,LAIX Inc,EdTech,,
+LBTI,Lithium & Boron Technology,Lithium battery tech,2.5,4
+LDO,Leonardo SpA,Defence,5.5,30
+LEA,Lear Corp,EV electrical systems,,
+LI,Li Auto Inc,EV,,
+LIN,Linde PLC,Industrial gas,200,
+LINK-USD,Chainlink,Crypto,10,
+LLOY.L,Lloyds Banking Group,UK Bank,30,
+LLY,Eli Lilly And Co,Pharma,600,1200
+LNGA,Hashdex Bitcoin Futures ETF,Gas ETF,,
+LOCK,iShares Digital Security UCITS ETF,Digital Security ETF,4.5,
+LOIL,WisdomTree WTI Crude Oil ETC,Oil ETF,,
+LON:ALM,Allied Minds,Early tech fund,30,50
+LON:AML,Aston Martin Lagonda,Luxury auto,40,
+LON:ANTO,Antofagasta plc,Copper,2500,
+LON:ARS,Asiamet Resources,Mining,,
+LON:ASC,ASOS plc,UK fashion,500,1000
+LON:BAG,A G Barr PLC,UK beverages,300,
+LON:CAML,Central Asia Metals PLC,Metals,150,
+LON:CARD,Card Factory PLC,Greeting cards,,
+LON:CBG,Close Brothers Group plc,UK Bank,200,400
+LON:CBX,LON:CBX,David Beckham/Skinny,,
+LON:CNA,Centrica PLC,UK gas,40,140
+LON:DWF,DWF Group,Legal,,
+LON:ECO,Eco Atlantic Oil & Gas,Oil,10,
+LON:EMH,European Metals Holdings,Mining,15,
+LON:EZJ,easyJet plc,Airline,300,1000
+LON:FUTR,Future plc,Media,300,
+LON:GAW,Games Workshop Group,Gaming,7000,
+LON:GDR,Genedrive PLC,Diagnostics,,
+LON:GRG,Greggs plc,UK food,850,
+LON:GSK,GSK plc,Pharma,1000,
+LON:GST,GSTechnologies,ICT,,
+LON:HOC,Hochschild Mining Plc,Mining,615.5,
+LON:HUM,Hummingbird Resources,Gold Mining,10,20
+LON:IPO,IP Group Plc,Innovation,50,
+LON:ITM,ITM Power plc,Hydrogen,,
+LON:ITV,ITV plc,UK broadcaster,60,100
+LON:JET,JET2 plc,Airline,,
+LON:MER,Mears Group PLC,Immigration centres,,
+LON:MNOD,Mining,Nickel/Palladium,,
+LON:OMG,Oxford Metrics PLC,3D motion,50,100
+LON:RMG,Royal Mail,Postal,140,300
+LON:ROO,Deliveroo,Food delivery,100,500
+LON:SHI,SIG plc,Construction products,30,
+LON:SHOE,Shoe Zone PLC,Footwear,50,200
+LON:SIS,Science in Sport,Sports nutrition,20,50
+LON:SML,Strategic Minerals PLC,Mining,2.5,
+LON:SRT,SRT Marine Systems PLC,Marine tech,,
+LON:SSE,SSE PLC,UK utility,1000,
+LON:SUPR,Supermarket Income REIT,UK Supermarket REITs,70,
+LON:TGP,Tekmar Group PLC,Energy,,
+LON:TPK,Travis Perkins plc,Wickes/home improvement,,
+LON:TSCO,Tesco PLC,UK supermarket,170,
+LON:UOG,United Oil & Gas,Oil,0.17,0.5
+LON:VLS,Velocys plc,Sustainable energy,7,15
+LON:WPP,WPP PLC,Marketing,270,
+LON:XSPS,Xtrackers S&P 500 Inverse,Short ETF,400,
+LON:augm,Augmentum Fintech,Fintech,80,
+LOW,Lowe's,Home improvement,,
+LPCN,Lipocine Inc,Pharma,,
+LRCX,Lam Research Corp,Semis,,
+LSYN,Lifespan Inc,Podcast streaming,,
+LTC-USD,Litecoin,Tier 1 crypto,80,300
+LULU,Lululemon Athletica Inc,Apparel,,
+LUNR,Intuitive Machines Inc,Space,4,10
+LYB,LyondellBasell Industries,Plastics,50,100
+LYV,Live Nation Entertainment,Concerts,35,
+LZ,LegalZoom.com Inc,Legal tech,,
+M,Macy's Inc,Retail,5,
+MA,Mastercard Inc,Payment network,200,500
+MAB,Mitchells & Butlers plc,Pubs,100,
+MANO,Manolete Partners PLC,Insolvency litigation,50,
+MANU,Manchester United,Football,15,25
+MC.PA,LVMH,Luxury,450,
+MCK,McKesson Corp,Healthcare distribution,160,
+MDLZ,Mondelez International,Snacks,,
+MDT,Medtronic PLC,Med devices,,
+MEDIF,Medipharm Labs Corp,Cannabis,0.15,0.3
+MELI,MercadoLibre Inc,Argentina Amazon,500,1500
+META,Meta Platforms Inc,Social media,100,500
+METX,ME Therapeutics Holdings,Med Tech,3,6
+MGTI,MGT Capital Investments,Crypto mining,,
+MKGI,MKGI Inc,NFT,,
+MKS.L,Marks and Spencer Group,UK retail,90,250
+MMED,MiniMed Group Inc,Medical mushrooms,,
+MMM,3M Co,Industrial,,
+MNL,Manchester & London Investment Trust,Trust,,
+MOGO,Mogo Inc,Canadian Fintech,,
+MOTS,Motus GI Holdings,Med devices surgery,,
+MPW,Metal Powder Works,Metals,,
+MRIN,Marin Software Ltd,eCommerce,,
+MRNA,Moderna Inc,Pharma mRNA,,150
+MSTR,Strategy Inc,Bitcoin treasury,115,
+MTCH,Match Group Inc,Dating,40,
+MTLS,Materialise NV,3D Printing,,
+MTO,Mitie Group PLC,Immig facilities,,
+MTOR,Meritor Inc,Electric powertrains,,
+NACP,Impact Shares NAACP Minority Empowerment,Racial Inequality ETF,,
+NAKD,Naked Brand Group,Apparel,0.5,
+NANO,Nanoco Group PLC,Nanotech,10,
+NAPS,Naked Brand Group,Apparel,3.5,7
+NASDAQ:THBR,Thunder Bridge,N/A,,
+NAT,Nordic American Tankers,Marine,3,6
+ND,Nordstrom,Retail,,
+NDAQ,Nasdaq Inc,Exchange,,
+NEE,NextEra Energy Inc,Renewable energy,,
+NET,Cloudflare Inc,Cybersec,30,200
+NFLX,Netflix Inc,Streaming,70,1000
+NKE,Nike Inc,Athletic apparel,50,150
+NKTR,Nektar Therapeutics,Pharma,,
+NNN,NNN REIT Inc,REIT,,
+NOAC,Northern Star Acquisition,SPAC plant based,,
+NOK,Nokia Oyj,Telecom,,
+NOVN,Novartis AG,Pharma,25,100
+NSA,National Storage Affiliates,Storage REIT,25,50
+NTNX,Nutanix Inc,Cloud,,
+NUCG,VanEck Uranium and Nuclear Tech,ETF Uranium & Nuclear,30,
+NUMD,Nu-Med Plus Inc,Nitric Oxide,,1
+NUMI,Nuveen Municipal Income ETF,Medical mushrooms,,
+NVAX,Novavax Inc,Pharma vaccine,,
+NVDA,NVIDIA Corp,Semiconductors,90,200
+NVIGF,NVIDIA,Semis,,
+NVO,Novo Nordisk A/S,Pharma,,
+NVT,nVent Electric PLC,Data centre cooling,40,
+NWE,NorthWestern Energy Group,Utility,,
+NXE,NexGen Energy,Uranium,2,
+NXMH,Next Meats Holdings,Plant-based,,
+NXPI,NXP Semiconductors NV,5G,100,
+NYSE:AXP,American Express Co,Payments,80,
+NYSE:BODY,The Beachbody Company,SPAC Health and fitness,,
+NYSE:PATH,UiPath Inc,Automation,12,
+NYSE:TEVA,Teva Pharmaceutical,Pharma,10,15
+OCGN,Ocugen Inc,Pharma eye disease,,
+OCN,Oceana Metals,Mining,0.6,
+ODX,Omega Diagnostics,Antibody Testing,60,100
+OKLO,Oklo Inc,Nuclear,50,
+OKTA,Okta Inc,Remote Access ID,70,250
+ONVO,Organovo Holdings,3D printing - human tissue,,
+OPEN,Opendoor Technologies,Real estate,,
+OPK,OPKO Health Inc,Pharma,,
+OPTT,Ocean Power Technologies,Wave energy,,
+ORGO,Organogenesis Holdings,Regenerative medicine,,
+ORLY,O'Reilly Automotive,Auto parts,,
+ORSTED.CO,Orsted A/S,Renewable Energy,300,600
+OSTK,Overstock.com,E-commerce,,
+OTLK,Outlook Therapeutics,Pharma oncology,,
+OUST,Ouster Inc,Driverless tech lidar,3.5,10
+OWLT,Owlet Inc,Baby remote monitor,5,12
+PAF,Pan African Resources plc,Mining,,
+PAVM,PAVmed Inc,Med devices,,
+PCPL,Pacific Coast Pipeline,EV supply chain,,
+PCTI,PCTEL Inc,5G,,
+PCTY,Paylocity Holding,SaaS,100,
+PDSB,PDS Biotechnology Corp,Pharma,,
+PEGA,Pegasystems Inc,Digital transformation,,
+PHM,PulteGroup,Homebuilder,80,
+PHSP,WisdomTree Physical Silver,ETF Phys Silver,,
+PHUN,Phunware Inc,Tech,,
+PINS,Pinterest Inc,Social media,25,
+PLTR,Palantir Technologies Inc,Big Data,15,
+PLUG,Plug Power Inc,EV battery,3.96,
+PMTU,PMTU,Telehealth,,
+POAI,Predictive Oncology Inc,Artificial Intelligence,1,
+PPBT,Purple Biotech,Non-steroid drugs,,
+PQDI,Principal Spectrum Preferred Income,ETF Convertible Bonds,15,
+PRIM,Primerica Inc,Insurance,,
+PRPO,Precipio Inc,Diagnostics,4,20
+PSN,Parsons Corp,Defence,,
+PSNL,Personalis Inc,Cancer genomics,10,
+PTC,PTC Inc,Industrial software,,
+PTCT,PTC Therapeutics Inc,Pharma,,
+PTON,Peloton Interactive Inc,Fitness,5,
+PTY,PIMCO Corporate&Income Opportunity Fund,Fixed income,,
+PW,Power REIT,Cannabis REIT,,
+PYPL,PayPal Holdings,Payments,100,250
+QCOM,Qualcomm Inc,Semis,50,
+QDEL,Quidel Corp,Diagnostics manufacturer,,
+QUBT,Quantum Computing Inc,Quantum,5,
+RAPT,RAPT Therapeutics,Pharma,,
+RBOD,iShares Automation & Robotics,Robotics Automation,6.5,
+RBRK,Rubrik Inc,Cybersecurity,20,
+RBTX,iShares Automation & Robotics,US TECH Automation,,
+REI,Ring Energy,Oil,1.5,
+RESN,Resonant Inc,RF Filters radio,3.5,
+RIOT,Riot Platforms Inc,Crypto mining,2,
+RLGY,Realogy Holdings Corp,Real estate,,
+RMO,Romeo Power,Battery,10,15
+RNDR-USD,Render,Crypto,10,
+ROBG,L&G ROBO Global Robotics Automation,ETF,,
+ROKU,Roku Inc,Streaming/Digital media,70,
+RPD,Rapid7 Inc,Cybersecurity,,
+RUSHB,Rush Enterprises Class B,Trucks,,
+RVLV,Revolve Group Inc,Fashion tech,20,50
+RVSN,Rail Vision Ltd,Rail tech,1,
+RZLV,Rezolve Ai PLC,Ai,1,
+SAVA,Cassava Sciences,Pharma neuro,,
+SBET,SharpLink Gaming,Sports betting,15,
+SCCO,Southern Copper Corp,Copper,100,
+SCWX,Scalable Capital,World Xtrackers ETF,30,
+SE,Sea Ltd,SE Asia tech,,
+SENS,Senseonics Holdings,Med devices,,
+SHCO,Schmitt Industries,N/A,3,
+SHIP,Seanergy Maritime Holdings,Marine,0.5,
+SHOP,Shopify Inc,E-commerce platform,100,
+SHSL,Shengshi Lock,N/A,,
+SINO,SINO Pharma,NFTs,7,
+SKT,Tanger Factory Outlet Centers,Retail REIT,,
+SLS,Sellas Life Sciences Group,Pharma,,
+SMR,NuScale Power,Nuclear,20,
+SMT.L,Scottish Mortgage Investment Trust,Trust,650,
+SNAP,Snap Inc,Social media,10,20
+SNDL,Sundial Growers,Cannabis,,
+SNES,SenesTech Inc,Pest control,,
+SNPW,Sun Pacific Holding,N/A,,
+SNSR,Global X Internet of Things ETF,IoT ETF,,
+SOCL,Global X Social Media ETF,Social media ETF,20,
+SOL-USD,Solana,Crypto,100,
+SOLSV,Solaris Energy Infrastructure,Solar,,
+SOS,SOS Limited,N/A,,
+SOUN,SoundHound AI Inc,Voice AI,30,
+SPA,Spanish Mountain Gold,Gold,,
+SPLK,Splunk Inc,Cybersecurity,140,
+SPOT,Spotify Technology SA,Music streaming,200,500
+SQ,Block (Square),Cashapp,70,
+SRP,Serica Energy,Immigration centres,,
+SST,System1 Inc,Marketing,2.87,
+STAR,iStar Inc,REIT,,
+STIC,STIC SPAC,Barkbox Pets SPAC,10,
+STOR,iShares Energy Storage & Hydrogen ETF,REIT stores,,
+STSA,Sentinel Studios,Inhaler migraines,4.5,
+SUM,Summit Materials,Construction,,
+SURG,SurgePays Inc,Payments,,
+SVA,Sinovac Biotech,Pharma,,
+SWX:ABBN,ABB Ltd,Industrial,14,
+SYK,Stryker Corp,Med tech,,
+SYN,Synergia Energy,Pharma GI,,
+T,AT&T Inc,Telecom,15,
+TAKOF,Volatus Aerospace,Drones,,
+TALK,Talkspace Inc,Telemed SPAC,2,4
+TBLA,Taboola.com Ltd,AdTech,3,
+TCEHY,Tencent Holdings ADR,Chinese tech,,
+TCX,Tucows Inc,Domains,,
+TECH,BIO-TECHNE Corp,Clinical diagnostic,,
+TEM,Tempus AI Inc,AI - Pelosi play,8,
+TIT,Telecom Italia SpA,Telecom,0.25,0.5
+TKAT,Takung Art,NFTs Crypto,30,
+TLW.L,Tullow Oil plc,Oil,5,250
+TNDM,Tandem Diabetes Care,Med devices,,
+TOOP,Loop Industries,Plastics,,
+TPE:2330,Taiwan Semi,Semis,300,100
+TRN,Trinity Industries,Recovery play,,
+TSE:HUT,Hut 8 Corp,Bitcoin mining,,
+TSLA,Tesla Inc,EV,200,600
+TSQ,Townsquare Media,Media,4,
+TTD,Trade Desk Inc,Digital Marketing,21.8,
+TTI,Tetra Technologies Inc,Energy,,
+TTNP,Titan Pharmaceuticals,Pharma,3,5
+UAA,Under Armour Inc,Apparel,7.5,20
+UAVS,AgEagle Aerial Systems,Drones,,
+UBER,Uber Technologies Inc,Ride-share,20,100
+UBS,UBS Group AG,Banking,,
+UEC,Uranium Energy Corp,Uranium,1.5,
+ULVR.L,Unilever plc,Consumer staples,3500,
+UNBLF,Unibail-Rodamco-Westfield,REIT,50,100
+UNH,UnitedHealth Group,Health insurance,250,
+UUUU,Energy Fuels Inc,Uranium,3,
+VANI,Vivani Medical,Prev EYES,2,
+VCVC,VCVC SPAC,N/A,,
+VERI,Veritone Inc,AI,2,
+VFF,Village Farms International,Cannabis,,
+VICR,Vicor Corp,Power components,,
+VIH,VIH SPAC,Crypto SPAC BAKKT,,
+VIVE,Viveve Medical,Med devices,,
+VJET,voxeljet AG,3D Printing,,
+VKTX,Viking Therapeutics Inc,Pharma,15,
+VMEO,Vimeo Inc,Video,5,
+VMOM,Vanguard Momentum ETF,ETF Momentum,,
+VOD.L,Vodafone Group PLC,Telecom,10,20
+VOLT,Tema Electrification ETF,Electricity,25,
+VRNT,Verint Systems,Cybersec,,
+VUZI,Vuzix Corp,VR/AR glasses,1,20
+VWDRY,Vestas Wind Systems ADR,Wind,,
+VWS.CO,Vestas Wind Systems,Renewables,150,
+VYNE,Vyne Therapeutics,Pharma,,
+W7L,W7 Worldwide,Cosmetics,350,
+WDAY,Workday Inc,HR SaaS,,
+WFH,Direxion Work From Home ETF,ETF Work From Home,,
+WING,Wingstop Inc,Restaurants,,
+WKP,Workspace Group plc,Office space,,
+WM,Waste Management Inc,Waste mgmt,,
+WMT,Walmart Inc,Retail,,
+WPC,W.P. Carey Inc,REIT,,
+WPRT,Westport Fuel Systems,Fuel systems,,
+WRCY,Westrock Coffee Co,Recycling,,
+WWR,Westwater Resources Inc,Minerals,1,
+XMEX,Direxion Daily Mexico Bull,ETF,,
+XONE,The ExOne Company,3D Printing,,
+XPEV,Xpeng Inc - ADR,EV China,,
+XRP-USD,Ripple,Tier 1 crypto,0.6,4
+XSDX,Xtrackers ShortDAX Daily Swap UCITS,Short ETF,,
+XSPX,Xtrackers S&P 500 Swap UCITS,Short ETF,,
+YALA,Yalla Group,Clubhouse middle east,,
+YYAI,AiRWA Inc,Padel solana xCl,1,
+ZBRA,Zebra Technologies Corp,Tech,,
+ZKIN,ZK International,NFTs,,
