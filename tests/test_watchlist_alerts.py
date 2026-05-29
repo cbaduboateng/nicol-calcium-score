@@ -347,3 +347,60 @@ def test_pick_winners_unknown_caps_pass_through_unless_required():
     )
     # A (microcap) and E (unknown cap) both pass; B/C/D excluded by cap.
     assert set(picks["ticker"]) == {"A", "E"}
+
+
+# ---- strict mode gates ---------------------------------------------------
+
+
+def test_strict_mode_keeps_only_buy_zone_with_all_gates_passing():
+    picks = pick_winners(_picks_view(), top_n=10, strict_mode=True)
+    # A is BUY ZONE, 3m=25>0, theme hot (AI 20+ median), R:R=3, 6m=40 → passes
+    # B is APPROACHING → fails BUY ZONE gate
+    # C is HOLD (Cannabis, 3m -10 cold theme) → fails
+    # D blow-off 250% → fails
+    # E SELL ZONE → fails
+    assert set(picks["ticker"]) == {"A"}
+
+
+def test_strict_mode_blocks_negative_3m_momentum():
+    view = _picks_view().copy()
+    # Force A into negative 3m to see it dropped
+    view.loc[view["ticker"] == "A", "pct_3m"] = -5.0
+    picks = pick_winners(view, top_n=10, strict_mode=True)
+    assert "A" not in set(picks["ticker"])
+
+
+def test_strict_mode_respects_rr_floor():
+    # B is APPROACHING — but if we relax the status gate by making it BUY
+    # ZONE with a weak R:R, the R:R floor should still drop it.
+    view = _picks_view().copy()
+    view.loc[view["ticker"] == "B", "status"] = "BUY ZONE"
+    view.loc[view["ticker"] == "B", "pct_3m"] = 25.0  # hot theme already
+    # B's R:R is 0.8 — below the default 2.0 floor
+    picks = pick_winners(view, top_n=10, strict_mode=True, strict_min_rr=2.0)
+    assert "B" not in set(picks["ticker"])
+    # Drop the floor to 0.5 and B should survive
+    picks_loose = pick_winners(view, top_n=10, strict_mode=True, strict_min_rr=0.5)
+    assert "B" in set(picks_loose["ticker"])
+
+
+def test_strict_mode_blocks_parabolic_blowoff():
+    view = _picks_view().copy()
+    # Force D into BUY ZONE so only the blow-off gate is blocking it
+    view.loc[view["ticker"] == "D", "status"] = "BUY ZONE"
+    view.loc[view["ticker"] == "D", "reward_risk"] = 3.0
+    picks = pick_winners(
+        view, top_n=10, strict_mode=True, blowoff_threshold_pct=100.0,
+    )
+    assert "D" not in set(picks["ticker"])
+    # Raise the threshold and D survives
+    picks_loose = pick_winners(
+        view, top_n=10, strict_mode=True, blowoff_threshold_pct=500.0,
+    )
+    assert "D" in set(picks_loose["ticker"])
+
+
+def test_strict_mode_off_by_default_keeps_old_behaviour():
+    base = pick_winners(_picks_view(), top_n=10)
+    strict = pick_winners(_picks_view(), top_n=10, strict_mode=True)
+    assert len(base) > len(strict)

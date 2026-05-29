@@ -362,6 +362,25 @@ def _render_watchlist_tab(st) -> None:
                 help="Excludes tickers we don't have a market cap for. "
                      "On by default so the cap filter actually filters.",
             )
+
+        # Strict mode — hard gates, no weighted-average dilution
+        strict_row = st.columns([3, 2])
+        with strict_row[0]:
+            strict_mode = st.checkbox(
+                "🎯 Strict mode (hard gates instead of weighted average)",
+                value=False,
+                help=(
+                    "Only ticks that pass ALL of these survive: BUY ZONE, "
+                    "3m momentum > 0, theme 3m median > 0, R:R ≥ threshold, "
+                    "6m < blow-off threshold. Composite then ranks the survivors."
+                ),
+            )
+        with strict_row[1]:
+            strict_min_rr = st.slider(
+                "Strict R:R floor", 1.0, 5.0, 2.0, step=0.5,
+                disabled=not strict_mode,
+                help="Minimum reward-to-risk to pass the strict gate. R:R=∞ (live ≤ entry) always passes.",
+            )
         overlay_notes = []
         if congress_overlay:
             overlay_notes.append(
@@ -393,7 +412,14 @@ def _render_watchlist_tab(st) -> None:
         min_market_cap_usd=min_cap,
         max_market_cap_usd=max_cap,
         require_known_cap=require_known,
+        strict_mode=strict_mode,
+        strict_min_rr=float(strict_min_rr),
     )
+    if strict_mode:
+        st.caption(
+            f"🎯 Strict mode active: **{len(picks)} tickers** passed every hard gate "
+            f"(BUY ZONE, 3m>0, hot theme, R:R≥{strict_min_rr:.1f}, 6m<{blowoff:.0f}%)."
+        )
     if picks.empty:
         st.info("No picks meet the criteria. Loosen the filters or check that prices loaded.")
     else:

@@ -664,6 +664,8 @@ def pick_winners(
     min_market_cap_usd: float | None = None,
     max_market_cap_usd: float | None = None,
     require_known_cap: bool = False,
+    strict_mode: bool = False,
+    strict_min_rr: float = 2.0,
 ) -> pd.DataFrame:
     """Composite winner-picker.
 
@@ -707,6 +709,28 @@ def pick_winners(
         status = r.get("status")
         if exclude_sell_zone and status == "SELL ZONE":
             continue
+
+        # Hard gates: when strict mode is on, only tickers that pass EVERY
+        # threshold survive. Each gate corresponds to one of the five most
+        # common failure modes ("falling knife", "cold theme", "no real R:R",
+        # "blow-off chase", "not actually triggered yet").
+        if strict_mode:
+            if status != "BUY ZONE":
+                continue
+            pct_3m_val = r.get("pct_3m")
+            if pct_3m_val is None or not np.isfinite(pct_3m_val) or pct_3m_val <= 0:
+                continue  # negative or unknown 3m → falling knife or no data
+            theme_3m_val = theme_3m.get(r.get("theme"))
+            if (theme_3m_val is None or not np.isfinite(theme_3m_val)
+                    or theme_3m_val <= 0):
+                continue  # cold theme
+            rr_val = r.get("reward_risk")
+            if rr_val is None or not np.isfinite(rr_val) or rr_val < strict_min_rr:
+                continue  # weak asymmetry (inf passes — that's fine)
+            pct_6m_val = r.get("pct_6m")
+            if (pct_6m_val is not None and np.isfinite(pct_6m_val)
+                    and pct_6m_val > blowoff_threshold_pct):
+                continue  # already parabolic
 
         mcap = r.get("market_cap_usd")
         mcap_known = mcap is not None and np.isfinite(mcap) and mcap > 0
@@ -797,6 +821,20 @@ def pick_winners(
             "congress_summary": congress_summary,
         })
 
+    if not rows:
+        # Strict gates or aggressive filters can produce zero survivors —
+        # return an empty frame with the expected column set so the
+        # dashboard renders consistently.
+        return pd.DataFrame(columns=[
+            "rank", "ticker", "name", "theme", "status",
+            "market_cap_usd", "cap_bucket",
+            "live_price", "target_entry", "target_exit", "reward_risk",
+            "pct_1m", "pct_3m", "pct_6m", "pct_12m",
+            "score_analyst", "score_rr", "score_theme", "score_momentum",
+            "score_congress", "score_catalyst",
+            "blowoff_penalty", "composite",
+            "catalyst_days", "catalyst_label", "congress_summary",
+        ])
     out = (
         pd.DataFrame(rows)
         .sort_values("composite", ascending=False)
