@@ -829,6 +829,208 @@ def _render_watchlist_ticker_card(
             st.markdown(f"{head}. {rationale}" if rationale else head + ".")
 
 
+def _fmt_dollar(v: float) -> str:
+    if not pd.notna(v):
+        return "—"
+    sign = "−" if v < 0 else ""
+    av = abs(float(v))
+    if av >= 1_000_000:
+        return f"{sign}${av / 1e6:.2f}M"
+    if av >= 1_000:
+        return f"{sign}${av / 1e3:.1f}k"
+    return f"{sign}${av:.0f}"
+
+
+def _render_track_record_tab(st) -> None:
+    """Forward-marked signal history. Replays watchlist BUY ZONE crossings
+    against actual price data and grades each one (target / stop / timeout
+    / open). No persistence — fully reproducible from price history."""
+    from .track_record import (
+        DEFAULT_POSITION_SIZE_USD,
+        build_track_record,
+        cumulative_pnl_series,
+        summarise_track_record,
+    )
+    from .watchlist_alerts import (
+        WATCHLIST_PATH,
+        fetch_price_history,
+        load_watchlist,
+    )
+
+    st.subheader("📊 Track record — every BUY ZONE signal, marked forward")
+    st.caption(
+        "Every time a watchlist ticker has crossed into its analyst buy zone "
+        "we treat it as a signal, then walk forward bar-by-bar until it hits "
+        "the target, hits the stop, or times out at 6 months. No look-ahead, "
+        "no edits, no survivorship — every signal that fired is here."
+    )
+
+    watchlist = load_watchlist(WATCHLIST_PATH)
+    if watchlist.empty:
+        st.warning(f"No watchlist file at `{WATCHLIST_PATH}`.")
+        return
+    tradable = watchlist[
+        watchlist["target_entry"].notna() & (watchlist["target_entry"] > 0)
+    ]
+    if tradable.empty:
+        st.info(
+            "No watchlist tickers have a target_entry yet — nothing to score. "
+            "Add buy targets in `data/watchlist.csv`."
+        )
+        return
+
+    with st.expander("Replay parameters", expanded=False):
+        prm = st.columns(4)
+        with prm[0]:
+            stop_pct = st.slider(
+                "Stop %", 5, 25, 10, step=1,
+                help="How far below entry triggers the stop.",
+            ) / 100.0
+        with prm[1]:
+            timeout_days = st.slider(
+                "Timeout days", 30, 365, 180, step=30,
+                help="How long a signal can stay open before forced close.",
+            )
+        with prm[2]:
+            cooldown_days = st.slider(
+                "Re-signal cooldown", 0, 90, 30, step=5,
+                help="Minimum days between two signals on the same ticker.",
+            )
+        with prm[3]:
+            position_size_usd = st.number_input(
+                "Position size ($)",
+                min_value=1_000.0, max_value=50_000_000.0,
+                value=float(DEFAULT_POSITION_SIZE_USD), step=100_000.0,
+                help="Notional per signal. Doesn't change relative performance — only the dollar headlines.",
+            )
+
+    tickers = sorted(set(tradable["ticker"].tolist()))
+    with st.spinner(f"Replaying {len(tickers)} tickers with 2y of price history..."):
+        try:
+            history = fetch_price_history(tickers, period="2y")
+        except Exception as exc:
+            st.error(f"Price fetch failed: {exc}")
+            return
+
+    if not history:
+        st.warning("No price history available — track record is empty.")
+        return
+
+    signals = build_track_record(
+        tradable, history,
+        stop_pct=stop_pct,
+        timeout_days=int(timeout_days),
+        cooldown_days=int(cooldown_days),
+    )
+    if signals.empty:
+        st.info("No BUY ZONE crossings detected in the price history.")
+        return
+
+    summary = summarise_track_record(signals, position_size_usd=position_size_usd)
+
+    # ---- At a glance -------------------------------------------------------
+    st.markdown("### At a glance")
+    g = st.columns(6)
+    g[0].metric("Picks", summary["total"])
+    g[1].metric("Closed", summary["closed"])
+    g[2].metric("Win rate", f"{summary['win_rate'] * 100:.0f}%")
+    g[3].metric("Hit rate", f"{summary['hit_rate'] * 100:.0f}%",
+                help="Closed via target only (not stop or timeout).")
+    g[4].metric("Avg return", f"{summary['avg_return_pct']:+.2f}%")
+    g[5].metric("Realised", _fmt_dollar(summary["total_realised_usd"]))
+
+    if summary["closed"] < 30:
+        st.caption(
+            f"⚠️ Only **{summary['closed']} closed signals** — too few to draw "
+            "conclusions. Win/hit rates need at least 30 closures before the "
+            "noise floor drops below the signal."
+        )
+
+    # ---- Cumulative P&L chart ---------------------------------------------
+    pnl = cumulative_pnl_series(signals, position_size_usd=position_size_usd)
+    if not pnl.empty:
+        st.markdown("#### Cumulative realised P&L")
+        chart_df = pnl.set_index("close_date")["cumulative_usd"]
+        st.line_chart(chart_df, height=240)
+
+    # ---- Recent closed ----------------------------------------------------
+    closed = signals[~signals["open"]].copy()
+    if not closed.empty:
+        st.markdown("#### Recent closed signals")
+        closed = closed.sort_values("close_date", ascending=False).head(15)
+        closed["realised_usd"] = closed["return_pct"] / 100.0 * position_size_usd
+        result_label = closed["close_reason"].map({
+            "target": "🎯 Hit target",
+            "stop": "🛑 Hit stop",
+            "timeout": "⏰ Timeout",
+        }).fillna(closed["close_reason"])
+        closed_display = closed.assign(result=result_label)[[
+            "close_date", "ticker", "entry_price", "close_price",
+            "return_pct", "realised_usd", "days_held", "result",
+        ]].reset_index(drop=True)
+        st.dataframe(
+            closed_display, use_container_width=True, hide_index=True,
+            column_config={
+                "close_date": "Closed",
+                "ticker": "Ticker",
+                "entry_price": st.column_config.NumberColumn("Entry", format="$%.2f"),
+                "close_price": st.column_config.NumberColumn("Exit", format="$%.2f"),
+                "return_pct": st.column_config.NumberColumn("Return", format="%+.1f%%"),
+                "realised_usd": st.column_config.NumberColumn("P&L $", format="$%.0f"),
+                "days_held": st.column_config.NumberColumn("Days", format="%d"),
+                "result": "Result",
+            },
+        )
+
+    # ---- Open signals -----------------------------------------------------
+    open_signals = signals[signals["open"]].copy()
+    if not open_signals.empty:
+        st.markdown("#### Live signals (still in play)")
+        open_signals = open_signals.sort_values("return_pct", ascending=False)
+        open_signals["mtm_usd"] = open_signals["return_pct"] / 100.0 * position_size_usd
+        st.dataframe(
+            open_signals[[
+                "signal_date", "ticker", "entry_price", "close_price",
+                "return_pct", "mtm_usd", "days_held",
+            ]].reset_index(drop=True),
+            use_container_width=True, hide_index=True,
+            column_config={
+                "signal_date": "Signal",
+                "ticker": "Ticker",
+                "entry_price": st.column_config.NumberColumn("Entry", format="$%.2f"),
+                "close_price": st.column_config.NumberColumn("Current", format="$%.2f"),
+                "return_pct": st.column_config.NumberColumn("Move", format="%+.1f%%"),
+                "mtm_usd": st.column_config.NumberColumn("MTM $", format="$%.0f"),
+                "days_held": st.column_config.NumberColumn("Days", format="%d"),
+            },
+        )
+
+    # ---- Honest caveats --------------------------------------------------
+    with st.expander("How this stays honest"):
+        st.markdown(
+            "- **Forward-marking only.** A signal's entry price is the close on the "
+            "day price first crossed at or below the analyst's buy target. Exits use "
+            "prices strictly *after* that date — no look-ahead.\n"
+            "- **Pre-set exits.** Target (analyst's `target_exit`), stop (entry × "
+            f"{1 - stop_pct:.0%}), and a {int(timeout_days)}-day timeout are fixed "
+            "the moment the signal fires.\n"
+            "- **Conservative tie-break.** When a daily bar's range could plausibly "
+            "have touched both target and stop, we assume the stop fired — never "
+            "the optimistic outcome.\n"
+            "- **No survivorship.** Every signal that fired is on this page, "
+            "winners and losers alike. Re-signals on the same ticker within the "
+            "cooldown are merged into the existing one.\n"
+            "- **Caveat:** the replay assumes *today's* analyst targets applied "
+            "historically. If a target was raised last week, the entire history is "
+            "rescored against the new level. Fair approximation, not literal history.\n"
+            "- **Hit rate ≠ win rate.** Win rate is *any* profitable close (could be "
+            "a timeout above water). Hit rate is the stricter set that actually "
+            "hit the target. Both matter — they tell different stories about R:R.\n"
+            f"- **Sample size.** Below 30 closed signals (currently {summary['closed']}), "
+            "headline figures are noisy. Wait for the count to build before drawing conclusions."
+        )
+
+
 def main() -> None:
     try:
         import streamlit as st
@@ -893,13 +1095,18 @@ def main() -> None:
 
     enriched = _enrich_candidates(candidates, trades, actors)
 
-    tab_watchlist, tab_top, tab_actors, tab_clusters, tab_catalysts = st.tabs(
-        ["Watchlist", "Top candidates", "Actor leaderboard", "Clusters", "Catalyst calendar"],
+    tab_watchlist, tab_track, tab_top, tab_actors, tab_clusters, tab_catalysts = st.tabs(
+        ["Watchlist", "📊 Track record", "Top candidates", "Actor leaderboard",
+         "Clusters", "Catalyst calendar"],
     )
 
     # ---- Watchlist: analyst-curated picks with live alerts ----------------
     with tab_watchlist:
         _render_watchlist_tab(st)
+
+    # ---- Track record: forward-marked signal history ----------------------
+    with tab_track:
+        _render_track_record_tab(st)
 
 
     with tab_top:
