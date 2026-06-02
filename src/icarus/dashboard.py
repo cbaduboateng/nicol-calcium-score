@@ -1054,51 +1054,156 @@ def main() -> None:
         )
 
     with tab_actors:
-        st.subheader("Actor leaderboard")
-        st.caption("Which members trade most, and whose trades score best.")
-        if not trades.empty:
-            top_by_actor = (
-                trades.groupby("actor_id")
-                .agg(trade_count=("trade_id", "count"))
-                .reset_index()
+        st.subheader("Actor edge leaderboard")
+        st.caption(
+            "Which members actually make money on their trades. "
+            "Realised return is (current price − close on transaction_date) / "
+            "close on transaction_date, computed for every YTD buy. "
+            "Sort by mean return to see who has edge; filter min trades to "
+            "kill one-hit-wonder noise."
+        )
+        from .actor_edge import load_actor_edge, load_trade_returns
+        edge = load_actor_edge()
+        trade_returns = load_trade_returns()
+        if edge.empty:
+            st.info(
+                "No actor_edge.parquet yet. The cold-start bootstrap builds "
+                "this from trades.parquet + yfinance prices; it'll appear on "
+                "the next deploy or after the next overnight refresh."
             )
-            cand_by_actor = (
-                candidates.groupby("actor_id")
-                .agg(candidate_count=("trade_id", "count"),
-                     mean_score=("asymmetry_score", "mean"))
-                .reset_index()
-            )
-            board = top_by_actor.merge(cand_by_actor, on="actor_id", how="left")
-            if not actors.empty:
-                actor_lookup = actors[[c for c in (
-                    "actor_id", "name", "chamber", "state", "party",
-                ) if c in actors.columns]]
-                board = board.merge(actor_lookup, on="actor_id", how="left")
-                if "name" in board.columns:
-                    board["Member"] = board["name"].fillna(board["actor_id"])
-                    board = board.drop(columns=["name"])
+        else:
+            ctrl = st.columns([2, 2, 2])
+            with ctrl[0]:
+                min_trades = st.slider(
+                    "Min trades", 1, 20, 3, step=1,
+                    help="Hides actors with too few trades to be statistically meaningful.",
+                )
+            with ctrl[1]:
+                sort_by_options = {
+                    "Mean return %":      "mean_return_pct",
+                    "Cumulative return %": "cumulative_return_pct",
+                    "Hit rate":            "hit_rate",
+                    "Best trade %":        "best_return_pct",
+                    "Trade count":         "n_trades",
+                }
+                sort_label = st.selectbox(
+                    "Sort by", list(sort_by_options.keys()), index=0,
+                )
+                sort_col = sort_by_options[sort_label]
+            with ctrl[2]:
+                st.caption(
+                    f"YTD window. **{len(edge)}** actors tracked, "
+                    f"**{len(trade_returns)}** trades scored."
+                )
+
+            board = edge[edge["n_trades"] >= min_trades].copy()
+            board = board.sort_values(sort_col, ascending=False).reset_index(drop=True)
+            if "name" in board.columns:
+                board["Member"] = board["name"].fillna(board["actor_id"])
             else:
                 board["Member"] = board["actor_id"]
-            board = board.sort_values(
-                ["candidate_count", "mean_score"], ascending=[False, False],
+            board.insert(0, "rank", board.index + 1)
+            board["win_loss"] = board.apply(
+                lambda r: f"{int(r['n_winners'])} W / {int(r['n_losers'])} L",
+                axis=1,
             )
-            ordered = [c for c in (
-                "Member", "chamber", "state", "party",
-                "trade_count", "candidate_count", "mean_score", "actor_id",
+
+            display_cols = [c for c in (
+                "rank", "Member", "party", "state", "chamber",
+                "n_trades", "win_loss", "hit_rate",
+                "mean_return_pct", "cumulative_return_pct",
+                "best_return_pct", "worst_return_pct",
+                "avg_days_held",
             ) if c in board.columns]
-            st.dataframe(
-                board[ordered], use_container_width=True, hide_index=True,
+
+            edge_event = st.dataframe(
+                board[display_cols],
+                use_container_width=True, hide_index=True,
+                on_select="rerun",
+                selection_mode="single-row",
+                key="actor_edge_table",
                 column_config={
-                    "chamber": "Chamber",
-                    "state": "State",
+                    "rank": st.column_config.NumberColumn("#", format="%d"),
+                    "Member": "Member",
                     "party": "Party",
-                    "trade_count": "Trades filed",
-                    "candidate_count": "Flagged",
-                    "mean_score": st.column_config.NumberColumn(
-                        "Avg score", format="%.2f"),
-                    "actor_id": "Bioguide ID",
+                    "state": "State",
+                    "chamber": "Chamber",
+                    "n_trades": st.column_config.NumberColumn("Trades", format="%d"),
+                    "win_loss": "W/L",
+                    "hit_rate": st.column_config.ProgressColumn(
+                        "Hit rate", min_value=0.0, max_value=1.0, format="%.0f%%",
+                    ),
+                    "mean_return_pct": st.column_config.NumberColumn(
+                        "Mean ret", format="%+.1f%%",
+                        help="Equal-weighted average return across all YTD buys.",
+                    ),
+                    "cumulative_return_pct": st.column_config.NumberColumn(
+                        "Cumulative ret", format="%+.1f%%",
+                        help="Sum of returns — what you'd have if you placed "
+                             "equal $ on each YTD buy and held to today.",
+                    ),
+                    "best_return_pct": st.column_config.NumberColumn(
+                        "Best", format="%+.1f%%",
+                    ),
+                    "worst_return_pct": st.column_config.NumberColumn(
+                        "Worst", format="%+.1f%%",
+                    ),
+                    "avg_days_held": st.column_config.NumberColumn(
+                        "Avg days", format="%.0f",
+                    ),
                 },
             )
+
+            # Drill-down: click an actor to see their individual YTD trades.
+            if edge_event is not None and edge_event.selection.rows:
+                sel_idx = edge_event.selection.rows[0]
+                sel_actor_id = str(board.iloc[sel_idx]["actor_id"])
+                sel_name = str(board.iloc[sel_idx]["Member"])
+                st.markdown(f"#### {sel_name} — individual YTD trades")
+                their_trades = trade_returns[
+                    trade_returns["actor_id"].astype(str) == sel_actor_id
+                ].copy()
+                if their_trades.empty:
+                    st.info("No trade-level rows found for this actor.")
+                else:
+                    their_trades = their_trades.sort_values(
+                        "return_pct", ascending=False
+                    ).reset_index(drop=True)
+                    their_trades.insert(0, "#", their_trades.index + 1)
+                    st.dataframe(
+                        their_trades[[c for c in (
+                            "#", "transaction_date", "ticker",
+                            "entry_price", "current_price",
+                            "return_pct", "days_held", "size_usd",
+                        ) if c in their_trades.columns]],
+                        use_container_width=True, hide_index=True,
+                        column_config={
+                            "#": st.column_config.NumberColumn("#", format="%d"),
+                            "transaction_date": "Date",
+                            "ticker": "Ticker",
+                            "entry_price": st.column_config.NumberColumn(
+                                "Entry", format="$%.2f",
+                            ),
+                            "current_price": st.column_config.NumberColumn(
+                                "Now", format="$%.2f",
+                            ),
+                            "return_pct": st.column_config.NumberColumn(
+                                "Return", format="%+.1f%%",
+                            ),
+                            "days_held": st.column_config.NumberColumn(
+                                "Days", format="%d",
+                            ),
+                            "size_usd": st.column_config.NumberColumn(
+                                "Size", format="$%.0f",
+                                help="Disclosure midpoint of the trade.",
+                            ),
+                        },
+                    )
+            else:
+                st.caption(
+                    "👆 Click an actor above to see their individual YTD trades, "
+                    "ranked by realised return."
+                )
 
     with tab_clusters:
         st.subheader("Tickers with cluster activity (>=2 members)")
