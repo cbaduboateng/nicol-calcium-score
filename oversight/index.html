@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oversight — Personal Finance</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#0f172a">
+<style>
+  :root {
+    --bg: #0f172a;
+    --panel: #1e293b;
+    --panel-2: #334155;
+    --border: #334155;
+    --text: #f8fafc;
+    --muted: #94a3b8;
+    --accent: #0ea5e9;
+    --accent-2: #38bdf8;
+    --good: #22c55e;
+    --bad: #ef4444;
+    --warn: #f59e0b;
+    --shadow: 0 4px 14px rgba(0,0,0,.35);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  header {
+    background: linear-gradient(135deg, #0f172a, #1e40af);
+    padding: 1.25rem 1rem;
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 10;
+  }
+
+  .header-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .brand {
+    display: flex; align-items: center; gap: .6rem;
+  }
+
+  .brand-logo {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: linear-gradient(135deg, var(--accent), #1e40af);
+    display: grid; place-items: center; font-weight: 700; color: white;
+  }
+
+  .brand-name { font-size: 1.15rem; font-weight: 700; letter-spacing: .3px; }
+  .brand-sub  { font-size: .75rem; color: var(--muted); }
+
+  .actions button {
+    background: var(--panel);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: .45rem .8rem;
+    border-radius: 8px;
+    font-size: .8rem;
+    cursor: pointer;
+    margin-left: .35rem;
+  }
+  .actions button:hover { background: var(--panel-2); }
+
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 1rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  @media (min-width: 900px) {
+    main { grid-template-columns: 1.4fr 1fr; }
+    .summary-strip { grid-column: 1 / -1; }
+    .tabs-card { grid-column: 1; }
+    .side-col { grid-column: 2; display: grid; gap: 1rem; align-content: start; }
+  }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    padding: 1rem 1.1rem;
+  }
+
+  .card h2 {
+    font-size: .95rem;
+    color: var(--accent-2);
+    margin-bottom: .75rem;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    font-weight: 600;
+  }
+
+  .summary-strip {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: .75rem;
+  }
+  @media (min-width: 700px) {
+    .summary-strip { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  .stat {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: .9rem 1rem;
+  }
+  .stat-label { font-size: .72rem; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+  .stat-value { font-size: 1.4rem; font-weight: 700; margin-top: .25rem; }
+  .stat-sub   { font-size: .72rem; color: var(--muted); margin-top: .15rem; }
+  .stat-value.good { color: var(--good); }
+  .stat-value.bad  { color: var(--bad);  }
+
+  .tabs {
+    display: flex; flex-wrap: wrap; gap: .3rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1rem;
+  }
+  .tab {
+    background: transparent; color: var(--muted);
+    border: none; padding: .55rem .9rem;
+    font-size: .82rem; cursor: pointer;
+    border-bottom: 2px solid transparent;
+    font-weight: 500;
+  }
+  .tab.active { color: var(--accent-2); border-bottom-color: var(--accent-2); }
+  .tab:hover { color: var(--text); }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  .row-list { display: flex; flex-direction: column; gap: .5rem; }
+
+  .item-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: .5rem;
+    align-items: center;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: .55rem .7rem;
+  }
+  .item-row .name { font-weight: 600; font-size: .9rem; }
+  .item-row .meta { color: var(--muted); font-size: .72rem; }
+  .item-row .amount { font-variant-numeric: tabular-nums; font-weight: 600; }
+  .item-row button {
+    background: transparent; color: var(--muted);
+    border: 1px solid var(--border); border-radius: 6px;
+    padding: .2rem .5rem; cursor: pointer; font-size: .7rem;
+  }
+  .item-row button:hover { color: var(--bad); border-color: var(--bad); }
+
+  .field-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: .5rem;
+    margin-top: .75rem;
+  }
+  @media (min-width: 500px) {
+    .field-grid.two-col { grid-template-columns: 1fr 1fr; }
+    .field-grid.three-col { grid-template-columns: 2fr 1fr 1fr; }
+    .field-grid.four-col { grid-template-columns: 2fr 1fr 1fr 1fr; }
+  }
+
+  label { font-size: .72rem; color: var(--muted); display: block; margin-bottom: .2rem; }
+
+  input, select {
+    width: 100%;
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: .5rem .6rem;
+    font-size: .88rem;
+    font-family: inherit;
+  }
+  input:focus, select:focus { outline: none; border-color: var(--accent); }
+
+  .btn {
+    background: var(--accent);
+    color: white; border: none;
+    padding: .55rem .9rem;
+    border-radius: 8px;
+    font-size: .82rem; font-weight: 600;
+    cursor: pointer;
+    margin-top: .6rem;
+  }
+  .btn:hover { background: var(--accent-2); }
+  .btn.ghost { background: transparent; border: 1px solid var(--border); color: var(--text); }
+
+  .breakdown-row {
+    display: flex; justify-content: space-between;
+    padding: .35rem 0;
+    font-size: .85rem;
+    border-bottom: 1px dashed var(--border);
+  }
+  .breakdown-row:last-child { border-bottom: none; }
+  .breakdown-row .label { color: var(--muted); }
+  .breakdown-row .val { font-variant-numeric: tabular-nums; font-weight: 600; }
+  .breakdown-row.total { border-top: 1px solid var(--border); border-bottom: none; margin-top: .35rem; padding-top: .55rem; font-size: .95rem; }
+
+  .allowance {
+    margin-top: .5rem;
+  }
+  .allowance-head {
+    display: flex; justify-content: space-between;
+    font-size: .78rem; margin-bottom: .25rem;
+  }
+  .allowance-head .used { color: var(--muted); }
+  .bar { height: 8px; background: var(--bg); border-radius: 6px; overflow: hidden; border: 1px solid var(--border); }
+  .bar > span { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width .3s ease; }
+  .bar > span.warn { background: linear-gradient(90deg, var(--warn), #fbbf24); }
+  .bar > span.bad  { background: linear-gradient(90deg, var(--bad), #f87171); }
+
+  .empty { color: var(--muted); font-size: .82rem; padding: .5rem; text-align: center; }
+
+  footer {
+    text-align: center; color: var(--muted); font-size: .72rem;
+    padding: 2rem 1rem 1rem;
+  }
+
+  .privacy {
+    background: rgba(14,165,233,.08);
+    border: 1px solid rgba(14,165,233,.25);
+    border-radius: 10px;
+    padding: .55rem .75rem;
+    font-size: .75rem;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-logo">O</div>
+      <div>
+        <div class="brand-name">Oversight</div>
+        <div class="brand-sub">Your complete financial picture</div>
+      </div>
+    </div>
+    <div class="actions">
+      <button id="btn-export">Export</button>
+      <button id="btn-import">Import</button>
+      <button id="btn-reset">Reset</button>
+      <input type="file" id="file-import" accept="application/json" style="display:none">
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="summary-strip">
+    <div class="stat">
+      <div class="stat-label">Net Worth</div>
+      <div class="stat-value" id="stat-networth">£0</div>
+      <div class="stat-sub" id="stat-networth-sub">assets − liabilities</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Total Assets</div>
+      <div class="stat-value good" id="stat-assets">£0</div>
+      <div class="stat-sub" id="stat-assets-sub">cash + investments + property</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Total Liabilities</div>
+      <div class="stat-value bad" id="stat-liab">£0</div>
+      <div class="stat-sub" id="stat-liab-sub">mortgage + debts</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Take-Home / month</div>
+      <div class="stat-value" id="stat-net">£0</div>
+      <div class="stat-sub" id="stat-net-sub">after tax, NI, SL, pension</div>
+    </div>
+  </div>
+
+  <div class="card tabs-card">
+    <div class="tabs" id="tabs">
+      <button class="tab active" data-tab="accounts">Accounts</button>
+      <button class="tab" data-tab="investments">Investments</button>
+      <button class="tab" data-tab="pensions">Pensions</button>
+      <button class="tab" data-tab="property">Property</button>
+      <button class="tab" data-tab="debts">Debts</button>
+      <button class="tab" data-tab="income">Income &amp; Tax</button>
+    </div>
+
+    <!-- ACCOUNTS -->
+    <div class="tab-panel active" data-tab="accounts">
+      <h2>Cash &amp; Savings</h2>
+      <div class="row-list" id="list-accounts"></div>
+      <div class="field-grid three-col">
+        <div><label>Name</label><input id="acc-name" placeholder="e.g. Barclays Current"></div>
+        <div><label>Type</label>
+          <select id="acc-type">
+            <option value="current">Current</option>
+            <option value="savings">Savings</option>
+            <option value="cash-isa">Cash ISA</option>
+            <option value="premium-bonds">Premium Bonds</option>
+            <option value="other">Other cash</option>
+          </select>
+        </div>
+        <div><label>Balance (£)</label><input id="acc-balance" type="number" step="0.01" placeholder="0.00"></div>
+      </div>
+      <button class="btn" data-add="account">+ Add account</button>
+    </div>
+
+    <!-- INVESTMENTS -->
+    <div class="tab-panel" data-tab="investments">
+      <h2>Investments</h2>
+      <div class="row-list" id="list-investments"></div>
+      <div class="field-grid four-col">
+        <div><label>Name</label><input id="inv-name" placeholder="e.g. Vanguard S&amp;S ISA"></div>
+        <div><label>Wrapper</label>
+          <select id="inv-wrapper">
+            <option value="s&s-isa">S&amp;S ISA</option>
+            <option value="gia">GIA (taxable)</option>
+            <option value="crypto">Crypto</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div><label>Value (£)</label><input id="inv-value" type="number" step="0.01" placeholder="0.00"></div>
+        <div><label>Cost basis (£)</label><input id="inv-cost" type="number" step="0.01" placeholder="0.00"></div>
+      </div>
+      <button class="btn" data-add="investment">+ Add investment</button>
+    </div>
+
+    <!-- PENSIONS -->
+    <div class="tab-panel" data-tab="pensions">
+      <h2>Pensions</h2>
+      <div class="row-list" id="list-pensions"></div>
+      <div class="field-grid four-col">
+        <div><label>Name</label><input id="pen-name" placeholder="e.g. Aviva Workplace"></div>
+        <div><label>Type</label>
+          <select id="pen-type">
+            <option value="workplace">Workplace DC</option>
+            <option value="sipp">SIPP</option>
+            <option value="db">DB (transfer value)</option>
+            <option value="state">State (est. pot)</option>
+          </select>
+        </div>
+        <div><label>Value (£)</label><input id="pen-value" type="number" step="0.01" placeholder="0.00"></div>
+        <div><label>Contribs YTD (£)</label><input id="pen-contrib" type="number" step="0.01" placeholder="0.00"></div>
+      </div>
+      <button class="btn" data-add="pension">+ Add pension</button>
+    </div>
+
+    <!-- PROPERTY -->
+    <div class="tab-panel" data-tab="property">
+      <h2>Property &amp; Mortgages</h2>
+      <div class="row-list" id="list-properties"></div>
+      <div class="field-grid two-col">
+        <div><label>Address / label</label><input id="prop-name" placeholder="e.g. Main residence"></div>
+        <div><label>Estimated value (£)</label><input id="prop-value" type="number" step="0.01" placeholder="0.00"></div>
+        <div><label>Mortgage balance (£)</label><input id="prop-mortgage" type="number" step="0.01" placeholder="0.00"></div>
+        <div><label>Interest rate (%)</label><input id="prop-rate" type="number" step="0.01" placeholder="0.00"></div>
+        <div><label>Monthly payment (£)</label><input id="prop-payment" type="number" step="0.01" placeholder="0.00"></div>
+        <div><label>Years remaining</label><input id="prop-years" type="number" step="0.5" placeholder="0"></div>
+      </div>
+      <button class="btn" data-add="property">+ Add property</button>
+    </div>
+
+    <!-- DEBTS -->
+    <div class="tab-panel" data-tab="debts">
+      <h2>Debts</h2>
+      <div class="row-list" id="list-debts"></div>
+      <div class="field-grid four-col">
+        <div><label>Name</label><input id="debt-name" placeholder="e.g. Amex Gold"></div>
+        <div><label>Type</label>
+          <select id="debt-type">
+            <option value="credit-card">Credit card</option>
+            <option value="loan">Personal loan</option>
+            <option value="car">Car finance</option>
+            <option value="student">Student loan</option>
+            <option value="overdraft">Overdraft</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div><label>Balance (£)</label><input id="debt-balance" type="number" step="0.01" placeholder="0.00"></div>
+        <div><label>APR (%)</label><input id="debt-apr" type="number" step="0.01" placeholder="0.00"></div>
+      </div>
+      <div class="field-grid two-col">
+        <div><label>Min / monthly payment (£)</label><input id="debt-payment" type="number" step="0.01" placeholder="0.00"></div>
+      </div>
+      <button class="btn" data-add="debt">+ Add debt</button>
+    </div>
+
+    <!-- INCOME & TAX -->
+    <div class="tab-panel" data-tab="income">
+      <h2>Income</h2>
+      <div class="field-grid two-col">
+        <div><label>Gross annual salary (£)</label><input id="inc-salary" type="number" step="1" placeholder="0"></div>
+        <div><label>Pension contribution (% of salary)</label><input id="inc-pen-pct" type="number" step="0.1" placeholder="0"></div>
+        <div><label>Dividend income (£/yr)</label><input id="inc-dividends" type="number" step="1" placeholder="0"></div>
+        <div><label>Other taxable income (£/yr)</label><input id="inc-other" type="number" step="1" placeholder="0"></div>
+        <div><label>Savings interest (£/yr)</label><input id="inc-interest" type="number" step="1" placeholder="0"></div>
+        <div><label>Realised capital gains YTD (£)</label><input id="inc-cgt" type="number" step="1" placeholder="0"></div>
+      </div>
+      <div class="field-grid two-col">
+        <div>
+          <label>Student loan plan</label>
+          <select id="inc-sl">
+            <option value="none">None</option>
+            <option value="plan1">Plan 1</option>
+            <option value="plan2">Plan 2</option>
+            <option value="plan4">Plan 4 (Scotland)</option>
+            <option value="plan5">Plan 5</option>
+            <option value="pg">Postgraduate</option>
+          </select>
+        </div>
+        <div>
+          <label>Region</label>
+          <select id="inc-region">
+            <option value="ew">England / Wales / NI</option>
+            <option value="scot">Scotland</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn" id="btn-save-income">Save income</button>
+    </div>
+  </div>
+
+  <div class="side-col">
+    <div class="card">
+      <h2>UK Tax Summary (2025/26)</h2>
+      <div id="tax-breakdown"></div>
+    </div>
+
+    <div class="card">
+      <h2>Annual Allowances</h2>
+      <div id="allowances"></div>
+    </div>
+
+    <div class="card">
+      <h2>Debt Snapshot</h2>
+      <div id="debt-snapshot"></div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  Oversight · Data stays on this device (localStorage). No accounts, no servers. ·
+  Tax figures based on published UK 2025/26 rates — informational only, not advice.
+</footer>
+
+<script>
+/* ============================================================
+   Oversight — self-contained personal finance PWA
+   All data lives in localStorage. UK 2025/26 tax logic.
+   ============================================================ */
+
+const STORAGE_KEY = 'oversight.v1';
+const fmt = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: 0 });
+const fmt2 = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: 2 });
+const pct = n => (n * 100).toFixed(1) + '%';
+
+const defaultState = () => ({
+  accounts: [],
+  investments: [],
+  pensions: [],
+  properties: [],
+  debts: [],
+  income: {
+    salary: 0, penPct: 0, dividends: 0, other: 0, interest: 0, cgt: 0,
+    sl: 'none', region: 'ew'
+  }
+});
+
+let state = load();
+
+function load() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return defaultState();
+    const parsed = JSON.parse(raw);
+    return Object.assign(defaultState(), parsed);
+  } catch (e) {
+    return defaultState();
+  }
+}
+
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  render();
+}
+
+/* ---------- UK TAX (2025/26) ---------- */
+
+const TAX = {
+  personalAllowance: 12570,
+  paTaperStart: 100000,
+  paTaperFullyLostAt: 125140,
+  // Widths of each band above the personal allowance (2025/26)
+  ew: [
+    { width: 37700,     rate: 0.20 }, // basic  (12,570 → 50,270)
+    { width: 74870,     rate: 0.40 }, // higher (50,270 → 125,140)
+    { width: Infinity,  rate: 0.45 }
+  ],
+  // Scotland 2025/26 band widths above PA
+  scot: [
+    { width: 2827,      rate: 0.19 }, // starter      (12,571 → 15,397)
+    { width: 12094,     rate: 0.20 }, // basic        (15,398 → 27,491)
+    { width: 16171,     rate: 0.21 }, // intermediate (27,492 → 43,662)
+    { width: 31338,     rate: 0.42 }, // higher       (43,663 → 75,000)
+    { width: 50140,     rate: 0.45 }, // advanced     (75,001 → 125,140)
+    { width: Infinity,  rate: 0.48 }
+  ],
+  basicRateTop: 50270,   // absolute income at top of UK-wide basic-rate band
+  higherRateTop: 125140,
+  ni: {
+    pt: 12570,
+    uel: 50270,
+    lowerRate: 0.08,
+    upperRate: 0.02
+  },
+  savings: {
+    starting: 5000,
+    psa: { basic: 1000, higher: 500, additional: 0 }
+  },
+  dividendAllowance: 500,
+  dividendRates: { basic: 0.0875, higher: 0.3375, additional: 0.3935 },
+  cgtAnnualExempt: 3000,
+  cgtRates: { basic: 0.18, higher: 0.24 }, // 2025/26 unified
+  isaAllowance: 20000,
+  pensionAnnualAllowance: 60000,
+  studentLoan: {
+    plan1: { threshold: 26065, rate: 0.09 },
+    plan2: { threshold: 28470, rate: 0.09 },
+    plan4: { threshold: 32745, rate: 0.09 },
+    plan5: { threshold: 25000, rate: 0.09 },
+    pg:    { threshold: 21000, rate: 0.06 }
+  }
+};
+
+function personalAllowance(adjustedIncome) {
+  if (adjustedIncome <= TAX.paTaperStart) return TAX.personalAllowance;
+  if (adjustedIncome >= TAX.paTaperFullyLostAt) return 0;
+  const reduction = Math.floor((adjustedIncome - TAX.paTaperStart) / 2);
+  return Math.max(0, TAX.personalAllowance - reduction);
+}
+
+function incomeTaxOn(taxable, region) {
+  const bands = region === 'scot' ? TAX.scot : TAX.ew;
+  let remaining = taxable;
+  let tax = 0;
+  for (const b of bands) {
+    if (remaining <= 0) break;
+    const slice = Math.min(remaining, b.width);
+    tax += slice * b.rate;
+    remaining -= slice;
+  }
+  return tax;
+}
+
+function niOn(salary) {
+  const { pt, uel, lowerRate, upperRate } = TAX.ni;
+  if (salary <= pt) return 0;
+  const inBand = Math.min(salary, uel) - pt;
+  let ni = inBand * lowerRate;
+  if (salary > uel) ni += (salary - uel) * upperRate;
+  return ni;
+}
+
+function studentLoanOn(salary, plan) {
+  if (plan === 'none' || !TAX.studentLoan[plan]) return 0;
+  const { threshold, rate } = TAX.studentLoan[plan];
+  if (salary <= threshold) return 0;
+  return (salary - threshold) * rate;
+}
+
+function computeTax(income) {
+  const salary = +income.salary || 0;
+  const penPct = (+income.penPct || 0) / 100;
+  const dividends = +income.dividends || 0;
+  const other = +income.other || 0;
+  const interest = +income.interest || 0;
+  const cgt = +income.cgt || 0;
+
+  // Salary sacrifice / net-pay style: pension reduces taxable salary
+  const pensionContrib = salary * penPct;
+  const taxableSalary = Math.max(0, salary - pensionContrib);
+
+  // Adjusted net income (approx) for PA taper
+  const grossForTaper = taxableSalary + other + interest + dividends;
+  const pa = personalAllowance(grossForTaper);
+
+  // Order: earned income first uses PA, then savings starting-rate & PSA, then dividends allowance
+  const nonSavings = taxableSalary + other;
+  let paLeft = pa;
+  const nonSavingsAfterPA = Math.max(0, nonSavings - paLeft);
+  paLeft = Math.max(0, paLeft - nonSavings);
+
+  // Savings: starting rate band up to £5,000 tapered by non-savings above PA
+  const startingBand = Math.max(0, TAX.savings.starting - nonSavingsAfterPA);
+  let interestAfterPA = Math.max(0, interest - paLeft);
+  paLeft = Math.max(0, paLeft - interest);
+  const interestInStarting = Math.min(interestAfterPA, startingBand);
+  let interestAboveStarting = interestAfterPA - interestInStarting;
+
+  // Determine band for PSA (based on total taxable income excluding CGT)
+  const totalTaxable = nonSavingsAfterPA + interestAfterPA + Math.max(0, dividends - paLeft);
+  let psa = TAX.savings.psa.basic;
+  if (totalTaxable + pa > TAX.higherRateTop) psa = TAX.savings.psa.additional;
+  else if (totalTaxable + pa > TAX.basicRateTop) psa = TAX.savings.psa.higher;
+  const interestPastPSA = Math.max(0, interestAboveStarting - psa);
+
+  // Dividend allowance
+  const dividendsAfterPA = Math.max(0, dividends - paLeft);
+  const divTaxable = Math.max(0, dividendsAfterPA - TAX.dividendAllowance);
+
+  // Income tax on earned & taxable interest (using bands)
+  const earnedAndInterestTaxable = nonSavingsAfterPA + interestPastPSA;
+  const incomeTax = incomeTaxOn(earnedAndInterestTaxable, income.region);
+
+  // Dividend tax by band (roughly): find which band divTaxable sits in
+  let divTax = 0;
+  if (divTaxable > 0) {
+    let base = earnedAndInterestTaxable + pa; // where dividends stack
+    let remaining = divTaxable;
+    const bands = [
+      { top: TAX.basicRateTop,  rate: TAX.dividendRates.basic },
+      { top: TAX.higherRateTop, rate: TAX.dividendRates.higher },
+      { top: Infinity,          rate: TAX.dividendRates.additional }
+    ];
+    for (const b of bands) {
+      const room = b.top - base;
+      if (room <= 0) continue;
+      const slice = Math.min(remaining, room);
+      divTax += slice * b.rate;
+      remaining -= slice;
+      base += slice;
+      if (remaining <= 0) break;
+    }
+  }
+
+  // NI (on gross salary before pension for salary sacrifice? Simplification: apply after pension)
+  const ni = niOn(taxableSalary);
+
+  // Student loan on gross salary
+  const sl = studentLoanOn(salary, income.sl);
+
+  // CGT
+  const cgtTaxable = Math.max(0, cgt - TAX.cgtAnnualExempt);
+  let cgtTax = 0;
+  if (cgtTaxable > 0) {
+    // Stack on top of income
+    const basicRoom = Math.max(0, TAX.basicRateTop - (earnedAndInterestTaxable + pa + dividendsAfterPA));
+    const inBasic = Math.min(cgtTaxable, basicRoom);
+    const inHigher = cgtTaxable - inBasic;
+    cgtTax = inBasic * TAX.cgtRates.basic + inHigher * TAX.cgtRates.higher;
+  }
+
+  const totalDeductions = incomeTax + divTax + ni + sl + pensionContrib;
+  const grossAll = salary + dividends + interest + other;
+  const netAnnual = grossAll - incomeTax - divTax - ni - sl - pensionContrib;
+
+  return {
+    salary, pensionContrib, taxableSalary, pa,
+    incomeTax, divTax, ni, sl, cgtTax,
+    grossAll, netAnnual, netMonthly: netAnnual / 12,
+    effectiveRate: grossAll > 0 ? (incomeTax + divTax + ni + sl) / grossAll : 0,
+    interestPastPSA, psa, dividendAllowanceUsed: Math.min(dividends, TAX.dividendAllowance),
+    cgtTaxableGain: cgtTaxable
+  };
+}
+
+/* ---------- RENDER ---------- */
+
+function sum(arr, key) { return arr.reduce((a, x) => a + (+x[key] || 0), 0); }
+
+function render() {
+  // Totals
+  const cash = sum(state.accounts, 'balance');
+  const inv  = sum(state.investments, 'value');
+  const pens = sum(state.pensions, 'value');
+  const propVal = sum(state.properties, 'value');
+  const mort = sum(state.properties, 'mortgage');
+  const debts = sum(state.debts, 'balance');
+
+  const assets = cash + inv + pens + propVal;
+  const liabilities = mort + debts;
+  const networth = assets - liabilities;
+
+  const tax = computeTax(state.income);
+
+  document.getElementById('stat-networth').textContent = fmt.format(networth);
+  document.getElementById('stat-networth').className = 'stat-value ' + (networth >= 0 ? 'good' : 'bad');
+  document.getElementById('stat-assets').textContent = fmt.format(assets);
+  document.getElementById('stat-liab').textContent = fmt.format(liabilities);
+  document.getElementById('stat-net').textContent = fmt.format(tax.netMonthly);
+  document.getElementById('stat-net-sub').textContent = `${fmt.format(tax.netAnnual)}/yr · eff ${pct(tax.effectiveRate)}`;
+  document.getElementById('stat-assets-sub').textContent = `cash ${fmt.format(cash)} · inv ${fmt.format(inv)} · pen ${fmt.format(pens)} · prop ${fmt.format(propVal)}`;
+  document.getElementById('stat-liab-sub').textContent = `mortgage ${fmt.format(mort)} · debts ${fmt.format(debts)}`;
+
+  renderList('list-accounts', state.accounts, 'accounts', (a) => ({
+    name: a.name || '(unnamed)',
+    meta: labelFor('acc', a.type),
+    amount: fmt2.format(+a.balance || 0)
+  }));
+
+  renderList('list-investments', state.investments, 'investments', (a) => {
+    const gain = (+a.value || 0) - (+a.cost || 0);
+    const gs = (gain >= 0 ? '+' : '') + fmt2.format(gain);
+    return {
+      name: a.name || '(unnamed)',
+      meta: labelFor('wrap', a.wrapper) + ' · unrealised ' + gs,
+      amount: fmt2.format(+a.value || 0)
+    };
+  });
+
+  renderList('list-pensions', state.pensions, 'pensions', (a) => ({
+    name: a.name || '(unnamed)',
+    meta: labelFor('pen', a.type) + ' · contrib YTD ' + fmt2.format(+a.contrib || 0),
+    amount: fmt2.format(+a.value || 0)
+  }));
+
+  renderList('list-properties', state.properties, 'properties', (a) => {
+    const equity = (+a.value || 0) - (+a.mortgage || 0);
+    const ltv = a.value > 0 ? ((+a.mortgage || 0) / (+a.value || 0)) : 0;
+    return {
+      name: a.name || '(unnamed)',
+      meta: `equity ${fmt2.format(equity)} · LTV ${(ltv*100).toFixed(0)}% · ${(+a.rate||0).toFixed(2)}% · ${(+a.payment||0).toFixed(0)}/mo · ${(+a.years||0)}y left`,
+      amount: fmt2.format(+a.value || 0)
+    };
+  });
+
+  renderList('list-debts', state.debts, 'debts', (a) => ({
+    name: a.name || '(unnamed)',
+    meta: `${labelFor('debt', a.type)} · APR ${(+a.apr||0).toFixed(2)}% · ${fmt2.format(+a.payment||0)}/mo`,
+    amount: fmt2.format(+a.balance || 0)
+  }));
+
+  // Income form
+  const i = state.income;
+  setVal('inc-salary', i.salary);
+  setVal('inc-pen-pct', i.penPct);
+  setVal('inc-dividends', i.dividends);
+  setVal('inc-other', i.other);
+  setVal('inc-interest', i.interest);
+  setVal('inc-cgt', i.cgt);
+  document.getElementById('inc-sl').value = i.sl;
+  document.getElementById('inc-region').value = i.region;
+
+  // Tax breakdown
+  const tb = document.getElementById('tax-breakdown');
+  tb.innerHTML = '';
+  addRow(tb, 'Gross total income', fmt.format(tax.grossAll));
+  addRow(tb, 'Personal allowance', fmt.format(tax.pa));
+  addRow(tb, 'Pension contribution', '−' + fmt.format(tax.pensionContrib));
+  addRow(tb, 'Income tax', '−' + fmt.format(tax.incomeTax));
+  addRow(tb, 'Dividend tax', '−' + fmt.format(tax.divTax));
+  addRow(tb, 'Employee NI', '−' + fmt.format(tax.ni));
+  addRow(tb, 'Student loan', '−' + fmt.format(tax.sl));
+  if (tax.cgtTax > 0) addRow(tb, 'CGT (est.)', '−' + fmt.format(tax.cgtTax));
+  addRow(tb, 'Net (annual)', fmt.format(tax.netAnnual), true);
+  addRow(tb, 'Net (monthly)', fmt.format(tax.netMonthly), true);
+  addRow(tb, 'Effective tax rate', pct(tax.effectiveRate));
+
+  // Allowances
+  const al = document.getElementById('allowances');
+  al.innerHTML = '';
+  const isaUsed = state.investments.filter(x => x.wrapper === 's&s-isa')
+    .reduce((a,x) => a + Math.min(+x.value||0, +x.cost||0), 0)
+    + state.accounts.filter(x => x.type === 'cash-isa').reduce((a,x) => a + (+x.balance||0), 0);
+  addAllowance(al, 'ISA allowance', isaUsed, TAX.isaAllowance, 'Cash ISA balance + S&S ISA cost basis (approx)');
+
+  const penUsed = sum(state.pensions, 'contrib') + ((+i.salary||0) * (+i.penPct||0)/100);
+  addAllowance(al, 'Pension annual allowance', penUsed, TAX.pensionAnnualAllowance, 'Personal + workplace + salary %');
+
+  addAllowance(al, 'CGT annual exempt', Math.min(+i.cgt||0, TAX.cgtAnnualExempt), TAX.cgtAnnualExempt, 'Realised gains this tax year');
+  addAllowance(al, 'Dividend allowance', tax.dividendAllowanceUsed, TAX.dividendAllowance, 'Dividends this year');
+  addAllowance(al, 'Personal savings allowance', Math.min(+i.interest||0, tax.psa), tax.psa, 'Interest, at your tax band');
+
+  // Debt snapshot
+  const ds = document.getElementById('debt-snapshot');
+  ds.innerHTML = '';
+  const totalDebt = debts + mort;
+  const monthlyDebt = sum(state.debts, 'payment') + sum(state.properties, 'payment');
+  const avgApr = state.debts.length
+    ? state.debts.reduce((a,x) => a + (+x.apr||0) * (+x.balance||0), 0) / (debts || 1)
+    : 0;
+  const dti = tax.netAnnual > 0 ? (monthlyDebt * 12) / tax.netAnnual : 0;
+  addRow(ds, 'Total debt', fmt.format(totalDebt));
+  addRow(ds, 'Mortgage', fmt.format(mort));
+  addRow(ds, 'Other debts', fmt.format(debts));
+  addRow(ds, 'Monthly repayments', fmt.format(monthlyDebt));
+  addRow(ds, 'Weighted APR (non-mortgage)', avgApr.toFixed(2) + '%');
+  addRow(ds, 'Repayments / net income', pct(dti), true);
+  if (propVal > 0) {
+    addRow(ds, 'Overall mortgage LTV', pct(mort / propVal));
+  }
+}
+
+function setVal(id, v) { const el = document.getElementById(id); if (el) el.value = (v === 0 || v) ? v : ''; }
+
+function labelFor(kind, v) {
+  const map = {
+    acc: { current:'Current', savings:'Savings', 'cash-isa':'Cash ISA', 'premium-bonds':'Premium Bonds', other:'Other' },
+    wrap: { 's&s-isa':'S&S ISA', gia:'GIA', crypto:'Crypto', other:'Other' },
+    pen: { workplace:'Workplace DC', sipp:'SIPP', db:'DB', state:'State' },
+    debt: { 'credit-card':'Credit card', loan:'Loan', car:'Car finance', student:'Student', overdraft:'Overdraft', other:'Other' }
+  };
+  return (map[kind] && map[kind][v]) || v || '';
+}
+
+function addRow(parent, label, val, total = false) {
+  const row = document.createElement('div');
+  row.className = 'breakdown-row' + (total ? ' total' : '');
+  row.innerHTML = `<span class="label">${label}</span><span class="val">${val}</span>`;
+  parent.appendChild(row);
+}
+
+function addAllowance(parent, label, used, total, note) {
+  const pctUsed = total > 0 ? Math.min(1, used / total) : 0;
+  const cls = pctUsed >= 1 ? 'bad' : pctUsed >= 0.8 ? 'warn' : '';
+  const div = document.createElement('div');
+  div.className = 'allowance';
+  div.innerHTML = `
+    <div class="allowance-head">
+      <span>${label}</span>
+      <span class="used">${fmt.format(used)} / ${fmt.format(total)}</span>
+    </div>
+    <div class="bar"><span class="${cls}" style="width:${(pctUsed*100).toFixed(1)}%"></span></div>
+    <div class="stat-sub" style="margin-top:.2rem">${note}</div>
+  `;
+  parent.appendChild(div);
+}
+
+function renderList(id, items, key, mapFn) {
+  const el = document.getElementById(id);
+  el.innerHTML = '';
+  if (!items.length) {
+    el.innerHTML = '<div class="empty">Nothing added yet.</div>';
+    return;
+  }
+  items.forEach((it, idx) => {
+    const m = mapFn(it);
+    const row = document.createElement('div');
+    row.className = 'item-row';
+    row.innerHTML = `
+      <div>
+        <div class="name">${escapeHtml(m.name)}</div>
+        <div class="meta">${escapeHtml(m.meta)}</div>
+      </div>
+      <div class="amount">${m.amount}</div>
+      <button aria-label="remove">✕</button>
+    `;
+    row.querySelector('button').addEventListener('click', () => {
+      state[key].splice(idx, 1);
+      save();
+    });
+    el.appendChild(row);
+  });
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* ---------- WIRING ---------- */
+
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.querySelector(`.tab-panel[data-tab="${t.dataset.tab}"]`).classList.add('active');
+  });
+});
+
+document.querySelectorAll('[data-add]').forEach(btn => {
+  btn.addEventListener('click', () => addItem(btn.dataset.add));
+});
+
+function addItem(kind) {
+  if (kind === 'account') {
+    const item = {
+      name: val('acc-name'), type: val('acc-type'), balance: +val('acc-balance') || 0
+    };
+    if (!item.name && !item.balance) return;
+    state.accounts.push(item);
+    clearFields(['acc-name', 'acc-balance']);
+  } else if (kind === 'investment') {
+    const item = {
+      name: val('inv-name'), wrapper: val('inv-wrapper'),
+      value: +val('inv-value') || 0, cost: +val('inv-cost') || 0
+    };
+    if (!item.name && !item.value) return;
+    state.investments.push(item);
+    clearFields(['inv-name', 'inv-value', 'inv-cost']);
+  } else if (kind === 'pension') {
+    const item = {
+      name: val('pen-name'), type: val('pen-type'),
+      value: +val('pen-value') || 0, contrib: +val('pen-contrib') || 0
+    };
+    if (!item.name && !item.value) return;
+    state.pensions.push(item);
+    clearFields(['pen-name', 'pen-value', 'pen-contrib']);
+  } else if (kind === 'property') {
+    const item = {
+      name: val('prop-name'),
+      value: +val('prop-value') || 0,
+      mortgage: +val('prop-mortgage') || 0,
+      rate: +val('prop-rate') || 0,
+      payment: +val('prop-payment') || 0,
+      years: +val('prop-years') || 0
+    };
+    if (!item.name && !item.value) return;
+    state.properties.push(item);
+    clearFields(['prop-name', 'prop-value', 'prop-mortgage', 'prop-rate', 'prop-payment', 'prop-years']);
+  } else if (kind === 'debt') {
+    const item = {
+      name: val('debt-name'), type: val('debt-type'),
+      balance: +val('debt-balance') || 0,
+      apr: +val('debt-apr') || 0,
+      payment: +val('debt-payment') || 0
+    };
+    if (!item.name && !item.balance) return;
+    state.debts.push(item);
+    clearFields(['debt-name', 'debt-balance', 'debt-apr', 'debt-payment']);
+  }
+  save();
+}
+
+function val(id) { return document.getElementById(id).value.trim(); }
+function clearFields(ids) { ids.forEach(id => document.getElementById(id).value = ''); }
+
+document.getElementById('btn-save-income').addEventListener('click', () => {
+  state.income = {
+    salary:    +val('inc-salary') || 0,
+    penPct:    +val('inc-pen-pct') || 0,
+    dividends: +val('inc-dividends') || 0,
+    other:     +val('inc-other') || 0,
+    interest:  +val('inc-interest') || 0,
+    cgt:       +val('inc-cgt') || 0,
+    sl:        val('inc-sl') || 'none',
+    region:    val('inc-region') || 'ew'
+  };
+  save();
+});
+
+// Live-update income on change
+['inc-salary','inc-pen-pct','inc-dividends','inc-other','inc-interest','inc-cgt','inc-sl','inc-region'].forEach(id => {
+  document.getElementById(id).addEventListener('input', () => {
+    state.income[
+      { 'inc-salary':'salary','inc-pen-pct':'penPct','inc-dividends':'dividends',
+        'inc-other':'other','inc-interest':'interest','inc-cgt':'cgt',
+        'inc-sl':'sl','inc-region':'region' }[id]
+    ] = (id === 'inc-sl' || id === 'inc-region') ? val(id) : (+val(id) || 0);
+    save();
+  });
+});
+
+/* Export / Import / Reset */
+document.getElementById('btn-export').addEventListener('click', () => {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `oversight-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById('btn-import').addEventListener('click', () => document.getElementById('file-import').click());
+document.getElementById('file-import').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const parsed = JSON.parse(reader.result);
+      state = Object.assign(defaultState(), parsed);
+      save();
+    } catch (err) {
+      alert('Could not read that file.');
+    }
+  };
+  reader.readAsText(file);
+});
+
+document.getElementById('btn-reset').addEventListener('click', () => {
+  if (confirm('Wipe all Oversight data on this device?')) {
+    state = defaultState();
+    save();
+  }
+});
+
+/* Service worker */
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+
+render();
+</script>
+</body>
+</html>

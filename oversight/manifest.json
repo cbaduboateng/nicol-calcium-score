@@ -1,0 +1,14 @@
+{
+  "name": "Oversight — Personal Finance",
+  "short_name": "Oversight",
+  "description": "See your complete financial position in one place",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
