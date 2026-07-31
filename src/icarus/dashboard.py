@@ -330,6 +330,72 @@ def _render_watchlist_tab(st) -> None:
     n_with_price = int(view["live_price"].notna().sum())
     st.caption(f"Live price available for **{n_with_price} / {len(view)}**.")
 
+    # ---- ☀️ Today's signals (day-scale action ranking) ---------------------
+    st.markdown("### ☀️ Today's signals")
+    st.caption(
+        "Of everything in the buy zone, which deserves attention TODAY. "
+        "Ranked by relative volume (is money flowing in right now?), zone "
+        "freshness (crossed in today beats sat-there-for-months), 5-day "
+        "momentum, theme heat, R:R — plus a bonus for 48h news headlines."
+    )
+    from .daily_signals import compute_daily_signals, fetch_news_counts
+    from .watchlist_alerts import fetch_volume_history
+
+    buy_zone_tickers = sorted(
+        view[view["status"] == "BUY ZONE"]["ticker"].astype(str).tolist()
+    )
+    if not buy_zone_tickers:
+        st.info("Nothing in the buy zone right now — no daily signals to rank.")
+    else:
+        with st.spinner("Checking volume and news for the buy-zone names..."):
+            try:
+                volumes = fetch_volume_history(sorted(set(view["ticker"])))
+            except Exception as exc:
+                log_ = exc  # noqa: F841
+                volumes = {}
+            try:
+                news = fetch_news_counts(buy_zone_tickers)
+            except Exception:
+                news = {}
+        heat_for_today = theme_heat(view)
+        theme_3m_map = (
+            dict(zip(heat_for_today["theme"], heat_for_today["median_3m"]))
+            if not heat_for_today.empty else {}
+        )
+        today = compute_daily_signals(
+            view, history, volumes,
+            news_counts=news, theme_3m=theme_3m_map, top_n=5,
+        )
+        if today.empty:
+            st.info("No buy-zone stock produced a rankable signal today.")
+        else:
+            for _, sig in today.iterrows():
+                with st.container(border=True):
+                    hl, hr = st.columns([3, 2])
+                    with hl:
+                        st.markdown(
+                            f"**#{int(sig['rank'])}  {sig['ticker']}** — "
+                            f"{sig['name'] or ''}"
+                        )
+                        st.caption(sig["reasons"])
+                    with hr:
+                        score_pct = f"{sig['today_score']:.2f}"
+                        live = sig.get("live_price")
+                        entry = sig.get("target_entry")
+                        live_s = f"{live:,.2f}" if pd.notna(live) else "—"
+                        entry_s = f"{entry:,.2f}" if pd.notna(entry) else "—"
+                        st.markdown(
+                            f"Today score **{score_pct}**  \n"
+                            f"Live {live_s} · Buy ≤ {entry_s}"
+                        )
+            st.caption(
+                "⚠️ Volume and news are *attention* signals, not quality "
+                "signals — they say 'look here today', not 'buy this'. "
+                "Check the company card and the Top picks composite before acting."
+            )
+
+    st.divider()
+
     # ---- 🏆 Top picks today (composite winner ranker) ----------------------
     congress_overlay = load_congress_overlay()
     catalyst_overlay = load_catalyst_overlay()

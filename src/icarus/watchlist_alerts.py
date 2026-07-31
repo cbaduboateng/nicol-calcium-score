@@ -914,3 +914,71 @@ def fetch_price_history(
         except Exception as exc:
             log.debug("Could not write spartan price cache (%s)", exc)
     return out
+
+
+def fetch_volume_history(
+    tickers: list[str],
+    *,
+    period: str = "3mo",
+    cache_dir: Path | str = "data/cache",
+    max_cache_age_hours: float = 12.0,
+) -> dict[str, pd.Series]:
+    """Pull daily share volume for each ticker. Same shape and caching
+    pattern as :func:`fetch_price_history`, separate cache file. Volume
+    is the raw material for the relative-volume 'something is happening
+    today' signal, so the cache expires faster than the price cache."""
+    try:
+        import yfinance as yf
+    except ImportError:
+        log.warning("yfinance unavailable; skipping volume fetch")
+        return {}
+    cache_dir = Path(cache_dir)
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    cache_file = cache_dir / f"watchlist_volumes_{period}.parquet"
+
+    if cache_file.exists():
+        import time
+        age_h = (time.time() - cache_file.stat().st_mtime) / 3600.0
+        if age_h < max_cache_age_hours:
+            try:
+                df = pd.read_parquet(cache_file)
+                df.index = pd.to_datetime(df.index)
+                return {c: df[c].dropna() for c in df.columns if df[c].notna().any()}
+            except Exception as exc:
+                log.debug("Could not read volume cache (%s); refetching", exc)
+
+    log.info("Fetching volume for %d tickers (period=%s)", len(tickers), period)
+    try:
+        data = yf.download(
+            tickers=" ".join(tickers),
+            period=period,
+            interval="1d",
+            group_by="ticker",
+            auto_adjust=False,
+            threads=True,
+            progress=False,
+        )
+    except Exception as exc:
+        log.warning("yfinance volume download failed: %s", exc)
+        return {}
+
+    out: dict[str, pd.Series] = {}
+    if isinstance(data.columns, pd.MultiIndex):
+        for t in tickers:
+            try:
+                col = data[t]["Volume"].dropna()
+            except (KeyError, ValueError):
+                continue
+            if not col.empty:
+                out[t] = col
+    elif "Volume" in getattr(data, "columns", []):
+        col = data["Volume"].dropna()
+        if not col.empty and tickers:
+            out[tickers[0]] = col
+
+    if out:
+        try:
+            pd.DataFrame(out).to_parquet(cache_file)
+        except Exception as exc:
+            log.debug("Could not write volume cache (%s)", exc)
+    return out
