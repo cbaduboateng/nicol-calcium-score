@@ -296,16 +296,39 @@ def _render_watchlist_tab(st) -> None:
         "below (don't chase parabolic tops). Click any row to expand the full company card."
     )
     with st.expander("Tune the picker", expanded=False):
+        # One-tap preset: the £5k Runbook (Xu-style concentrated momentum).
+        # Callback sets widget session-state BEFORE the rerun re-creates them.
+        def _apply_runbook_preset() -> None:
+            ss = st.session_state
+            ss["picker_top_n"] = 10
+            ss["picker_blowoff"] = 100
+            ss["picker_excl_sell"] = True
+            ss["picker_cap_label"] = "Small cap < $300M"
+            ss["picker_require_cap"] = True
+            ss["picker_strict"] = True
+            ss["picker_strict_rr"] = 3.0
+
+        st.button(
+            "⚡ £5k Runbook preset",
+            on_click=_apply_runbook_preset,
+            help="One tap: Strict mode ON, R:R floor 3.0, cap < $300M with "
+                 "known cap required, blow-off 100%, top 10. The survivors "
+                 "list SHOULD be empty most days — that's the discipline.",
+        )
+
         tc = st.columns(3)
         with tc[0]:
-            picks_n = st.slider("How many picks", 5, 50, 15, step=5)
+            picks_n = st.slider("How many picks", 5, 50, 15, step=5,
+                                key="picker_top_n")
         with tc[1]:
             blowoff = st.slider(
                 "Blow-off threshold (6m %)", 30, 300, 100, step=10,
+                key="picker_blowoff",
                 help="6-month returns above this start subtracting from the composite.",
             )
         with tc[2]:
-            exclude_sell = st.checkbox("Exclude SELL ZONE", value=True)
+            exclude_sell = st.checkbox("Exclude SELL ZONE", value=True,
+                                       key="picker_excl_sell")
 
         # Market-cap filter row
         cap_known = int(view["market_cap_usd"].notna().sum()) if "market_cap_usd" in view.columns else 0
@@ -353,12 +376,14 @@ def _render_watchlist_tab(st) -> None:
             }
             cap_label = st.selectbox(
                 "Market cap filter", list(cap_options.keys()), index=0,
+                key="picker_cap_label",
                 help="When 'Require known cap' is on, tickers without a known cap are excluded.",
             )
             min_cap, max_cap = cap_options[cap_label]
         with cap_row[1]:
             require_known = st.checkbox(
                 "Require known cap", value=True,
+                key="picker_require_cap",
                 help="Excludes tickers we don't have a market cap for. "
                      "On by default so the cap filter actually filters.",
             )
@@ -369,6 +394,7 @@ def _render_watchlist_tab(st) -> None:
             strict_mode = st.checkbox(
                 "🎯 Strict mode (hard gates instead of weighted average)",
                 value=False,
+                key="picker_strict",
                 help=(
                     "Only ticks that pass ALL of these survive: BUY ZONE, "
                     "3m momentum > 0, theme 3m median > 0, R:R ≥ threshold, "
@@ -378,6 +404,7 @@ def _render_watchlist_tab(st) -> None:
         with strict_row[1]:
             strict_min_rr = st.slider(
                 "Strict R:R floor", 1.0, 5.0, 2.0, step=0.5,
+                key="picker_strict_rr",
                 disabled=not strict_mode,
                 help="Minimum reward-to-risk to pass the strict gate. R:R=∞ (live ≤ entry) always passes.",
             )
@@ -1028,6 +1055,129 @@ def _render_track_record_tab(st) -> None:
             "hit the target. Both matter — they tell different stories about R:R.\n"
             f"- **Sample size.** Below 30 closed signals (currently {summary['closed']}), "
             "headline figures are noisy. Wait for the count to build before drawing conclusions."
+        )
+
+    # ---- ⚡ £5k Runbook backtest -------------------------------------------
+    st.divider()
+    st.markdown("### ⚡ £5k Runbook backtest — concentrated momentum, replayed")
+    st.caption(
+        "Simulates the Xu-style runbook on this watchlist over the same price "
+        "history: max 2 positions, hard −12% stop, entries only when a BUY "
+        "ZONE crossing coincides with positive stock momentum, a hot theme, "
+        "R:R ≥ 3 to the analyst exit, and a small market cap. Winners get one "
+        "pyramid add at +25% with the stop moved to breakeven. "
+        "Currency-agnostic notional — treat the £ figures as relative."
+    )
+
+    with st.expander("Runbook parameters", expanded=False):
+        rb = st.columns(4)
+        with rb[0]:
+            rb_capital = st.number_input(
+                "Start capital (£)", min_value=500.0, max_value=1_000_000.0,
+                value=5_000.0, step=500.0, key="runbook_capital",
+            )
+        with rb[1]:
+            rb_stop = st.slider("Stop %", 5, 25, 12, step=1, key="runbook_stop")
+        with rb[2]:
+            rb_rr = st.slider("Min R:R", 1.0, 5.0, 3.0, step=0.5, key="runbook_rr")
+        with rb[3]:
+            rb_cap_label = st.selectbox(
+                "Cap ceiling", ["< $100M", "< $300M", "< $1B", "No cap filter"],
+                index=1, key="runbook_cap",
+            )
+        rb_require_cap = st.checkbox(
+            "Require known market cap", value=True, key="runbook_require_cap",
+            help="With this off, tickers whose cap we don't know are allowed through the cap gate.",
+        )
+
+    if st.button("▶ Run the £5k backtest", key="runbook_run"):
+        from .runbook_backtest import RunbookParams, simulate_runbook
+        from .ticker_facts import lookup as _facts_lookup
+
+        cap_map = {
+            "< $100M": 100_000_000.0, "< $300M": 300_000_000.0,
+            "< $1B": 1_000_000_000.0, "No cap filter": None,
+        }
+        rb_tradable = watchlist[
+            watchlist["target_entry"].notna() & (watchlist["target_entry"] > 0)
+            & watchlist["target_exit"].notna() & (watchlist["target_exit"] > 0)
+        ]
+        market_caps: dict[str, float] = {}
+        for t in rb_tradable["ticker"].astype(str):
+            fact = _facts_lookup(t, cache_only=True)
+            if fact is not None and fact.market_cap_usd is not None:
+                market_caps[t.upper()] = float(fact.market_cap_usd)
+
+        params = RunbookParams(
+            start_capital=float(rb_capital),
+            stop_pct=rb_stop / 100.0,
+            min_rr=float(rb_rr),
+            max_market_cap_usd=cap_map[rb_cap_label],
+            require_known_cap=bool(rb_require_cap),
+        )
+        with st.spinner("Replaying the runbook bar-by-bar..."):
+            st.session_state["runbook_result"] = simulate_runbook(
+                rb_tradable, history, params, market_caps=market_caps,
+            )
+
+    result = st.session_state.get("runbook_result")
+    if result is not None:
+        stats = result["stats"]
+        m = st.columns(5)
+        m[0].metric("Final equity", f"£{stats['final_equity']:,.0f}",
+                    f"{stats['return_pct']:+.1f}%")
+        m[1].metric("Max drawdown", f"{stats['max_drawdown_pct']:.1f}%")
+        m[2].metric("Closed trades", stats["n_closed"])
+        m[3].metric("Win rate", f"{stats['win_rate'] * 100:.0f}%")
+        m[4].metric("Avg / trade", f"{stats['avg_return_pct']:+.1f}%")
+
+        if stats["n_closed"] == 0 and stats["n_open"] == 0:
+            st.info(
+                "The runbook never fired — no watchlist name passed every gate "
+                "in this price window. That's informative in itself: either the "
+                "gates are too tight for this list, or the list lacks the "
+                "small-cap runners the style needs. Try relaxing the cap "
+                "ceiling or R:R floor."
+            )
+        else:
+            equity = result["equity"]
+            if not equity.empty:
+                st.markdown("#### Equity curve")
+                st.line_chart(equity.set_index("date")["equity"], height=240)
+
+            trades = result["trades"]
+            if not trades.empty:
+                st.markdown("#### Trades")
+                reason_label = trades["reason"].map({
+                    "target": "🎯 Target", "stop": "🛑 Stop",
+                    "breakeven-stop": "⚖️ Breakeven stop", "trail": "📉 Trail",
+                    "strength": "🚀 Sold into strength", "timeout": "⏰ Timeout",
+                    "open": "🟢 Open",
+                }).fillna(trades["reason"])
+                tdisp = trades.assign(result=reason_label)[[
+                    c for c in ("entry_date", "exit_date", "ticker",
+                                "entry_price", "exit_price", "return_pct",
+                                "days_held", "pyramided", "result")
+                    if c in trades.columns
+                ]]
+                st.dataframe(
+                    tdisp, use_container_width=True, hide_index=True,
+                    column_config={
+                        "entry_date": "In", "exit_date": "Out",
+                        "ticker": "Ticker",
+                        "entry_price": st.column_config.NumberColumn("Entry", format="$%.2f"),
+                        "exit_price": st.column_config.NumberColumn("Exit", format="$%.2f"),
+                        "return_pct": st.column_config.NumberColumn("Return", format="%+.1f%%"),
+                        "days_held": st.column_config.NumberColumn("Days", format="%d"),
+                        "pyramided": st.column_config.CheckboxColumn("Pyramided"),
+                        "result": "Result",
+                    },
+                )
+        st.caption(
+            "⚠️ One simulated path with today's targets and caps applied "
+            "historically, close-only fills, no slippage or commissions. "
+            "Treat as an upper bound on the style's performance here — "
+            "not an expectation, and not financial advice."
         )
 
 
