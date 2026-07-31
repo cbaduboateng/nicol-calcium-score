@@ -55,6 +55,46 @@ _US_PREFIXES: frozenset[str] = frozenset({
     "OTCMKTS", "OTC", "CBOE",
 })
 
+# Curated aliases: tickers the sheet listed bare that need an exchange
+# suffix Yahoo-side, plus well-known US renames. High-confidence only —
+# ambiguous symbols are left alone rather than guessed.
+_ALIASES: dict[str, str] = {
+    # US renames / relistings
+    "AAXN": "AXON",     # Axon Enterprise (renamed 2019)
+    "CREE": "WOLF",     # Cree -> Wolfspeed
+    "SQ": "XYZ",        # Block (renamed 2025)
+    "OSTK": "BYON",     # Overstock -> Beyond
+    "WRK": "SW",        # WestRock -> Smurfit Westrock
+    "PKI": "RVTY",      # PerkinElmer -> Revvity
+    "FLT": "CPAY",      # FleetCor -> Corpay
+    "RLGY": "HOUS",     # Realogy -> Anywhere
+    "FB": "META",
+    # Bare international tickers listed without an exchange prefix
+    "DBK": "DBK.DE",       # Deutsche Bank
+    "ZAL": "ZAL.DE",       # Zalando
+    "SDF": "SDF.DE",       # K+S
+    "BARC": "BARC.L",      # Barclays
+    "GLEN": "GLEN.L",      # Glencore
+    "OCDO": "OCDO.L",      # Ocado
+    "RTO": "RTO.L",        # Rentokil
+    "MAB": "MAB.L",        # Mitchells & Butlers
+    "MTO": "MTO.L",        # Mitie
+    "SRP": "SRP.L",        # Serco
+    "SMDS": "SMDS.L",      # DS Smith
+    "BYG": "BYG.L",        # Big Yellow
+    "CPI": "CPI.L",        # Capita
+    "CMCX": "CMCX.L",      # CMC Markets
+    "DUKE": "DUKE.L",      # Duke Capital
+    "W7L": "W7L.L",        # Warpaint London
+    "PAF": "PAF.L",        # Pan African Resources
+    "IGG": "IGG.L",        # IG Group
+    "TIT": "TIT.MI",       # Telecom Italia
+    "LDO": "LDO.MI",       # Leonardo
+    "THULE": "THULE.ST",   # Thule Group
+    "NOVN": "NOVN.SW",     # Novartis (SIX symbol)
+    "FUNO11": "FUNO11.MX", # Fibra Uno
+}
+
 
 def normalize_symbol(ticker: str) -> str:
     """Translate one watchlist ticker to its Yahoo Finance symbol.
@@ -63,7 +103,11 @@ def normalize_symbol(ticker: str) -> str:
     without a prefix pass through unchanged.
     """
     t = (ticker or "").strip().upper()
-    if not t or ":" not in t:
+    if not t:
+        return t
+    if t in _ALIASES:
+        return _ALIASES[t]
+    if ":" not in t:
         return t
     prefix, sym = t.split(":", 1)
     sym = sym.strip()

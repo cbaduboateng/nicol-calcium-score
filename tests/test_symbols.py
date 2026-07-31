@@ -53,3 +53,24 @@ def test_yahoo_symbol_map_handles_collisions():
     assert m["NYSE:HL"] == "HL"
     assert m["HL"] == "HL"          # collision: both map to the same data
     assert m["LON:THG"] == "THG.L"
+
+
+def test_us_rename_aliases():
+    assert normalize_symbol("SQ") == "XYZ"
+    assert normalize_symbol("CREE") == "WOLF"
+    assert normalize_symbol("AAXN") == "AXON"
+    assert normalize_symbol("WRK") == "SW"
+
+
+def test_bare_international_aliases_get_suffixes():
+    assert normalize_symbol("DBK") == "DBK.DE"
+    assert normalize_symbol("BARC") == "BARC.L"
+    assert normalize_symbol("GLEN") == "GLEN.L"
+    assert normalize_symbol("W7L") == "W7L.L"
+    assert normalize_symbol("TIT") == "TIT.MI"
+    assert normalize_symbol("NOVN") == "NOVN.SW"
+
+
+def test_alias_does_not_break_prefixed_or_plain_us():
+    assert normalize_symbol("LON:GSK") == "GSK.L"   # prefix path unaffected
+    assert normalize_symbol("NVDA") == "NVDA"       # plain US untouched

@@ -300,6 +300,52 @@ def test_merge_with_previous_no_prev_is_passthrough():
     assert _merge_with_previous(fresh, None) == fresh
 
 
+def test_top_up_recovers_missing_and_respects_cooldown(tmp_path):
+    from icarus.watchlist_alerts import _maybe_top_up
+    idx = pd.date_range("2026-01-01", periods=3, freq="D")
+    cache_file = tmp_path / "prices.parquet"
+    tickers = ["AAA"] + [f"MISS{i}" for i in range(12)]
+    data = {"AAA": pd.Series([1.0] * 3, index=idx)}
+
+    calls: list[list[str]] = []
+
+    def fake_fetch(symbols, period, field):
+        calls.append(list(symbols))
+        return {"MISS0": pd.Series([2.0] * 3, index=idx)}
+
+    out = _maybe_top_up(
+        data, tickers, field="Close", period="1y",
+        cache_file=cache_file, fetcher=fake_fetch,
+    )
+    assert "MISS0" in out          # recovery merged in
+    assert "AAA" in out            # original untouched
+    assert len(calls) == 1
+    assert cache_file.exists()     # persisted so coverage is monotonic
+
+    # Second call within the cooldown must not refetch.
+    out2 = _maybe_top_up(
+        out, tickers, field="Close", period="1y",
+        cache_file=cache_file, fetcher=fake_fetch,
+    )
+    assert len(calls) == 1
+    assert out2 == out
+
+
+def test_top_up_skips_when_few_missing(tmp_path):
+    from icarus.watchlist_alerts import _maybe_top_up
+    idx = pd.date_range("2026-01-01", periods=3, freq="D")
+    data = {"AAA": pd.Series([1.0] * 3, index=idx)}
+
+    def fake_fetch(symbols, period, field):  # pragma: no cover
+        raise AssertionError("should not fetch for a handful of missing")
+
+    out = _maybe_top_up(
+        data, ["AAA", "BBB"], field="Close", period="1y",
+        cache_file=tmp_path / "p.parquet", fetcher=fake_fetch,
+    )
+    assert out == data
+
+
 def test_load_congress_overlay_returns_empty_when_missing(tmp_path):
     from icarus.watchlist_alerts import load_congress_overlay
     overlay = load_congress_overlay(tmp_path / "missing.parquet")

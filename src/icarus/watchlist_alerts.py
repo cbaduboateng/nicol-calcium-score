@@ -908,6 +908,59 @@ def _bulk_field_download(
     return out
 
 
+_TOPUP_COOLDOWN_HOURS = 1.0
+_TOPUP_MIN_MISSING = 10
+
+
+def _maybe_top_up(
+    data: dict[str, pd.Series],
+    tickers: list[str],
+    *,
+    field: str,
+    period: str,
+    cache_file: Path,
+    fetcher=None,
+) -> dict[str, pd.Series]:
+    """Retry just the missing tickers when serving from cache.
+
+    A rate-limited fetch leaves gaps that would otherwise persist until
+    the cache TTL expires. This tops up at most once per cooldown hour:
+    fetch only the missing symbols (chunked), merge recoveries into the
+    served data, and rewrite the cache so coverage climbs monotonically.
+    Permanently dead tickers cost one retry per hour — acceptable."""
+    from .symbols import yahoo_symbol_map
+
+    missing = [t for t in tickers if t not in data]
+    if len(missing) < _TOPUP_MIN_MISSING:
+        return data
+    marker = cache_file.with_suffix(".topup")
+    if marker.exists():
+        import time as _time
+        if (_time.time() - marker.stat().st_mtime) / 3600.0 < _TOPUP_COOLDOWN_HOURS:
+            return data
+    try:
+        marker.write_text("")
+    except Exception:  # noqa: BLE001
+        pass
+
+    fetch = fetcher or _bulk_field_download
+    sym_map = yahoo_symbol_map(missing)
+    sym_data = fetch(sorted(set(sym_map.values())), period, field)
+    got = {t: sym_data[m] for t, m in sym_map.items() if m in sym_data}
+    if not got:
+        return data
+    log.info(
+        "%s top-up recovered %d of %d missing tickers", field, len(got), len(missing),
+    )
+    data = dict(data)
+    data.update(got)
+    try:
+        pd.DataFrame(data).to_parquet(cache_file)
+    except Exception as exc:  # noqa: BLE001
+        log.debug("Could not persist top-up (%s)", exc)
+    return data
+
+
 def _merge_with_previous(
     fresh: dict[str, pd.Series], prev: pd.DataFrame | None,
 ) -> dict[str, pd.Series]:
@@ -970,7 +1023,11 @@ def _fetch_field_history(
             # rate-limited fetch — fall through and refetch (it still serves
             # as backfill below).
             if df is not None and len(df.columns) >= 0.5 * len(set(tickers)):
-                return _frame_to_dict(df)
+                data = _frame_to_dict(df)
+                return _maybe_top_up(
+                    data, tickers,
+                    field=field, period=period, cache_file=cache_file,
+                )
             if df is not None:
                 log.warning(
                     "%s cache covers only %d/%d tickers — treating as "
