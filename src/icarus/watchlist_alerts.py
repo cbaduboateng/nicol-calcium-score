@@ -845,84 +845,199 @@ def pick_winners(
     return out
 
 
+_FETCH_CHUNK_SIZE = 150       # symbols per yf.download call — bursts get 429'd
+_FETCH_CHUNK_PAUSE_S = 0.5    # gentle gap between chunks
+
+
+def _read_cached_frame(path: Path) -> pd.DataFrame | None:
+    """Read a cached wide price/volume frame regardless of age."""
+    if not path.exists():
+        return None
+    try:
+        df = pd.read_parquet(path)
+        df.index = pd.to_datetime(df.index)
+        return df
+    except Exception as exc:  # noqa: BLE001
+        log.debug("Could not read cache %s (%s)", path, exc)
+        return None
+
+
+def _frame_to_dict(df: pd.DataFrame) -> dict[str, pd.Series]:
+    return {c: df[c].dropna() for c in df.columns if df[c].notna().any()}
+
+
+def _bulk_field_download(
+    yahoo_symbols: list[str], period: str, field: str,
+) -> dict[str, pd.Series]:
+    """Chunked yf.download so one 429 doesn't zero the whole watchlist.
+    Returns {yahoo_symbol -> Series}; failures are logged and skipped."""
+    import time as _time
+
+    import yfinance as yf
+
+    out: dict[str, pd.Series] = {}
+    for i in range(0, len(yahoo_symbols), _FETCH_CHUNK_SIZE):
+        chunk = yahoo_symbols[i:i + _FETCH_CHUNK_SIZE]
+        try:
+            data = yf.download(
+                tickers=" ".join(chunk),
+                period=period,
+                interval="1d",
+                group_by="ticker",
+                auto_adjust=False,
+                threads=True,
+                progress=False,
+            )
+        except Exception as exc:  # noqa: BLE001
+            log.warning("yfinance chunk %d-%d failed: %s", i, i + len(chunk), exc)
+            continue
+        if isinstance(data.columns, pd.MultiIndex):
+            for s in chunk:
+                try:
+                    col = data[s][field].dropna()
+                except (KeyError, ValueError):
+                    continue
+                if not col.empty:
+                    out[s] = col
+        elif field in getattr(data, "columns", []):
+            col = data[field].dropna()
+            if not col.empty and len(chunk) == 1:
+                out[chunk[0]] = col
+        if i + _FETCH_CHUNK_SIZE < len(yahoo_symbols):
+            _time.sleep(_FETCH_CHUNK_PAUSE_S)
+    return out
+
+
+def _merge_with_previous(
+    fresh: dict[str, pd.Series], prev: pd.DataFrame | None,
+) -> dict[str, pd.Series]:
+    """Backfill tickers missing from a fresh fetch with stale-cache data.
+    Fresh data always wins for tickers present in both; stale rows only
+    fill the gaps a rate-limited fetch left behind."""
+    if prev is None:
+        return fresh
+    merged = dict(fresh)
+    for c in prev.columns:
+        if c in merged:
+            continue
+        s = prev[c].dropna()
+        if not s.empty:
+            merged[c] = s
+    return merged
+
+
+def _fetch_field_history(
+    tickers: list[str],
+    *,
+    field: str,
+    period: str,
+    cache_dir: Path | str,
+    cache_stem: str,
+    legacy_stem: str,
+    max_cache_age_hours: float,
+) -> dict[str, pd.Series]:
+    """Shared engine behind the price and volume fetchers.
+
+    Resilience model:
+      1. Fresh cache (< TTL) short-circuits — no network.
+      2. Chunked download avoids the single-burst 429 from Yahoo.
+      3. Whatever the fetch misses is backfilled from the stale cache
+         (any age) and the pre-normalisation legacy cache, so a
+         rate-limited fetch degrades to yesterday's data instead of a
+         near-empty dashboard.
+      4. The merged (never smaller) frame is what gets cached — a bad
+         fetch can no longer poison the cache for the next 24h.
+    """
+    try:
+        import yfinance  # noqa: F401
+    except ImportError:
+        log.warning("yfinance unavailable; skipping %s fetch", field)
+        return {}
+    from .symbols import yahoo_symbol_map
+
+    cache_dir = Path(cache_dir)
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    cache_file = cache_dir / f"{cache_stem}_{period}.parquet"
+    legacy_file = cache_dir / f"{legacy_stem}_{period}.parquet"
+
+    if cache_file.exists():
+        import time as _time
+        age_h = (_time.time() - cache_file.stat().st_mtime) / 3600.0
+        if age_h < max_cache_age_hours:
+            df = _read_cached_frame(cache_file)
+            # Coverage sanity check: a fresh-looking cache that covers less
+            # than half the requested tickers is a poisoned artefact of a
+            # rate-limited fetch — fall through and refetch (it still serves
+            # as backfill below).
+            if df is not None and len(df.columns) >= 0.5 * len(set(tickers)):
+                return _frame_to_dict(df)
+            if df is not None:
+                log.warning(
+                    "%s cache covers only %d/%d tickers — treating as "
+                    "poisoned and refetching", field, len(df.columns),
+                    len(set(tickers)),
+                )
+
+    sym_map = yahoo_symbol_map(tickers)  # original -> yahoo symbol
+    yahoo_symbols = sorted(set(sym_map.values()))
+    log.info(
+        "Fetching %s for %d tickers (%d yahoo symbols, period=%s, chunked)",
+        field, len(tickers), len(yahoo_symbols), period,
+    )
+    sym_data = _bulk_field_download(yahoo_symbols, period, field)
+    fresh: dict[str, pd.Series] = {
+        t: sym_data[m] for t, m in sym_map.items() if m in sym_data
+    }
+
+    # Stale backfill: current cache (expired is fine) + legacy pre-v2 file.
+    prev = _read_cached_frame(cache_file)
+    legacy = _read_cached_frame(legacy_file)
+    if legacy is not None:
+        if prev is None:
+            prev = legacy
+        else:
+            for c in legacy.columns:
+                if c not in prev.columns:
+                    prev[c] = legacy[c]
+
+    if prev is not None and len(fresh) < 0.5 * len(prev.columns):
+        log.warning(
+            "%s fetch returned only %d tickers vs %d previously cached — "
+            "Yahoo is likely rate-limiting this IP; backfilling from stale cache",
+            field, len(fresh), len(prev.columns),
+        )
+    out = _merge_with_previous(fresh, prev)
+
+    if out:
+        try:
+            pd.DataFrame(out).to_parquet(cache_file)
+        except Exception as exc:  # noqa: BLE001
+            log.debug("Could not write %s cache (%s)", field, exc)
+    return out
+
+
 def fetch_price_history(
     tickers: list[str],
     *,
     period: str = "1y",
     cache_dir: Path | str = "data/cache",
 ) -> dict[str, pd.Series]:
-    """Pull daily close prices for each ticker. Wraps yfinance with caching.
+    """Pull daily close prices for each ticker. Wraps yfinance with
+    chunked fetching, 24h caching, and stale-cache backfill (see
+    :func:`_fetch_field_history` for the resilience model).
 
     Returns dict mapping ticker -> daily Close Series. Tickers that fail
-    (delisted, rate-limited, missing data) are silently omitted.
+    everywhere (delisted, never fetched) are omitted.
     """
-    try:
-        import yfinance as yf
-    except ImportError:
-        log.warning("yfinance unavailable; skipping price fetch")
-        return {}
-    from .symbols import yahoo_symbol_map
-
-    cache_dir = Path(cache_dir)
-    cache_dir.mkdir(parents=True, exist_ok=True)
-    # v2: cache-busted when symbol normalisation landed, so stale frames
-    # with NaN columns for LON:/EPA: tickers don't linger for 24h.
-    cache_file = cache_dir / f"watchlist_prices_v2_{period}.parquet"
-
-    # Cheap on-disk cache (24h max age) so the dashboard rerender is fast.
-    if cache_file.exists():
-        import time
-        age_h = (time.time() - cache_file.stat().st_mtime) / 3600.0
-        if age_h < 24:
-            try:
-                df = pd.read_parquet(cache_file)
-                df.index = pd.to_datetime(df.index)
-                return {c: df[c].dropna() for c in df.columns if df[c].notna().any()}
-            except Exception as exc:
-                log.debug("Could not read cache (%s); refetching", exc)
-
-    sym_map = yahoo_symbol_map(tickers)  # original -> yahoo symbol
-    yahoo_symbols = sorted(set(sym_map.values()))
-    log.info(
-        "Fetching %d tickers (%d yahoo symbols) from yfinance (period=%s)",
-        len(tickers), len(yahoo_symbols), period,
+    return _fetch_field_history(
+        tickers,
+        field="Close",
+        period=period,
+        cache_dir=cache_dir,
+        cache_stem="watchlist_prices_v2",
+        legacy_stem="watchlist_prices",
+        max_cache_age_hours=24.0,
     )
-    try:
-        data = yf.download(
-            tickers=" ".join(yahoo_symbols),
-            period=period,
-            interval="1d",
-            group_by="ticker",
-            auto_adjust=False,
-            threads=True,
-            progress=False,
-        )
-    except Exception as exc:
-        log.warning("yfinance bulk download failed: %s", exc)
-        return {}
-
-    out: dict[str, pd.Series] = {}
-    if isinstance(data.columns, pd.MultiIndex):
-        for t in tickers:
-            try:
-                col = data[sym_map[t]]["Close"].dropna()
-            except (KeyError, ValueError):
-                continue
-            if not col.empty:
-                out[t] = col
-    elif "Close" in getattr(data, "columns", []):
-        col = data["Close"].dropna()
-        if not col.empty and tickers:
-            out[tickers[0]] = col
-
-    # Persist a single tidy frame for the cache.
-    if out:
-        try:
-            tidy = pd.DataFrame(out)
-            tidy.to_parquet(cache_file)
-        except Exception as exc:
-            log.debug("Could not write spartan price cache (%s)", exc)
-    return out
 
 
 def fetch_volume_history(
@@ -932,66 +1047,15 @@ def fetch_volume_history(
     cache_dir: Path | str = "data/cache",
     max_cache_age_hours: float = 12.0,
 ) -> dict[str, pd.Series]:
-    """Pull daily share volume for each ticker. Same shape and caching
-    pattern as :func:`fetch_price_history`, separate cache file. Volume
-    is the raw material for the relative-volume 'something is happening
-    today' signal, so the cache expires faster than the price cache."""
-    try:
-        import yfinance as yf
-    except ImportError:
-        log.warning("yfinance unavailable; skipping volume fetch")
-        return {}
-    from .symbols import yahoo_symbol_map
-
-    cache_dir = Path(cache_dir)
-    cache_dir.mkdir(parents=True, exist_ok=True)
-    cache_file = cache_dir / f"watchlist_volumes_v2_{period}.parquet"
-
-    if cache_file.exists():
-        import time
-        age_h = (time.time() - cache_file.stat().st_mtime) / 3600.0
-        if age_h < max_cache_age_hours:
-            try:
-                df = pd.read_parquet(cache_file)
-                df.index = pd.to_datetime(df.index)
-                return {c: df[c].dropna() for c in df.columns if df[c].notna().any()}
-            except Exception as exc:
-                log.debug("Could not read volume cache (%s); refetching", exc)
-
-    sym_map = yahoo_symbol_map(tickers)
-    yahoo_symbols = sorted(set(sym_map.values()))
-    log.info("Fetching volume for %d tickers (period=%s)", len(tickers), period)
-    try:
-        data = yf.download(
-            tickers=" ".join(yahoo_symbols),
-            period=period,
-            interval="1d",
-            group_by="ticker",
-            auto_adjust=False,
-            threads=True,
-            progress=False,
-        )
-    except Exception as exc:
-        log.warning("yfinance volume download failed: %s", exc)
-        return {}
-
-    out: dict[str, pd.Series] = {}
-    if isinstance(data.columns, pd.MultiIndex):
-        for t in tickers:
-            try:
-                col = data[sym_map[t]]["Volume"].dropna()
-            except (KeyError, ValueError):
-                continue
-            if not col.empty:
-                out[t] = col
-    elif "Volume" in getattr(data, "columns", []):
-        col = data["Volume"].dropna()
-        if not col.empty and tickers:
-            out[tickers[0]] = col
-
-    if out:
-        try:
-            pd.DataFrame(out).to_parquet(cache_file)
-        except Exception as exc:
-            log.debug("Could not write volume cache (%s)", exc)
-    return out
+    """Pull daily share volume for each ticker. Same resilience model as
+    :func:`fetch_price_history`, separate cache with a faster TTL because
+    volume IS the daily signal."""
+    return _fetch_field_history(
+        tickers,
+        field="Volume",
+        period=period,
+        cache_dir=cache_dir,
+        cache_stem="watchlist_volumes_v2",
+        legacy_stem="watchlist_volumes",
+        max_cache_age_hours=max_cache_age_hours,
+    )

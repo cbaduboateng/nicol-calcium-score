@@ -279,6 +279,27 @@ def test_load_catalyst_overlay_keeps_nearest_event_per_ticker(tmp_path):
     assert overlay["BMY"]["score"] > overlay["LMT"]["score"]
 
 
+def test_merge_with_previous_backfills_missing_tickers():
+    from icarus.watchlist_alerts import _merge_with_previous
+    idx = pd.date_range("2026-01-01", periods=5, freq="D")
+    fresh = {"AAA": pd.Series([1.0] * 5, index=idx)}
+    prev = pd.DataFrame({
+        "AAA": [9.0] * 5,   # stale — fresh must win
+        "BBB": [2.0] * 5,   # missing from fresh — backfilled
+    }, index=idx)
+    merged = _merge_with_previous(fresh, prev)
+    assert set(merged) == {"AAA", "BBB"}
+    assert merged["AAA"].iloc[0] == 1.0   # fresh wins
+    assert merged["BBB"].iloc[0] == 2.0   # stale backfill
+
+
+def test_merge_with_previous_no_prev_is_passthrough():
+    from icarus.watchlist_alerts import _merge_with_previous
+    idx = pd.date_range("2026-01-01", periods=3, freq="D")
+    fresh = {"AAA": pd.Series([1.0] * 3, index=idx)}
+    assert _merge_with_previous(fresh, None) == fresh
+
+
 def test_load_congress_overlay_returns_empty_when_missing(tmp_path):
     from icarus.watchlist_alerts import load_congress_overlay
     overlay = load_congress_overlay(tmp_path / "missing.parquet")
