@@ -32,6 +32,24 @@ log = logging.getLogger("streamlit_app")
 _MAX_DATA_AGE_HOURS = 24
 
 
+def _load_secrets_into_env() -> None:
+    """Copy Streamlit Cloud secrets into os.environ BEFORE any gating logic.
+
+    On Streamlit Cloud, secrets live in ``st.secrets`` — not env vars — so
+    any ``os.environ`` check that runs before this copy always sees an
+    empty key. The freshness gate used to do exactly that, which meant a
+    key sitting in Secrets was never even attempted. No-op on Render where
+    env vars are set directly."""
+    try:
+        import streamlit as st
+        for key in ("QUIVER_API_KEY", "CONGRESS_API_KEY"):
+            if key in st.secrets and key not in os.environ:
+                os.environ[key] = st.secrets[key]
+                log.info("Loaded %s from st.secrets into env", key)
+    except Exception as exc:
+        log.info("st.secrets not available (%s)", exc)
+
+
 def _existing_data_is_fresh_and_live() -> bool:
     """Skip the bootstrap only when we already have *live* data that isn't
     too old. Synthetic-only data is treated as stale so the next cold start
@@ -68,6 +86,7 @@ def _bootstrap_data_if_missing() -> None:
     has something to render. Skips re-bootstrap only when existing data is
     both fresh (<24h) and already includes a live source."""
     processed = Path("data/processed")
+    _load_secrets_into_env()  # MUST run before the gate reads os.environ
     if _existing_data_is_fresh_and_live():
         return
 
@@ -84,17 +103,6 @@ def _bootstrap_data_if_missing() -> None:
     from icarus.scoring.catalyst import build_calendar
 
     cfg = load_config()
-
-    # Pull Streamlit secrets into env (no-op on Render where env vars are
-    # already set directly).
-    try:
-        import streamlit as st
-        for key in ("QUIVER_API_KEY", "CONGRESS_API_KEY"):
-            if key in st.secrets and key not in os.environ:
-                os.environ[key] = st.secrets[key]
-                log.info("Loaded %s from st.secrets into env", key)
-    except Exception as exc:
-        log.info("st.secrets not available (%s)", exc)
 
     quiver_key = os.environ.get("QUIVER_API_KEY", "").strip()
     log.info(

@@ -1238,10 +1238,21 @@ def main() -> None:
             label += f" — latest disclosure {last_disc.strftime('%-d %b %Y')}"
         st.success(label)
     elif "synthetic" in sources or not sources:
-        st.info(
-            "🧪 Showing **synthetic data** (no QUIVER_API_KEY configured). "
-            "Set the secret in Streamlit Cloud → Settings → Secrets to switch to live trades."
-        )
+        import os as _os
+        if _os.environ.get("QUIVER_API_KEY", "").strip():
+            st.warning(
+                "🔌 Showing **synthetic data** even though QUIVER_API_KEY is set — "
+                "the last Quiver fetch returned no live trades. Likely causes: the "
+                "subscription has lapsed, or the key's tier doesn't include the "
+                "congress-trading endpoint. Check **Manage app → Logs** for the "
+                "'Quiver client raised' or 'Quiver returned 0 trades' line. The app "
+                "auto-upgrades to live data on the next restart once the key works."
+            )
+        else:
+            st.info(
+                "🧪 Showing **synthetic data** (no QUIVER_API_KEY configured). "
+                "Set the secret in Streamlit Cloud → Settings → Secrets to switch to live trades."
+            )
 
     enriched = _enrich_candidates(candidates, trades, actors)
 
