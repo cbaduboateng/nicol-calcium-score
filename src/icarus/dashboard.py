@@ -281,7 +281,52 @@ def _render_watchlist_tab(st) -> None:
         except Exception as exc:
             st.error(f"Price fetch failed: {exc}")
             history = {}
+
+    # ---- 🧮 Derive missing targets from the analyst's learned pattern ------
+    derive_on = st.toggle(
+        "🧮 Derive missing targets from the analyst pattern",
+        value=True,
+        key="derive_targets_toggle",
+        help=(
+            "Learns the analyst's target-setting rule from the rows that HAVE "
+            "targets (which price anchor entries cluster around, and the "
+            "typical exit-to-entry multiple), then fills the blanks. Derived "
+            "targets are flagged 'D' and are for screening only — the Track "
+            "record and £5k backtest always use analyst targets exclusively."
+        ),
+    )
+    if derive_on and history:
+        from .target_inference import (
+            derive_targets,
+            describe_pattern,
+            learn_target_pattern,
+        )
+        pattern = learn_target_pattern(watchlist, history)
+        if pattern is None:
+            st.caption(
+                "🧮 Not enough analyst targets with price history to learn a "
+                "pattern yet — showing analyst targets only."
+            )
+        else:
+            watchlist = derive_targets(watchlist, history, pattern)
+            n_e = int((watchlist["entry_source"] == "derived").sum())
+            n_x = int((watchlist["exit_source"] == "derived").sum())
+            st.caption(
+                f"🧮 {describe_pattern(pattern)}. Derived **{n_e} entries** "
+                f"and **{n_x} exits**; analyst values untouched."
+            )
+
     view = build_watchlist_view(watchlist, history)
+    if "entry_source" in watchlist.columns:
+        view = view.merge(
+            watchlist[["ticker", "entry_source", "exit_source"]],
+            on="ticker", how="left",
+        )
+        view["tgt_src"] = (
+            view["entry_source"].map({"analyst": "A", "derived": "D"}).fillna("—")
+            + "/"
+            + view["exit_source"].map({"analyst": "A", "derived": "D"}).fillna("—")
+        )
     n_with_price = int(view["live_price"].notna().sum())
     st.caption(f"Live price available for **{n_with_price} / {len(view)}**.")
 
@@ -589,12 +634,12 @@ def _render_watchlist_tab(st) -> None:
     )
     compact_main_cols = [
         "status", "ticker", "mkt_cap",
-        "live_price", "target_entry", "gap_to_entry_pct",
+        "live_price", "target_entry", "tgt_src", "gap_to_entry_pct",
         "pct_3m",
     ]
     full_main_cols = [
         "status", "ticker", "name", "theme", "mkt_cap",
-        "live_price", "target_entry", "target_exit",
+        "live_price", "target_entry", "target_exit", "tgt_src",
         "gap_to_entry_pct", "reward_risk",
         "pct_1m", "pct_3m", "pct_6m", "pct_12m",
         "description",
@@ -622,6 +667,11 @@ def _render_watchlist_tab(st) -> None:
             "live_price": st.column_config.NumberColumn("Live", format="%.2f"),
             "target_entry": st.column_config.NumberColumn("Buy ≤", format="%.2f"),
             "target_exit": st.column_config.NumberColumn("Sell ≥", format="%.2f"),
+            "tgt_src": st.column_config.TextColumn(
+                "Tgt",
+                help="Target provenance, entry/exit: A = analyst-set, "
+                     "D = derived from the learned pattern, — = none.",
+            ),
             "gap_to_entry_pct": st.column_config.NumberColumn(
                 "Gap to buy",
                 format="%+.1f%%",

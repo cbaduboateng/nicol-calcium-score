@@ -1,0 +1,130 @@
+"""Tests for the analyst target-pattern learner and applier."""
+
+from __future__ import annotations
+
+import numpy as np
+import pandas as pd
+import pytest
+
+from icarus.target_inference import (
+    derive_targets,
+    describe_pattern,
+    learn_target_pattern,
+)
+
+
+def _flat_series(level: float, n: int = 250) -> pd.Series:
+    idx = pd.date_range("2025-01-01", periods=n, freq="D")
+    return pd.Series([level] * n, index=idx)
+
+
+def _range_series(low: float, high: float, n: int = 250) -> pd.Series:
+    """Rises low→high then settles at the midpoint: 52w low/high are
+    distinct from the live price, so anchors are distinguishable."""
+    ramp = list(np.linspace(low, high, n - 50))
+    tail = [(low + high) / 2] * 50
+    idx = pd.date_range("2025-01-01", periods=n, freq="D")
+    return pd.Series(ramp + tail, index=idx)
+
+
+def _watchlist_consistent_low52(n: int = 25) -> tuple[pd.DataFrame, dict]:
+    """Entries set at exactly 1.2x the 52w low — tight around low52,
+    noisy vs live/high. Exits at 2x entry."""
+    rows, hist = [], {}
+    rng = np.random.default_rng(7)
+    for i in range(n):
+        t = f"T{i:03d}"
+        low = float(rng.uniform(5, 50))
+        high = low * float(rng.uniform(2.0, 6.0))  # varying range widths
+        hist[t] = _range_series(low, high)
+        entry = round(low * 1.2, 2)
+        rows.append({
+            "ticker": t, "name": t, "description": "AI play",
+            "target_entry": entry, "target_exit": round(entry * 2.0, 2),
+        })
+    return pd.DataFrame(rows), hist
+
+
+def test_learns_low52_anchor_when_entries_track_the_low():
+    wl, hist = _watchlist_consistent_low52()
+    p = learn_target_pattern(wl, hist)
+    assert p is not None
+    assert p["anchor"] == "low52"
+    assert p["entry_ratio"] == pytest.approx(1.2, abs=0.05)
+    assert p["exit_multiple"] == pytest.approx(2.0, abs=0.05)
+    assert p["n_entry"] == 25
+
+
+def test_refuses_to_learn_from_tiny_sample():
+    wl, hist = _watchlist_consistent_low52(n=5)
+    assert learn_target_pattern(wl, hist) is None
+
+
+def test_derive_fills_blanks_and_flags_provenance():
+    wl, hist = _watchlist_consistent_low52()
+    # Add two rows without targets: one with history, one without.
+    blank_with_hist = {"ticker": "NEW1", "name": "New", "description": "AI play",
+                       "target_entry": float("nan"), "target_exit": float("nan")}
+    blank_no_hist = {"ticker": "NEW2", "name": "New2", "description": "AI play",
+                     "target_entry": float("nan"), "target_exit": float("nan")}
+    wl = pd.concat([wl, pd.DataFrame([blank_with_hist, blank_no_hist])],
+                   ignore_index=True)
+    hist["NEW1"] = _range_series(10.0, 40.0)
+
+    p = learn_target_pattern(wl, hist)
+    out = derive_targets(wl, hist, p)
+
+    new1 = out[out["ticker"] == "NEW1"].iloc[0]
+    assert new1["entry_source"] == "derived"
+    assert new1["exit_source"] == "derived"
+    # low52=10, ratio≈1.2 → entry ≈ 12; exit ≈ 24
+    assert new1["target_entry"] == pytest.approx(12.0, rel=0.1)
+    assert new1["target_exit"] == pytest.approx(24.0, rel=0.15)
+
+    new2 = out[out["ticker"] == "NEW2"].iloc[0]
+    assert pd.isna(new2["target_entry"])  # no history → nothing derivable
+    assert pd.isna(new2["entry_source"])  # None/NaN both mean 'no source'
+
+
+def test_derive_never_touches_analyst_values():
+    wl, hist = _watchlist_consistent_low52()
+    p = learn_target_pattern(wl, hist)
+    out = derive_targets(wl, hist, p)
+    orig = wl.set_index("ticker")
+    for _, row in out.iterrows():
+        t = row["ticker"]
+        assert row["target_entry"] == orig.at[t, "target_entry"]
+        assert row["target_exit"] == orig.at[t, "target_exit"]
+        assert row["entry_source"] == "analyst"
+        assert row["exit_source"] == "analyst"
+
+
+def test_derive_fills_missing_exit_from_analyst_entry():
+    wl, hist = _watchlist_consistent_low52()
+    # A row with an analyst entry but no exit
+    extra = {"ticker": "HALFSET", "name": "Half", "description": "AI play",
+             "target_entry": 15.0, "target_exit": float("nan")}
+    wl = pd.concat([wl, pd.DataFrame([extra])], ignore_index=True)
+    hist["HALFSET"] = _range_series(12.0, 30.0)
+    p = learn_target_pattern(wl, hist)
+    out = derive_targets(wl, hist, p)
+    half = out[out["ticker"] == "HALFSET"].iloc[0]
+    assert half["entry_source"] == "analyst"
+    assert half["exit_source"] == "derived"
+    assert half["target_exit"] == pytest.approx(30.0, rel=0.1)  # 15 × 2.0
+
+
+def test_absurd_multiples_excluded_from_learning():
+    wl, hist = _watchlist_consistent_low52()
+    # Poison one row with exit < entry (mis-set) — learner should ignore it.
+    wl.loc[0, "target_exit"] = wl.loc[0, "target_entry"] * 0.3
+    p = learn_target_pattern(wl, hist)
+    assert p["exit_multiple"] == pytest.approx(2.0, abs=0.05)
+
+
+def test_describe_pattern_is_human_readable():
+    wl, hist = _watchlist_consistent_low52()
+    p = learn_target_pattern(wl, hist)
+    text = describe_pattern(p)
+    assert "52-week low" in text
+    assert "2.0×" in text
