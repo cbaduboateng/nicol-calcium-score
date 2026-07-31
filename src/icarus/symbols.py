@@ -93,6 +93,23 @@ _ALIASES: dict[str, str] = {
     "THULE": "THULE.ST",   # Thule Group
     "NOVN": "NOVN.SW",     # Novartis (SIX symbol)
     "FUNO11": "FUNO11.MX", # Fibra Uno
+    # Second sweep: more bare LSE names + renames recovered from the
+    # missing-prices list
+    "ABDP": "ABDP.L",      # AB Dynamics
+    "AGGP": "AGGP.L",      # iShares agg bond ETF
+    "NRR": "NRR.L",        # NewRiver REIT
+    "PHE": "PHE.L",        # PowerHouse Energy
+    "FSJ": "FSJ.L",        # James Fisher & Sons
+    "GAMA": "GAMA.L",      # Gamma Communications
+    "HAYD": "HAYD.L",      # Haydale Graphene
+    "PRD": "PRD.L",        # Predator Oil & Gas
+    "WATR": "WATR.L",      # Water Intelligence
+    "WKP": "WKP.L",        # Workspace Group
+    "HSW": "HSW.L",        # Hostelworld
+    "EURN": "CMBT",        # Euronav -> CMB.TECH (renamed 2024)
+    "USAT": "CTLP",        # USA Technologies -> Cantaloupe
+    "MWK": "ATER",         # Mohawk Group -> Aterian
+    "XL": "SPRU",          # XL Fleet -> Spruce Power
 }
 
 
