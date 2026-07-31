@@ -329,6 +329,17 @@ def _render_watchlist_tab(st) -> None:
         )
     n_with_price = int(view["live_price"].notna().sum())
     st.caption(f"Live price available for **{n_with_price} / {len(view)}**.")
+    missing_px = view[view["live_price"].isna()]["ticker"].astype(str).tolist()
+    if missing_px:
+        with st.expander(f"⚠️ {len(missing_px)} tickers without prices"):
+            st.caption(
+                "International prefixes (LON:THG → THG.L) are translated "
+                "automatically, so what's left here is mostly delisted or "
+                "acquired names (e.g. ATVI, VMW, SPLK) and OCR-mangled "
+                "symbols. Prune or correct these in `data/watchlist.csv` — "
+                "they can never alert."
+            )
+            st.write(", ".join(missing_px))
 
     # ---- ☀️ Today's signals (day-scale action ranking) ---------------------
     st.markdown("### ☀️ Today's signals")

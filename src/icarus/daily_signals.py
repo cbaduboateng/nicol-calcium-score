@@ -260,6 +260,8 @@ def fetch_news_counts(
             except Exception:  # noqa: BLE001
                 pass
 
+    from .symbols import normalize_symbol
+
     cutoff = time.time() - window_hours * 3600.0
     out: dict[str, dict] = {}
     for t in tickers[:max_tickers]:
@@ -267,7 +269,7 @@ def fetch_news_counts(
         count = 0
         tags: list[str] = []
         try:
-            items = yf.Ticker(upper).news or []
+            items = yf.Ticker(normalize_symbol(upper)).news or []
         except Exception as exc:  # noqa: BLE001
             log.debug("news fetch failed for %s: %s", upper, exc)
             items = []

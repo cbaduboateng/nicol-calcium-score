@@ -861,9 +861,13 @@ def fetch_price_history(
     except ImportError:
         log.warning("yfinance unavailable; skipping price fetch")
         return {}
+    from .symbols import yahoo_symbol_map
+
     cache_dir = Path(cache_dir)
     cache_dir.mkdir(parents=True, exist_ok=True)
-    cache_file = cache_dir / f"watchlist_prices_{period}.parquet"
+    # v2: cache-busted when symbol normalisation landed, so stale frames
+    # with NaN columns for LON:/EPA: tickers don't linger for 24h.
+    cache_file = cache_dir / f"watchlist_prices_v2_{period}.parquet"
 
     # Cheap on-disk cache (24h max age) so the dashboard rerender is fast.
     if cache_file.exists():
@@ -877,10 +881,15 @@ def fetch_price_history(
             except Exception as exc:
                 log.debug("Could not read cache (%s); refetching", exc)
 
-    log.info("Fetching %d tickers from yfinance (period=%s)", len(tickers), period)
+    sym_map = yahoo_symbol_map(tickers)  # original -> yahoo symbol
+    yahoo_symbols = sorted(set(sym_map.values()))
+    log.info(
+        "Fetching %d tickers (%d yahoo symbols) from yfinance (period=%s)",
+        len(tickers), len(yahoo_symbols), period,
+    )
     try:
         data = yf.download(
-            tickers=" ".join(tickers),
+            tickers=" ".join(yahoo_symbols),
             period=period,
             interval="1d",
             group_by="ticker",
@@ -896,7 +905,7 @@ def fetch_price_history(
     if isinstance(data.columns, pd.MultiIndex):
         for t in tickers:
             try:
-                col = data[t]["Close"].dropna()
+                col = data[sym_map[t]]["Close"].dropna()
             except (KeyError, ValueError):
                 continue
             if not col.empty:
@@ -932,9 +941,11 @@ def fetch_volume_history(
     except ImportError:
         log.warning("yfinance unavailable; skipping volume fetch")
         return {}
+    from .symbols import yahoo_symbol_map
+
     cache_dir = Path(cache_dir)
     cache_dir.mkdir(parents=True, exist_ok=True)
-    cache_file = cache_dir / f"watchlist_volumes_{period}.parquet"
+    cache_file = cache_dir / f"watchlist_volumes_v2_{period}.parquet"
 
     if cache_file.exists():
         import time
@@ -947,10 +958,12 @@ def fetch_volume_history(
             except Exception as exc:
                 log.debug("Could not read volume cache (%s); refetching", exc)
 
+    sym_map = yahoo_symbol_map(tickers)
+    yahoo_symbols = sorted(set(sym_map.values()))
     log.info("Fetching volume for %d tickers (period=%s)", len(tickers), period)
     try:
         data = yf.download(
-            tickers=" ".join(tickers),
+            tickers=" ".join(yahoo_symbols),
             period=period,
             interval="1d",
             group_by="ticker",
@@ -966,7 +979,7 @@ def fetch_volume_history(
     if isinstance(data.columns, pd.MultiIndex):
         for t in tickers:
             try:
-                col = data[t]["Volume"].dropna()
+                col = data[sym_map[t]]["Volume"].dropna()
             except (KeyError, ValueError):
                 continue
             if not col.empty:

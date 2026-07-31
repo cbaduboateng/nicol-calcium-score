@@ -745,14 +745,17 @@ def _persist_runtime_to_disk() -> None:
 
 def _fetch_from_yfinance(ticker: str) -> TickerFact | None:
     """Fetch company metadata for `ticker` via yfinance. Returns None on
-    any failure (rate-limit, delisted, missing fields). Always graceful."""
+    any failure (rate-limit, delisted, missing fields). Always graceful.
+    Google-style prefixed tickers (LON:THG) are translated to Yahoo
+    notation (THG.L) for the fetch; the fact stays keyed by the original."""
     try:
         import yfinance as yf  # local import: yfinance is optional at runtime
     except Exception as exc:  # noqa: BLE001
         _log.debug("yfinance not available (%s)", exc)
         return None
+    from .symbols import normalize_symbol
     try:
-        info = yf.Ticker(ticker).get_info()
+        info = yf.Ticker(normalize_symbol(ticker)).get_info()
     except Exception as exc:  # noqa: BLE001
         _log.debug("yfinance get_info(%s) failed: %s", ticker, exc)
         return None
@@ -892,9 +895,11 @@ def quick_market_caps(
 
     _log.info("quick_market_caps: fetching %d tickers via fast_info", len(todo))
 
+    from .symbols import normalize_symbol
+
     def _one(t: str) -> tuple[str, float | None]:
         try:
-            fi = yf.Ticker(t).fast_info
+            fi = yf.Ticker(normalize_symbol(t)).fast_info
             mc = getattr(fi, "market_cap", None)
             if mc is None and isinstance(fi, dict):
                 mc = fi.get("market_cap") or fi.get("marketCap")
