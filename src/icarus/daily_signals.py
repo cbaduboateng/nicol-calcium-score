@@ -293,7 +293,7 @@ def find_gems(
 
     quality_cols = [c for c in (
         "ticker", "composite", "score_congress", "score_catalyst",
-        "catalyst_days", "congress_summary",
+        "catalyst_days", "congress_summary", "market_cap_usd", "cap_bucket",
     ) if c in survivors.columns]
     merged = daily.drop(columns=["rank"]).merge(
         survivors[quality_cols], on="ticker", how="inner",

@@ -197,6 +197,15 @@ def test_find_gems_congress_overlay_is_soft_not_gating():
     assert g_boosted > g_without
 
 
+def test_find_gems_carries_market_cap_for_size_badging():
+    from icarus.daily_signals import find_gems
+    view = _gems_view().copy()
+    view["market_cap_usd"] = [85_000_000.0, 2_000_000_000.0, None]
+    gems = find_gems(view, _gems_histories(), _gems_volumes())
+    assert "market_cap_usd" in gems.columns
+    assert gems.iloc[0]["market_cap_usd"] == pytest.approx(85_000_000.0)
+
+
 def test_find_gems_empty_inputs():
     from icarus.daily_signals import find_gems
     assert find_gems(pd.DataFrame(), {}, {}).empty

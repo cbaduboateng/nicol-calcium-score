@@ -421,7 +421,36 @@ def _render_watchlist_tab(st) -> None:
                         "filtered by the cap band or scored below the cut."
                     )
     else:
-        for _, gem in gems.iterrows():
+        runbook_only = st.toggle(
+            "🎯 Runbook-sized only (< $300M)",
+            value=False,
+            key="gems_runbook_only",
+            help="Size informs the position decision, not the gem's validity — "
+                 "large-cap gems are steadier trades, small caps are the "
+                 "parabolic candidates. Unknown caps stay visible either way.",
+        )
+        gems_shown = gems
+        if runbook_only and "market_cap_usd" in gems.columns:
+            keep = gems["market_cap_usd"].isna() | (
+                gems["market_cap_usd"] < 300_000_000
+            )
+            gems_shown = gems[keep]
+            if gems_shown.empty:
+                st.info(
+                    "All of today's gems are larger than $300M — flip the "
+                    "toggle off to see them."
+                )
+        for _, gem in gems_shown.iterrows():
+            mcap = gem.get("market_cap_usd")
+            cap_s = _fmt_cap_short(mcap)
+            runbook_sized = (
+                pd.notna(mcap) and mcap is not None and mcap < 300_000_000
+            )
+            cap_line = f"Cap {cap_s}"
+            if runbook_sized:
+                cap_line += " · 🎯 runbook-sized"
+            elif cap_s == "—":
+                cap_line += " (unknown)"
             with st.container(border=True):
                 gl, gr = st.columns([3, 2])
                 with gl:
@@ -442,7 +471,8 @@ def _render_watchlist_tab(st) -> None:
                     st.markdown(
                         f"Gem score **{gem['gem_score']:.2f}** "
                         f"(quality {gem['composite']:.2f} · today {gem['today_score']:.2f})  \n"
-                        f"Live {live_s} · Buy ≤ {entry_s} · Sell ≥ {exit_s}"
+                        f"Live {live_s} · Buy ≤ {entry_s} · Sell ≥ {exit_s}  \n"
+                        f"{cap_line}"
                     )
                 with st.expander("Company card"):
                     gem_row = view[view["ticker"] == gem["ticker"]]
