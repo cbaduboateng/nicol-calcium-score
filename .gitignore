@@ -29,3 +29,11 @@ data/processed/*
 # Local
 .env
 .DS_Store
+
+# Warm-cache artifacts ARE committed — the whole point is that deploys boot
+# with data (Streamlit Cloud wipes its disk on every deploy). Negations must
+# come after the data/cache/* exclusion above.
+!data/cache/watchlist_prices_v2_*.parquet
+!data/cache/watchlist_volumes_v2_*.parquet
+!data/cache/ticker_facts_cache.json
+!data/cache/insider_overlay.json

@@ -30,7 +30,7 @@ OUT_PATH = Path("data/explorer/watchlist.csv")
 def main() -> int:
     import pandas as pd
 
-    from icarus.ticker_facts import lookup as facts_lookup, quick_market_caps
+    from icarus.ticker_facts import lookup as facts_lookup
     from icarus.universe import fetch_us_universe
     from icarus.watchlist_alerts import (
         WATCHLIST_PATH,
@@ -76,8 +76,21 @@ def main() -> int:
             liquid.append(t)
     log.info("After liquidity floor %.0fk avg: %d", AVG_VOLUME_MIN / 1000, len(liquid))
 
-    # Cap band via fast_info (populates the shared facts cache too).
-    quick_market_caps(liquid, max_workers=12)
+    # Full facts (sector + cap) via get_info — slower than fast_info but
+    # sector is what the theme gate runs on; without it every explorer
+    # name lands in one giant meaningless "Other" theme.
+    from icarus.ticker_facts import prewarm
+    n_warmed = prewarm(liquid, max_workers=12)
+    log.info("Prewarmed full facts for %d tickers", n_warmed)
+
+    import re as _re
+
+    def _clean_name(raw: str) -> str:
+        # Symbol-directory names carry suffixes like " - Common Stock",
+        # " - Class A Common Stock", " - American Depositary Shares".
+        return _re.split(r"\s+-\s+", raw)[0].strip()
+
+    name_by_ticker = dict(zip(universe["ticker"], universe["name"]))
     rows: list[dict] = []
     for t in liquid:
         fact = facts_lookup(t, cache_only=True)
@@ -85,17 +98,21 @@ def main() -> int:
         if cap is None or not (CAP_MIN <= cap <= CAP_MAX):
             continue
         name = (fact.name if fact and fact.name != t else "") or (
-            universe.set_index("ticker")["name"].get(t, "")
+            name_by_ticker.get(t, "")
         )
-        sector = fact.sector if fact else ""
+        sector = (fact.sector if fact else "") or ""
+        if sector == "Other":
+            sector = ""
         rows.append({
             "ticker": t,
-            "name": name,
+            "name": _clean_name(name),
             "description": sector,   # sector doubles as the theme hint
             "target_entry": "",
             "target_exit": "",
         })
     log.info("After cap band $50M-$2B: %d explorer names", len(rows))
+    with_sector = sum(1 for r in rows if r["description"])
+    log.info("Sector known for %d / %d", with_sector, len(rows))
 
     if len(rows) < 50:
         log.error("Explorer list suspiciously small (%d) — refusing to overwrite", len(rows))
