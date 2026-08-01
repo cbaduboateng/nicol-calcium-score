@@ -337,24 +337,6 @@ def _prewarm_watchlist_caps_once() -> None:
 _prewarm_watchlist_caps_once()
 
 
-def _build_actor_edge_once() -> None:
-    """Compute realized YTD returns per congressional actor on cold start.
-
-    Runs outside the gated bootstrap so the Actor leaderboard tab always
-    has fresh edge metrics even when processed/ parquets are checked in
-    with stale mtime. Skipped silently if trades.parquet is missing or
-    the price fetch fails."""
-    try:
-        from icarus.actor_edge import build_actor_edge_files
-        tr_path, edge_path = build_actor_edge_files()
-        if edge_path is not None:
-            log.info("Actor edge built at %s", edge_path)
-    except Exception as exc:
-        log.warning("Actor edge build failed (%s); leaderboard will be empty", exc)
-
-
-_build_actor_edge_once()
-
 from icarus.dashboard import main as _main  # noqa: E402
 
 _main()

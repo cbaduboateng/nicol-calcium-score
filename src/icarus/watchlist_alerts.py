@@ -451,7 +451,7 @@ DEFAULT_PICK_WEIGHTS: dict[str, float] = {
     "reward_risk": 0.20,
     "theme_momentum": 0.15,
     "personal_momentum": 0.15,
-    "congress": 0.10,
+    "insider": 0.10,
     "catalyst": 0.10,
 }
 
@@ -683,7 +683,7 @@ def pick_winners(
     blowoff_threshold_pct: float = 100.0,
     exclude_sell_zone: bool = True,
     weights: dict[str, float] | None = None,
-    congress_overlay: dict[str, dict | float] | None = None,
+    insider_overlay: dict[str, dict | float] | None = None,
     catalyst_overlay: dict[str, dict | float] | None = None,
     min_market_cap_usd: float | None = None,
     max_market_cap_usd: float | None = None,
@@ -702,8 +702,8 @@ def pick_winners(
       reward_risk       — R:R to the analyst exit target, clipped at 5
       theme_momentum    — the theme's 3m median % through a logistic
       personal_momentum — (12m - 1m) % through the same logistic
-      congress          — max asymmetry_score from candidates.parquet
-                          (0 when no overlay supplied)
+      insider           — SEC Form 4 insider-buying composite from
+                          insider_overlay (0 when no overlay supplied)
       catalyst          — proximity to the next upcoming catalyst within
                           the horizon (1.0 at 0 days, 0 at horizon)
 
@@ -714,7 +714,7 @@ def pick_winners(
     w = dict(DEFAULT_PICK_WEIGHTS)
     if weights:
         w.update(weights)
-    c_overlay = congress_overlay or {}
+    i_overlay = insider_overlay or {}
     k_overlay = catalyst_overlay or {}
 
     if view.empty:
@@ -794,7 +794,7 @@ def pick_winners(
         s_rr = _rr_score(r.get("reward_risk"))
         s_theme = _logistic_pct(theme_3m.get(theme))
         s_mom = _logistic_pct(mom_pct)
-        s_congress = _overlay_score(c_overlay.get(ticker))
+        s_insider = _overlay_score(i_overlay.get(ticker))
         s_catalyst = _overlay_score(k_overlay.get(ticker))
         penalty = _blowoff_penalty(r.get("pct_6m"), blowoff_threshold_pct)
 
@@ -803,7 +803,7 @@ def pick_winners(
             + w["reward_risk"] * s_rr
             + w["theme_momentum"] * s_theme
             + w["personal_momentum"] * s_mom
-            + w["congress"] * s_congress
+            + w["insider"] * s_insider
             + w["catalyst"] * s_catalyst
         ) - penalty
         composite = float(np.clip(composite, 0.0, 1.0))
@@ -818,10 +818,10 @@ def pick_winners(
             cat_entry.get("category")
             if isinstance(cat_entry, dict) else None
         )
-        cong_entry = c_overlay.get(ticker)
-        congress_summary = (
-            cong_entry.get("signal_summary")
-            if isinstance(cong_entry, dict) else None
+        ins_entry = i_overlay.get(ticker)
+        insider_summary = (
+            ins_entry.get("summary")
+            if isinstance(ins_entry, dict) else None
         )
 
         rows.append({
@@ -843,13 +843,13 @@ def pick_winners(
             "score_rr": s_rr,
             "score_theme": s_theme,
             "score_momentum": s_mom,
-            "score_congress": s_congress,
+            "score_insider": s_insider,
             "score_catalyst": s_catalyst,
             "blowoff_penalty": penalty,
             "composite": composite,
             "catalyst_days": catalyst_days,
             "catalyst_label": catalyst_label,
-            "congress_summary": congress_summary,
+            "insider_summary": insider_summary,
         })
 
     if not rows:
@@ -862,9 +862,9 @@ def pick_winners(
             "live_price", "target_entry", "target_exit", "reward_risk",
             "pct_1m", "pct_3m", "pct_6m", "pct_12m",
             "score_analyst", "score_rr", "score_theme", "score_momentum",
-            "score_congress", "score_catalyst",
+            "score_insider", "score_catalyst",
             "blowoff_penalty", "composite",
-            "catalyst_days", "catalyst_label", "congress_summary",
+            "catalyst_days", "catalyst_label", "insider_summary",
         ])
     out = (
         pd.DataFrame(rows)

@@ -236,7 +236,7 @@ def find_gems(
     volume_history: dict[str, pd.Series] | None = None,
     *,
     news_counts: dict[str, dict] | None = None,
-    congress_overlay: dict | None = None,
+    insider_overlay: dict | None = None,
     catalyst_overlay: dict | None = None,
     strict_min_rr: float = 3.0,
     blowoff_threshold_pct: float = 100.0,
@@ -254,9 +254,9 @@ def find_gems(
 
     gem_score = 0.5 x quality composite + 0.5 x today score.
 
-    Congress and catalyst overlays contribute soft weight inside the
-    quality composite only — never a gate (STOCK Act filings lag up to
-    45 days, so congressional buying is a tailwind, not a trigger).
+    Insider and catalyst overlays contribute soft weight inside the
+    quality composite only — never a gate. Insider buying (SEC Form 4)
+    is a tailwind with a 2-day filing lag, but tailwinds don't gate.
 
     Empty most days by design: six signal families rarely agree.
     """
@@ -274,7 +274,7 @@ def find_gems(
         min_market_cap_usd=min_market_cap_usd,
         max_market_cap_usd=max_market_cap_usd,
         require_known_cap=require_known_cap,
-        congress_overlay=congress_overlay,
+        insider_overlay=insider_overlay,
         catalyst_overlay=catalyst_overlay,
     )
     if survivors.empty:
@@ -294,8 +294,8 @@ def find_gems(
         return pd.DataFrame()
 
     quality_cols = [c for c in (
-        "ticker", "composite", "score_congress", "score_catalyst",
-        "catalyst_days", "congress_summary", "market_cap_usd", "cap_bucket",
+        "ticker", "composite", "score_insider", "score_catalyst",
+        "catalyst_days", "insider_summary", "market_cap_usd", "cap_bucket",
     ) if c in survivors.columns]
     merged = daily.drop(columns=["rank"]).merge(
         survivors[quality_cols], on="ticker", how="inner",

@@ -217,11 +217,11 @@ def test_pick_winners_applies_blowoff_penalty():
     assert d_no > d_pen
 
 
-def test_pick_winners_congress_overlay_boosts_score():
+def test_pick_winners_insider_overlay_boosts_score():
     base = pick_winners(_picks_view(), top_n=10)
     boosted = pick_winners(
         _picks_view(), top_n=10,
-        congress_overlay={"C": 1.0},  # boost Gamma which would otherwise rank low
+        insider_overlay={"C": 1.0},  # boost Gamma which would otherwise rank low
     )
     c_base = float(base[base["ticker"] == "C"]["composite"].iloc[0])
     c_boost = float(boosted[boosted["ticker"] == "C"]["composite"].iloc[0])
@@ -229,10 +229,10 @@ def test_pick_winners_congress_overlay_boosts_score():
 
 
 def test_pick_winners_accepts_rich_overlay_dict():
-    rich = {"C": {"score": 1.0, "n_actors": 4, "signal_summary": "4 trading"}}
+    rich = {"C": {"score": 1.0, "n_buyers": 4, "summary": "4 insiders bought"}}
     bare = {"C": 1.0}
-    p_rich = pick_winners(_picks_view(), top_n=10, congress_overlay=rich)
-    p_bare = pick_winners(_picks_view(), top_n=10, congress_overlay=bare)
+    p_rich = pick_winners(_picks_view(), top_n=10, insider_overlay=rich)
+    p_bare = pick_winners(_picks_view(), top_n=10, insider_overlay=bare)
     c_rich = float(p_rich[p_rich["ticker"] == "C"]["composite"].iloc[0])
     c_bare = float(p_bare[p_bare["ticker"] == "C"]["composite"].iloc[0])
     assert abs(c_rich - c_bare) < 1e-9

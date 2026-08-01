@@ -183,14 +183,14 @@ def test_find_gems_volume_surge_cannot_rescue_a_falling_knife():
     assert "HELD" not in set(gems["ticker"])
 
 
-def test_find_gems_congress_overlay_is_soft_not_gating():
+def test_find_gems_insider_overlay_is_soft_not_gating():
     from icarus.daily_signals import find_gems
-    # No congress data at all → GEM must still qualify (overlay is a bonus)
+    # No insider data at all → GEM must still qualify (overlay is a bonus)
     without = find_gems(_gems_view(), _gems_histories(), _gems_volumes())
     assert "GEM" in set(without["ticker"])
     boosted = find_gems(
         _gems_view(), _gems_histories(), _gems_volumes(),
-        congress_overlay={"GEM": {"score": 1.0, "signal_summary": "3 members"}},
+        insider_overlay={"GEM": {"score": 1.0, "summary": "2 insiders bought"}},
     )
     g_without = float(without[without["ticker"] == "GEM"]["gem_score"].iloc[0])
     g_boosted = float(boosted[boosted["ticker"] == "GEM"]["gem_score"].iloc[0])

@@ -31,13 +31,13 @@ def main() -> int:
 
     from icarus.daily_signals import find_gems
     from icarus.target_inference import derive_targets, learn_target_pattern
+    from icarus.insider_overlay import load_insider_overlay
     from icarus.watchlist_alerts import (
         WATCHLIST_PATH,
         build_watchlist_view,
         fetch_price_history,
         fetch_volume_history,
         load_catalyst_overlay,
-        load_congress_overlay,
         load_watchlist,
     )
 
@@ -57,9 +57,13 @@ def main() -> int:
         watchlist = derive_targets(watchlist, history, pattern)
 
     view = build_watchlist_view(watchlist, history)
+    try:
+        insider = load_insider_overlay()
+    except Exception:
+        insider = {}
     gems = find_gems(
         view, history, volumes,
-        congress_overlay=load_congress_overlay() or None,
+        insider_overlay=insider or None,
         catalyst_overlay=load_catalyst_overlay() or None,
         top_n=5,
     )

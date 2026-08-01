@@ -226,7 +226,7 @@ def _render_watchlist_tab(st) -> None:
         build_watchlist_view,
         fetch_price_history,
         load_catalyst_overlay,
-        load_congress_overlay,
+
         load_watchlist,
         parabolic_rank,
         pick_winners,
@@ -244,7 +244,6 @@ def _render_watchlist_tab(st) -> None:
     freshness_bits: list[str] = []
     for label, path in (
         ("watchlist", "data/watchlist.csv"),
-        ("congress trades", "data/processed/trades.parquet"),
         ("catalysts", "data/processed/catalysts.parquet"),
     ):
         p = Path(path)
@@ -350,7 +349,11 @@ def _render_watchlist_tab(st) -> None:
     )
     from .watchlist_alerts import fetch_volume_history
 
-    congress_overlay = load_congress_overlay()
+    from .insider_overlay import load_insider_overlay
+    try:
+        insider_overlay = load_insider_overlay()
+    except Exception:
+        insider_overlay = {}
     catalyst_overlay = load_catalyst_overlay()
 
     buy_zone_tickers = sorted(
@@ -419,7 +422,7 @@ def _render_watchlist_tab(st) -> None:
                 )
             _render_watchlist_ticker_card(
                 st, found,
-                congress_overlay=congress_overlay,
+                insider_overlay=insider_overlay,
                 catalyst_overlay=catalyst_overlay,
             )
         st.divider()
@@ -427,7 +430,7 @@ def _render_watchlist_tab(st) -> None:
     gems = find_gems(
         view, history, volumes,
         news_counts=news,
-        congress_overlay=congress_overlay or None,
+        insider_overlay=insider_overlay or None,
         catalyst_overlay=catalyst_overlay or None,
         top_n=5,
     )
@@ -536,8 +539,8 @@ def _render_watchlist_tab(st) -> None:
     st.caption(
         "A gem passes EVERY strict quality gate (buy zone, own 3m momentum "
         "> 0, hot theme, R:R ≥ 3, not parabolic) AND shows day-scale action "
-        "(volume, freshness, news). Congress and catalysts add soft weight "
-        "only — never a gate, since STOCK Act filings lag up to 45 days. "
+        "(volume, freshness, news). Insider buying (SEC Form 4, 2-day lag) "
+        "and catalysts add soft weight only — never a gate. "
         "**Empty most days by design** — six signal families rarely agree."
     )
     if not explorer_gems.empty:
@@ -608,8 +611,8 @@ def _render_watchlist_tab(st) -> None:
                         f"{gem['name'] or ''}"
                     )
                     st.caption(gem["reasons"])
-                    if gem.get("congress_summary"):
-                        st.caption(f"🏛️ {gem['congress_summary']}")
+                    if gem.get("insider_summary"):
+                        st.caption(f"💼 Insiders: {gem['insider_summary']}")
                 with gr:
                     live = gem.get("live_price")
                     entry = gem.get("target_entry")
@@ -631,7 +634,7 @@ def _render_watchlist_tab(st) -> None:
                     if not gem_row.empty:
                         _render_watchlist_ticker_card(
                             st, gem_row.iloc[0],
-                            congress_overlay=congress_overlay,
+                            insider_overlay=insider_overlay,
                             catalyst_overlay=catalyst_overlay,
                         )
 
@@ -686,7 +689,7 @@ def _render_watchlist_tab(st) -> None:
     st.markdown("### 🏆 Top picks today")
     st.caption(
         "Composite of analyst signal (30%), reward-to-risk (20%), theme momentum (15%), "
-        "personal 12-1 momentum (15%), congressional overlay (10%), and upcoming-catalyst "
+        "personal 12-1 momentum (15%), insider-buying overlay (10%), and upcoming-catalyst "
         "proximity (10%). Blow-off penalty subtracted when 6-month gain exceeds the threshold "
         "below (don't chase parabolic tops). Click any row to expand the full company card."
     )
@@ -804,15 +807,15 @@ def _render_watchlist_tab(st) -> None:
                 help="Minimum reward-to-risk to pass the strict gate. R:R=∞ (live ≤ entry) always passes.",
             )
         overlay_notes = []
-        if congress_overlay:
+        if insider_overlay:
             overlay_notes.append(
-                f"Congress overlay: **{len(congress_overlay)} tickers** with "
-                "asymmetry scores from `candidates.parquet`."
+                f"💼 Insider overlay: **{len(insider_overlay)} tickers** with "
+                "recent open-market Form 4 buying (2-day filing lag)."
             )
         else:
             overlay_notes.append(
-                "Congress overlay inactive (no `candidates.parquet` yet). "
-                "Set `QUIVER_API_KEY` and redeploy to enable it."
+                "💼 Insider overlay inactive — OpenInsider unreachable this "
+                "load; picks rely on the other layers."
             )
         if catalyst_overlay:
             overlay_notes.append(
@@ -829,7 +832,7 @@ def _render_watchlist_tab(st) -> None:
         top_n=picks_n,
         blowoff_threshold_pct=float(blowoff),
         exclude_sell_zone=exclude_sell,
-        congress_overlay=congress_overlay or None,
+        insider_overlay=insider_overlay or None,
         catalyst_overlay=catalyst_overlay or None,
         min_market_cap_usd=min_cap,
         max_market_cap_usd=max_cap,
@@ -865,7 +868,7 @@ def _render_watchlist_tab(st) -> None:
             "rank", "ticker", "name", "theme", "status",
             "mkt_cap", "composite",
             "score_analyst", "score_rr", "score_theme",
-            "score_momentum", "score_congress", "score_catalyst",
+            "score_momentum", "score_insider", "score_catalyst",
             "catalyst_days", "blowoff_penalty",
             "live_price", "target_entry", "target_exit",
             "reward_risk", "pct_3m", "pct_6m",
@@ -896,9 +899,9 @@ def _render_watchlist_tab(st) -> None:
                 "score_rr": st.column_config.NumberColumn("R:R sub", format="%.2f"),
                 "score_theme": st.column_config.NumberColumn("Theme", format="%.2f"),
                 "score_momentum": st.column_config.NumberColumn("12-1 mo", format="%.2f"),
-                "score_congress": st.column_config.NumberColumn(
-                    "Cong", format="%.2f",
-                    help="Max asymmetry_score from congress candidates parquet (0 if no overlay).",
+                "score_insider": st.column_config.NumberColumn(
+                    "Insider", format="%.2f",
+                    help="SEC Form 4 insider-buying composite: clustered open-market buys by senior insiders.",
                 ),
                 "score_catalyst": st.column_config.NumberColumn(
                     "Cat", format="%.2f",
@@ -925,7 +928,7 @@ def _render_watchlist_tab(st) -> None:
             sel_row = view[view["ticker"] == sel_ticker].iloc[0]
             _render_watchlist_ticker_card(
                 st, sel_row,
-                congress_overlay=congress_overlay,
+                insider_overlay=insider_overlay,
                 catalyst_overlay=catalyst_overlay,
             )
 
@@ -1052,7 +1055,7 @@ def _render_watchlist_tab(st) -> None:
         selected_row = view[view["ticker"] == selected_ticker].iloc[0]
         _render_watchlist_ticker_card(
             st, selected_row,
-            congress_overlay=congress_overlay,
+            insider_overlay=insider_overlay,
             catalyst_overlay=catalyst_overlay,
         )
 
@@ -1109,7 +1112,7 @@ def _render_watchlist_tab(st) -> None:
         sel_row = view[view["ticker"] == sel_ticker].iloc[0]
         _render_watchlist_ticker_card(
             st, sel_row,
-            congress_overlay=congress_overlay,
+            insider_overlay=insider_overlay,
             catalyst_overlay=catalyst_overlay,
         )
 
@@ -1131,7 +1134,7 @@ def _render_watchlist_tab(st) -> None:
         for _, row in drill.iterrows():
             _render_watchlist_ticker_card(
                 st, row,
-                congress_overlay=congress_overlay,
+                insider_overlay=insider_overlay,
                 catalyst_overlay=catalyst_overlay,
             )
     else:
@@ -1151,14 +1154,14 @@ def _render_watchlist_ticker_card(
     st,
     row: pd.Series,
     *,
-    congress_overlay: dict | None = None,
+    insider_overlay: dict | None = None,
     catalyst_overlay: dict | None = None,
 ) -> None:
     """Compact card for a single watchlist ticker: name, live vs targets,
     short company description, and any catalyst hook. Falls back to the
     analyst note from the CSV when curated facts are missing.
 
-    When `congress_overlay` / `catalyst_overlay` are passed, surfaces the
+    When `insider_overlay` / `catalyst_overlay` are passed, surfaces the
     matching ticker's detail (who, when, upcoming events) inside the card."""
     ticker = str(row.get("ticker", "?"))
     fact = ticker_lookup(ticker)
@@ -1225,28 +1228,16 @@ def _render_watchlist_ticker_card(
         if summary and row.get("description"):
             st.markdown(f"**Analyst note.** {row['description']}")
 
-        # ---- Congress signal -------------------------------------------------
+        # ---- Insider buying (SEC Form 4) ------------------------------------
         ck = ticker.upper()
-        cong = (congress_overlay or {}).get(ck)
-        if cong:
-            bits: list[str] = []
-            if cong.get("n_actors"):
-                bits.append(
-                    f"**{int(cong['n_actors'])} member"
-                    f"{'s' if cong['n_actors'] != 1 else ''}** trading"
-                )
-            if cong.get("days_ago") is not None:
-                bits.append(f"last buy **{int(cong['days_ago'])}d ago**")
-            if cong.get("cluster_size", 0) and cong["cluster_size"] >= 3:
-                bits.append(f"cluster size **{int(cong['cluster_size'])}**")
-            score = cong.get("score") or 0.0
-            if score:
-                bits.append(f"asymmetry **{score:.2f}**")
-            actors = cong.get("top_actors") or []
-            actors_str = (" — " + ", ".join(actors)) if actors else ""
+        ins = (insider_overlay or {}).get(ck)
+        if ins:
             st.markdown(
-                f"**🏛️ Congress signal.** "
-                f"{' · '.join(bits) if bits else 'tracked'}{actors_str}."
+                f"**💼 Insider buying.** {ins.get('summary') or 'active'} "
+                f"(composite **{ins.get('score', 0.0):.2f}**). Open-market "
+                "Form 4 purchases, filed within 2 business days — insiders "
+                "buying their own stock near your entry level is one of the "
+                "strongest confluences this screen knows."
             )
 
         # ---- Upcoming catalyst ----------------------------------------------
@@ -1665,12 +1656,13 @@ It also hosts the **£5k Runbook backtest** — a simulation of a small,
 concentrated trading account run under strict rules. Give the record 30+
 closed signals before believing any of the percentages.
 
-**Top candidates / Actor leaderboard / Clusters / Catalyst calendar** —
-the congressional-trading side: which US politicians are trading what,
-which of them actually make money (leaderboard shows realised returns per
-member), and upcoming events that could move prices. Congressional buying
-is used as a *tailwind* signal only — filings arrive up to 45 days late,
-so it never gates a decision.
+**Where did the congress tabs go?** Retired. Congressional-trade
+filings arrive up to 45 days late and failed validation as a standalone
+signal, so they've been replaced by something faster and stronger:
+**insider buying** (SEC Form 4). When a company's own executives buy
+their stock on the open market — filed within 2 business days — that
+shows up as a 💼 line on gem cards and the company card, and adds soft
+weight to the picks. Like every overlay: a tailwind, never a gate.
 
 ---
 
@@ -1717,7 +1709,6 @@ def main() -> None:
             "`pip install icarus[dashboard]`."
         )
 
-    processed = Path("data/processed")
     st.set_page_config(
         page_title=APP_TITLE,
         page_icon=APP_ICON_EMOJI,
@@ -1726,67 +1717,19 @@ def main() -> None:
         menu_items={
             "Get help": None,
             "Report a Bug": None,
-            "About": f"{APP_TITLE} — read-only research view of congressional trading signals.",
+            "About": f"{APP_TITLE} — analyst-watchlist research screen.",
         },
     )
     inject_mobile(st)
     st.title(f"{APP_ICON_EMOJI} {APP_TITLE}")
     st.caption(
-        "Asymmetric-trade screen for congressional disclosures. "
-        "Read-only research view — not financial advice."
+        "Analyst-watchlist screen with quality gates, day-scale signals and "
+        "a forward-marked track record. Read-only research view — not "
+        "financial advice."
     )
 
-    trades = _read_parquet(processed / "trades.parquet")
-    actors = _read_parquet(processed / "actors.parquet")
-    candidates = _read_parquet(processed / "candidates.parquet")
-    catalysts = _read_parquet(processed / "catalysts.parquet")
-
-    if candidates.empty:
-        st.warning(
-            "No candidates yet. Run: "
-            "`icarus ingest --source synthetic && icarus score`"
-        )
-        return
-
-    # Surface the data source so the user knows whether this is live or
-    # synthetic. Quiver-sourced trades carry source=='quiver'; the synthetic
-    # generator uses 'synthetic'.
-    sources = (
-        set(trades["source"].dropna().unique()) if "source" in trades.columns else set()
-    )
-    if "quiver" in sources or "house_ptr" in sources or "senate_efd" in sources:
-        live = ", ".join(sorted(s for s in sources if s != "synthetic"))
-        last_disc = (
-            pd.to_datetime(trades["disclosure_date"]).max()
-            if "disclosure_date" in trades.columns else None
-        )
-        label = f"📡 Live data from **{live}**"
-        if last_disc is not None and not pd.isna(last_disc):
-            label += f" — latest disclosure {last_disc.strftime('%-d %b %Y')}"
-        st.success(label)
-    elif "synthetic" in sources or not sources:
-        import os as _os
-        if _os.environ.get("QUIVER_API_KEY", "").strip():
-            st.warning(
-                "🔌 Showing **synthetic data** even though QUIVER_API_KEY is set — "
-                "the last Quiver fetch returned no live trades. Likely causes: the "
-                "subscription has lapsed, or the key's tier doesn't include the "
-                "congress-trading endpoint. Check **Manage app → Logs** for the "
-                "'Quiver client raised' or 'Quiver returned 0 trades' line. The app "
-                "auto-upgrades to live data on the next restart once the key works."
-            )
-        else:
-            st.info(
-                "🧪 Showing **synthetic data** (no QUIVER_API_KEY configured). "
-                "Set the secret in Streamlit Cloud → Settings → Secrets to switch to live trades."
-            )
-
-    enriched = _enrich_candidates(candidates, trades, actors)
-
-    (tab_watchlist, tab_track, tab_top, tab_actors, tab_clusters,
-     tab_catalysts, tab_about) = st.tabs(
-        ["Watchlist", "📊 Track record", "Top candidates", "Actor leaderboard",
-         "Clusters", "Catalyst calendar", "ℹ️ About"],
+    tab_watchlist, tab_track, tab_about = st.tabs(
+        ["Watchlist", "📊 Track record", "ℹ️ About"],
     )
 
     # ---- Watchlist: analyst-curated picks with live alerts ----------------
@@ -1800,384 +1743,6 @@ def main() -> None:
     # ---- About: plain-English guide ---------------------------------------
     with tab_about:
         _render_about_tab(st)
-
-
-    with tab_top:
-        st.subheader("Top asymmetric candidates")
-        st.caption(
-            "Highest-scoring trades the model flagged. Higher score = better "
-            "risk/reward by this filter stack. Click a row's ticker below to see details."
-        )
-
-        # ---- Filters --------------------------------------------------------
-        with st.expander("Filters", expanded=False):
-            row1 = st.columns(3)
-            with row1[0]:
-                f_direction = st.selectbox(
-                    "Direction", ["All", "Buy", "Sell", "Partial sale"], index=0,
-                )
-            with row1[1]:
-                f_chamber = st.selectbox(
-                    "Chamber", ["All", "House", "Senate"], index=0,
-                )
-            with row1[2]:
-                f_window = st.selectbox(
-                    "Time window",
-                    ["All time", "Last 7 days", "Last 30 days", "Last 90 days", "Last 365 days"],
-                    index=0,
-                )
-            row2 = st.columns(3)
-            with row2[0]:
-                f_min_cluster = st.number_input(
-                    "Min cluster size", min_value=1, max_value=20, value=1, step=1,
-                    help="Show only trades where at least N members traded the same ticker in the same window.",
-                )
-            with row2[1]:
-                f_catalyst = st.checkbox(
-                    "Pending catalyst only",
-                    help="Hide trades where the model didn't detect a known upcoming event.",
-                )
-            with row2[2]:
-                f_ticker = st.text_input(
-                    "Ticker contains",
-                    placeholder="e.g. NVDA",
-                    help="Substring match, case-insensitive.",
-                )
-            # Third row: sector multiselect, full width — most useful single cut
-            # for narrowing to a thematic slice (Defence, Pharma, Semis, etc.).
-            sector_options = sorted(
-                enriched["category"].dropna().unique().tolist(),
-            ) if "category" in enriched.columns else []
-            f_sectors = st.multiselect(
-                "Sectors",
-                options=sector_options,
-                default=[],
-                help="Pick one or more top-level sectors. Leave empty for all.",
-            )
-
-        # ---- Apply filters --------------------------------------------------
-        filtered = enriched.copy()
-        if f_direction != "All" and "direction" in filtered.columns:
-            target = f_direction.lower().replace(" ", "_")
-            filtered = filtered[
-                filtered["direction"].astype(str).str.lower().str.startswith(
-                    target.split("_")[0]
-                )
-            ]
-        if f_chamber != "All" and "chamber" in filtered.columns:
-            filtered = filtered[
-                filtered["chamber"].astype(str).str.lower() == f_chamber.lower()
-            ]
-        if f_window != "All time" and "transaction_date" in filtered.columns:
-            days_map = {
-                "Last 7 days": 7, "Last 30 days": 30,
-                "Last 90 days": 90, "Last 365 days": 365,
-            }
-            from datetime import timedelta
-            cutoff = pd.Timestamp(date.today() - timedelta(days=days_map[f_window]))
-            filtered = filtered[
-                pd.to_datetime(filtered["transaction_date"]) >= cutoff
-            ]
-        if f_min_cluster > 1 and "cluster_size" in filtered.columns:
-            filtered = filtered[filtered["cluster_size"] >= f_min_cluster]
-        if f_catalyst and "catalyst_pending" in filtered.columns:
-            filtered = filtered[filtered["catalyst_pending"] == True]
-        if f_ticker.strip() and "ticker" in filtered.columns:
-            needle = f_ticker.strip().upper()
-            filtered = filtered[
-                filtered["ticker"].astype(str).str.upper().str.contains(needle, na=False)
-            ]
-        if f_sectors and "category" in filtered.columns:
-            filtered = filtered[filtered["category"].isin(f_sectors)]
-
-        st.caption(f"Showing **{len(filtered)} of {len(enriched)}** candidates after filters.")
-        top_n = st.slider("Top N", 5, 100, min(20, max(5, len(filtered))))
-        view = filtered.sort_values("asymmetry_score", ascending=False).head(top_n).reset_index(drop=True)
-
-        display_cols = [c for c in (
-            "transaction_date", "ticker", "company", "exchange", "cap",
-            "who", "chamber", "state",
-            "direction", "amount_max_usd", "days_to_disclose",
-            "asymmetry_score", "cluster_size", "catalyst_pending",
-            "signal_types",
-        ) if c in view.columns]
-        st.dataframe(
-            view[display_cols],
-            use_container_width=True,
-            hide_index=True,
-            column_config={
-                "transaction_date": st.column_config.DateColumn("Trade date"),
-                "ticker": "Ticker",
-                "company": "Company",
-                "exchange": "Exchange",
-                "cap": st.column_config.TextColumn(
-                    "Cap", help="Market-cap bucket: mega >$200B, large $10-200B, mid $2-10B, small $300M-$2B, micro <$300M"),
-                "who": "Member",
-                "chamber": "Chamber",
-                "state": "State",
-                "direction": "Buy/Sell",
-                "amount_max_usd": st.column_config.NumberColumn(
-                    "Amount (upper)", format="$%d"),
-                "days_to_disclose": st.column_config.NumberColumn(
-                    "Days to file", help="Days between the trade and the public disclosure. Faster = higher conviction signal."),
-                "asymmetry_score": st.column_config.NumberColumn(
-                    "Score", format="%.2f",
-                    help="Composite signal. Higher = better risk/reward."),
-                "cluster_size": st.column_config.NumberColumn(
-                    "Cluster", help="How many members traded the same ticker in the same window."),
-                "catalyst_pending": st.column_config.CheckboxColumn(
-                    "Catalyst", help="A known catalyst is pending."),
-                "signal_types": "Why flagged",
-            },
-        )
-
-        st.markdown("---")
-        st.markdown("#### Details")
-        choice_options = [
-            (
-                f"{i+1}. {row.get('company') or row['ticker']} "
-                f"({row['ticker']}) — {row.get('who','?')} on "
-                f"{pd.to_datetime(row.get('transaction_date')).strftime('%Y-%m-%d') if pd.notna(row.get('transaction_date')) else '?'}"
-            )
-            for i, row in view.iterrows()
-        ]
-        selected = st.selectbox(
-            "Show details for:", options=list(range(len(view))),
-            format_func=lambda i: choice_options[i] if i < len(choice_options) else "?",
-        )
-        if selected is not None and selected < len(view):
-            _render_ticker_card(st, view.iloc[selected])
-
-        st.caption(
-            "This is a research screen, not a recommendation. Disclosure "
-            "amounts are filed in brackets, so 'Amount' is the bracket ceiling."
-        )
-
-    with tab_actors:
-        st.subheader("Actor edge leaderboard")
-        st.caption(
-            "Which members actually make money on their trades. "
-            "Realised return is (current price − close on transaction_date) / "
-            "close on transaction_date, computed for every YTD buy. "
-            "Sort by mean return to see who has edge; filter min trades to "
-            "kill one-hit-wonder noise."
-        )
-        from .actor_edge import load_actor_edge, load_trade_returns
-        edge = load_actor_edge()
-        trade_returns = load_trade_returns()
-        if edge.empty:
-            st.info(
-                "No actor_edge.parquet yet. The cold-start bootstrap builds "
-                "this from trades.parquet + yfinance prices; it'll appear on "
-                "the next deploy or after the next overnight refresh."
-            )
-        else:
-            ctrl = st.columns([2, 2, 2])
-            with ctrl[0]:
-                min_trades = st.slider(
-                    "Min trades", 1, 20, 3, step=1,
-                    help="Hides actors with too few trades to be statistically meaningful.",
-                )
-            with ctrl[1]:
-                sort_by_options = {
-                    "Mean return %":      "mean_return_pct",
-                    "Cumulative return %": "cumulative_return_pct",
-                    "Hit rate":            "hit_rate",
-                    "Best trade %":        "best_return_pct",
-                    "Trade count":         "n_trades",
-                }
-                sort_label = st.selectbox(
-                    "Sort by", list(sort_by_options.keys()), index=0,
-                )
-                sort_col = sort_by_options[sort_label]
-            with ctrl[2]:
-                st.caption(
-                    f"YTD window. **{len(edge)}** actors tracked, "
-                    f"**{len(trade_returns)}** trades scored."
-                )
-
-            board = edge[edge["n_trades"] >= min_trades].copy()
-            board = board.sort_values(sort_col, ascending=False).reset_index(drop=True)
-            if "name" in board.columns:
-                board["Member"] = board["name"].fillna(board["actor_id"])
-            else:
-                board["Member"] = board["actor_id"]
-            board.insert(0, "rank", board.index + 1)
-            board["win_loss"] = board.apply(
-                lambda r: f"{int(r['n_winners'])} W / {int(r['n_losers'])} L",
-                axis=1,
-            )
-
-            display_cols = [c for c in (
-                "rank", "Member", "party", "state", "chamber",
-                "n_trades", "win_loss", "hit_rate",
-                "mean_return_pct", "cumulative_return_pct",
-                "best_return_pct", "worst_return_pct",
-                "avg_days_held",
-            ) if c in board.columns]
-
-            edge_event = st.dataframe(
-                board[display_cols],
-                use_container_width=True, hide_index=True,
-                on_select="rerun",
-                selection_mode="single-row",
-                key="actor_edge_table",
-                column_config={
-                    "rank": st.column_config.NumberColumn("#", format="%d"),
-                    "Member": "Member",
-                    "party": "Party",
-                    "state": "State",
-                    "chamber": "Chamber",
-                    "n_trades": st.column_config.NumberColumn("Trades", format="%d"),
-                    "win_loss": "W/L",
-                    "hit_rate": st.column_config.ProgressColumn(
-                        "Hit rate", min_value=0.0, max_value=1.0, format="%.0f%%",
-                    ),
-                    "mean_return_pct": st.column_config.NumberColumn(
-                        "Mean ret", format="%+.1f%%",
-                        help="Equal-weighted average return across all YTD buys.",
-                    ),
-                    "cumulative_return_pct": st.column_config.NumberColumn(
-                        "Cumulative ret", format="%+.1f%%",
-                        help="Sum of returns — what you'd have if you placed "
-                             "equal $ on each YTD buy and held to today.",
-                    ),
-                    "best_return_pct": st.column_config.NumberColumn(
-                        "Best", format="%+.1f%%",
-                    ),
-                    "worst_return_pct": st.column_config.NumberColumn(
-                        "Worst", format="%+.1f%%",
-                    ),
-                    "avg_days_held": st.column_config.NumberColumn(
-                        "Avg days", format="%.0f",
-                    ),
-                },
-            )
-
-            # Drill-down: click an actor to see their individual YTD trades.
-            if edge_event is not None and edge_event.selection.rows:
-                sel_idx = edge_event.selection.rows[0]
-                sel_actor_id = str(board.iloc[sel_idx]["actor_id"])
-                sel_name = str(board.iloc[sel_idx]["Member"])
-                st.markdown(f"#### {sel_name} — individual YTD trades")
-                their_trades = trade_returns[
-                    trade_returns["actor_id"].astype(str) == sel_actor_id
-                ].copy()
-                if their_trades.empty:
-                    st.info("No trade-level rows found for this actor.")
-                else:
-                    their_trades = their_trades.sort_values(
-                        "return_pct", ascending=False
-                    ).reset_index(drop=True)
-                    their_trades.insert(0, "#", their_trades.index + 1)
-                    st.dataframe(
-                        their_trades[[c for c in (
-                            "#", "transaction_date", "ticker",
-                            "entry_price", "current_price",
-                            "return_pct", "days_held", "size_usd",
-                        ) if c in their_trades.columns]],
-                        use_container_width=True, hide_index=True,
-                        column_config={
-                            "#": st.column_config.NumberColumn("#", format="%d"),
-                            "transaction_date": "Date",
-                            "ticker": "Ticker",
-                            "entry_price": st.column_config.NumberColumn(
-                                "Entry", format="$%.2f",
-                            ),
-                            "current_price": st.column_config.NumberColumn(
-                                "Now", format="$%.2f",
-                            ),
-                            "return_pct": st.column_config.NumberColumn(
-                                "Return", format="%+.1f%%",
-                            ),
-                            "days_held": st.column_config.NumberColumn(
-                                "Days", format="%d",
-                            ),
-                            "size_usd": st.column_config.NumberColumn(
-                                "Size", format="$%.0f",
-                                help="Disclosure midpoint of the trade.",
-                            ),
-                        },
-                    )
-            else:
-                st.caption(
-                    "👆 Click an actor above to see their individual YTD trades, "
-                    "ranked by realised return."
-                )
-
-    with tab_clusters:
-        st.subheader("Tickers with cluster activity (>=2 members)")
-        st.caption(
-            "When multiple members buy the same ticker in the same window, "
-            "that's the strongest collective signal."
-        )
-        if "cluster_size" in candidates.columns:
-            clusters = enriched[enriched["cluster_size"] >= 2]
-            if clusters.empty:
-                st.info("No active clusters with cluster_size >= 2.")
-            else:
-                agg = {
-                    "cluster_size": ("cluster_size", "max"),
-                    "mean_score": ("asymmetry_score", "mean"),
-                    "members": ("who", lambda s: ", ".join(sorted(set(s)))),
-                }
-                if "transaction_date" in clusters.columns:
-                    agg["latest_trade"] = ("transaction_date", "max")
-                if "company" in clusters.columns:
-                    agg["company"] = ("company", "first")
-                cluster_view = (
-                    clusters.groupby("ticker")
-                    .agg(**agg)
-                    .reset_index()
-                    .sort_values("mean_score", ascending=False)
-                )
-                st.dataframe(
-                    cluster_view, use_container_width=True, hide_index=True,
-                    column_config={
-                        "ticker": "Ticker",
-                        "company": "Company",
-                        "cluster_size": "Members",
-                        "mean_score": st.column_config.NumberColumn(
-                            "Avg score", format="%.2f"),
-                        "members": "Who",
-                        "latest_trade": st.column_config.DateColumn(
-                            "Latest trade"),
-                    },
-                )
-
-    with tab_catalysts:
-        st.subheader("Forward catalyst calendar")
-        st.caption(
-            "Known upcoming events that could move a ticker. The model "
-            "promotes trades on tickers with a pending catalyst."
-        )
-        if catalysts.empty:
-            st.info(
-                "No catalysts loaded. Run `icarus catalysts` to build the "
-                "forward calendar (DoD obligation cycle is offline-safe)."
-            )
-        else:
-            today = pd.Timestamp(date.today())
-            view = catalysts.copy()
-            view["event_date"] = pd.to_datetime(view["event_date"])
-            view = view[view["event_date"] >= today].sort_values("event_date")
-            # Decorate with company name where available.
-            view["company"] = view["ticker"].apply(
-                lambda t: (ticker_lookup(t).name if ticker_lookup(t) else "")
-            )
-            st.dataframe(
-                view[["event_date", "ticker", "company", "category", "source", "rationale"]],
-                use_container_width=True, hide_index=True,
-                column_config={
-                    "event_date": st.column_config.DateColumn("When"),
-                    "ticker": "Ticker",
-                    "company": "Company",
-                    "category": "Type",
-                    "source": "Source",
-                    "rationale": "Why",
-                },
-            )
-
 
 if __name__ == "__main__":
     main()
