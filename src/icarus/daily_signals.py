@@ -228,6 +228,88 @@ def compute_daily_signals(
     return out
 
 
+def find_gems(
+    view: pd.DataFrame,
+    price_history: dict[str, pd.Series],
+    volume_history: dict[str, pd.Series] | None = None,
+    *,
+    news_counts: dict[str, dict] | None = None,
+    congress_overlay: dict | None = None,
+    catalyst_overlay: dict | None = None,
+    strict_min_rr: float = 3.0,
+    blowoff_threshold_pct: float = 100.0,
+    min_market_cap_usd: float | None = None,
+    max_market_cap_usd: float | None = None,
+    require_known_cap: bool = False,
+    top_n: int = 5,
+) -> pd.DataFrame:
+    """The intersection filter: quality gates AND day-scale signals.
+
+    A gem must FIRST survive every strict hard gate (BUY ZONE, own 3m
+    momentum > 0, theme 3m median > 0, R:R >= floor, not parabolic,
+    optional cap band) and is THEN ranked by what's happening today
+    (relative volume, freshness, 5d momentum, news).
+
+    gem_score = 0.5 x quality composite + 0.5 x today score.
+
+    Congress and catalyst overlays contribute soft weight inside the
+    quality composite only — never a gate (STOCK Act filings lag up to
+    45 days, so congressional buying is a tailwind, not a trigger).
+
+    Empty most days by design: six signal families rarely agree.
+    """
+    from .watchlist_alerts import pick_winners, theme_heat
+
+    if view is None or view.empty:
+        return pd.DataFrame()
+
+    survivors = pick_winners(
+        view,
+        top_n=100_000,
+        strict_mode=True,
+        strict_min_rr=strict_min_rr,
+        blowoff_threshold_pct=blowoff_threshold_pct,
+        min_market_cap_usd=min_market_cap_usd,
+        max_market_cap_usd=max_market_cap_usd,
+        require_known_cap=require_known_cap,
+        congress_overlay=congress_overlay,
+        catalyst_overlay=catalyst_overlay,
+    )
+    if survivors.empty:
+        return pd.DataFrame()
+
+    heat = theme_heat(view)  # theme temperature from the FULL watchlist
+    theme_3m = (
+        dict(zip(heat["theme"], heat["median_3m"])) if not heat.empty else {}
+    )
+    subset = view[view["ticker"].isin(set(survivors["ticker"]))]
+    daily = compute_daily_signals(
+        subset, price_history, volume_history,
+        news_counts=news_counts, theme_3m=theme_3m,
+        top_n=100_000,
+    )
+    if daily.empty:
+        return pd.DataFrame()
+
+    quality_cols = [c for c in (
+        "ticker", "composite", "score_congress", "score_catalyst",
+        "catalyst_days", "congress_summary",
+    ) if c in survivors.columns]
+    merged = daily.drop(columns=["rank"]).merge(
+        survivors[quality_cols], on="ticker", how="inner",
+    )
+    if merged.empty:
+        return pd.DataFrame()
+    merged["gem_score"] = 0.5 * merged["composite"] + 0.5 * merged["today_score"]
+    merged = (
+        merged.sort_values("gem_score", ascending=False)
+        .head(top_n)
+        .reset_index(drop=True)
+    )
+    merged.insert(0, "rank", merged.index + 1)
+    return merged
+
+
 def fetch_news_counts(
     tickers: list[str],
     *,

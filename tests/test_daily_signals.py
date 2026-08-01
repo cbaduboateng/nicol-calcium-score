@@ -124,3 +124,82 @@ def test_missing_volume_degrades_to_neutral_not_crash():
 
 def test_empty_view_returns_empty():
     assert compute_daily_signals(pd.DataFrame(), {}, {}).empty
+
+
+# ---- find_gems (strict gates ∩ day-scale signals) ------------------------
+
+
+def _gems_view() -> pd.DataFrame:
+    return pd.DataFrame([
+        # Passes every strict gate AND has day-scale action → the gem
+        {"ticker": "GEM", "name": "Gem Co", "theme": "AI / Big Data",
+         "status": "BUY ZONE", "live_price": 9.9, "target_entry": 10.0,
+         "target_exit": 25.0, "reward_risk": 4.0,
+         "pct_1m": 5.0, "pct_3m": 25.0, "pct_6m": 40.0, "pct_12m": 60.0},
+        # Big volume surge but NEGATIVE 3m momentum → fails strict, no gem
+        {"ticker": "NOISY", "name": "Noisy Co", "theme": "Cannabis",
+         "status": "BUY ZONE", "live_price": 4.9, "target_entry": 5.0,
+         "target_exit": 20.0, "reward_risk": 4.0,
+         "pct_1m": 2.0, "pct_3m": -10.0, "pct_6m": -20.0, "pct_12m": -30.0},
+        # Quality name but only HOLD status → fails the zone gate
+        {"ticker": "HELD", "name": "Held Co", "theme": "AI / Big Data",
+         "status": "HOLD", "live_price": 30.0, "target_entry": 20.0,
+         "target_exit": 90.0, "reward_risk": 3.5,
+         "pct_1m": 4.0, "pct_3m": 20.0, "pct_6m": 35.0, "pct_12m": 50.0},
+    ])
+
+
+def _gems_histories() -> dict[str, pd.Series]:
+    return {
+        "GEM": _series([12.0] * 30 + [9.9]),      # crossed in today
+        "NOISY": _series([5.5] * 5 + [4.9] * 26),  # sat in zone for weeks
+        "HELD": _series([30.0] * 31),
+    }
+
+
+def _gems_volumes() -> dict[str, pd.Series]:
+    return {
+        "GEM": _series([1e6] * 30 + [3e6]),
+        "NOISY": _series([1e6] * 30 + [8e6]),  # huge surge, but it's a knife
+    }
+
+
+def test_find_gems_requires_strict_gates_and_daily_action():
+    from icarus.daily_signals import find_gems
+    gems = find_gems(_gems_view(), _gems_histories(), _gems_volumes())
+    assert list(gems["ticker"]) == ["GEM"]
+    g = gems.iloc[0]
+    # Blend of quality composite and today score
+    assert g["gem_score"] == pytest.approx(
+        0.5 * g["composite"] + 0.5 * g["today_score"],
+    )
+    assert "crossed into the buy zone today" in g["reasons"]
+
+
+def test_find_gems_volume_surge_cannot_rescue_a_falling_knife():
+    from icarus.daily_signals import find_gems
+    gems = find_gems(_gems_view(), _gems_histories(), _gems_volumes(), top_n=10)
+    assert "NOISY" not in set(gems["ticker"])
+    assert "HELD" not in set(gems["ticker"])
+
+
+def test_find_gems_congress_overlay_is_soft_not_gating():
+    from icarus.daily_signals import find_gems
+    # No congress data at all → GEM must still qualify (overlay is a bonus)
+    without = find_gems(_gems_view(), _gems_histories(), _gems_volumes())
+    assert "GEM" in set(without["ticker"])
+    boosted = find_gems(
+        _gems_view(), _gems_histories(), _gems_volumes(),
+        congress_overlay={"GEM": {"score": 1.0, "signal_summary": "3 members"}},
+    )
+    g_without = float(without[without["ticker"] == "GEM"]["gem_score"].iloc[0])
+    g_boosted = float(boosted[boosted["ticker"] == "GEM"]["gem_score"].iloc[0])
+    assert g_boosted > g_without
+
+
+def test_find_gems_empty_inputs():
+    from icarus.daily_signals import find_gems
+    assert find_gems(pd.DataFrame(), {}, {}).empty
+    # All strict-failers → empty even with histories present
+    knife_only = _gems_view().iloc[[1]]
+    assert find_gems(knife_only, _gems_histories(), _gems_volumes()).empty

@@ -341,33 +341,99 @@ def _render_watchlist_tab(st) -> None:
             )
             st.write(", ".join(missing_px))
 
+    # ---- Shared day-scale inputs (volumes, news, overlays) -----------------
+    from .daily_signals import compute_daily_signals, fetch_news_counts, find_gems
+    from .watchlist_alerts import fetch_volume_history
+
+    congress_overlay = load_congress_overlay()
+    catalyst_overlay = load_catalyst_overlay()
+
+    buy_zone_tickers = sorted(
+        view[view["status"] == "BUY ZONE"]["ticker"].astype(str).tolist()
+    )
+    volumes: dict = {}
+    news: dict = {}
+    if buy_zone_tickers:
+        with st.spinner("Checking volume and news for the buy-zone names..."):
+            try:
+                volumes = fetch_volume_history(sorted(set(view["ticker"])))
+            except Exception:
+                volumes = {}
+            try:
+                news = fetch_news_counts(buy_zone_tickers)
+            except Exception:
+                news = {}
+
+    # ---- 💎 Gems (quality gates AND day-scale agreement) -------------------
+    st.markdown("### 💎 Gems — every filter agrees")
+    st.caption(
+        "A gem passes EVERY strict quality gate (buy zone, own 3m momentum "
+        "> 0, hot theme, R:R ≥ 3, not parabolic) AND shows day-scale action "
+        "(volume, freshness, news). Congress and catalysts add soft weight "
+        "only — never a gate, since STOCK Act filings lag up to 45 days. "
+        "**Empty most days by design** — six signal families rarely agree."
+    )
+    gems = find_gems(
+        view, history, volumes,
+        news_counts=news,
+        congress_overlay=congress_overlay or None,
+        catalyst_overlay=catalyst_overlay or None,
+        top_n=5,
+    )
+    if gems.empty:
+        st.info(
+            "💤 No gems today. That's the discipline, not a malfunction — "
+            "check ☀️ Today's signals below for what's *close*, but don't "
+            "loosen the gates to make this list less empty."
+        )
+    else:
+        for _, gem in gems.iterrows():
+            with st.container(border=True):
+                gl, gr = st.columns([3, 2])
+                with gl:
+                    st.markdown(
+                        f"**💎 #{int(gem['rank'])}  {gem['ticker']}** — "
+                        f"{gem['name'] or ''}"
+                    )
+                    st.caption(gem["reasons"])
+                    if gem.get("congress_summary"):
+                        st.caption(f"🏛️ {gem['congress_summary']}")
+                with gr:
+                    live = gem.get("live_price")
+                    entry = gem.get("target_entry")
+                    exit_ = gem.get("target_exit")
+                    live_s = f"{live:,.2f}" if pd.notna(live) else "—"
+                    entry_s = f"{entry:,.2f}" if pd.notna(entry) else "—"
+                    exit_s = f"{exit_:,.2f}" if pd.notna(exit_) else "—"
+                    st.markdown(
+                        f"Gem score **{gem['gem_score']:.2f}** "
+                        f"(quality {gem['composite']:.2f} · today {gem['today_score']:.2f})  \n"
+                        f"Live {live_s} · Buy ≤ {entry_s} · Sell ≥ {exit_s}"
+                    )
+                with st.expander("Company card"):
+                    gem_row = view[view["ticker"] == gem["ticker"]]
+                    if not gem_row.empty:
+                        _render_watchlist_ticker_card(
+                            st, gem_row.iloc[0],
+                            congress_overlay=congress_overlay,
+                            catalyst_overlay=catalyst_overlay,
+                        )
+
+    st.divider()
+
     # ---- ☀️ Today's signals (day-scale action ranking) ---------------------
     st.markdown("### ☀️ Today's signals")
     st.caption(
         "Of everything in the buy zone, which deserves attention TODAY. "
         "Ranked by relative volume (is money flowing in right now?), zone "
         "freshness (crossed in today beats sat-there-for-months), 5-day "
-        "momentum, theme heat, R:R — plus a bonus for 48h news headlines."
-    )
-    from .daily_signals import compute_daily_signals, fetch_news_counts
-    from .watchlist_alerts import fetch_volume_history
-
-    buy_zone_tickers = sorted(
-        view[view["status"] == "BUY ZONE"]["ticker"].astype(str).tolist()
+        "momentum, theme heat, R:R — plus a bonus for 48h news headlines. "
+        "Unlike 💎 Gems, no quality gates apply here — this is the "
+        "attention list, not the buy list."
     )
     if not buy_zone_tickers:
         st.info("Nothing in the buy zone right now — no daily signals to rank.")
     else:
-        with st.spinner("Checking volume and news for the buy-zone names..."):
-            try:
-                volumes = fetch_volume_history(sorted(set(view["ticker"])))
-            except Exception as exc:
-                log_ = exc  # noqa: F841
-                volumes = {}
-            try:
-                news = fetch_news_counts(buy_zone_tickers)
-            except Exception:
-                news = {}
         heat_for_today = theme_heat(view)
         theme_3m_map = (
             dict(zip(heat_for_today["theme"], heat_for_today["median_3m"]))
@@ -408,8 +474,6 @@ def _render_watchlist_tab(st) -> None:
     st.divider()
 
     # ---- 🏆 Top picks today (composite winner ranker) ----------------------
-    congress_overlay = load_congress_overlay()
-    catalyst_overlay = load_catalyst_overlay()
     st.markdown("### 🏆 Top picks today")
     st.caption(
         "Composite of analyst signal (30%), reward-to-risk (20%), theme momentum (15%), "
