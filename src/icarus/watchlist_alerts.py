@@ -725,8 +725,15 @@ def pick_winners(
                     or theme_3m_val <= 0):
                 continue  # cold theme
             rr_val = r.get("reward_risk")
-            if rr_val is None or not np.isfinite(rr_val) or rr_val < strict_min_rr:
-                continue  # weak asymmetry (inf passes — that's fine)
+            # +inf means live <= entry (zero downside to the entry level)
+            # with an exit target above — the BEST case, so it passes.
+            # NaN means no usable target — fails. Finite must clear the floor.
+            rr_ok = rr_val is not None and (
+                (np.isinf(rr_val) and rr_val > 0)
+                or (np.isfinite(rr_val) and rr_val >= strict_min_rr)
+            )
+            if not rr_ok:
+                continue  # weak or unknowable asymmetry
             pct_6m_val = r.get("pct_6m")
             if (pct_6m_val is not None and np.isfinite(pct_6m_val)
                     and pct_6m_val > blowoff_threshold_pct):

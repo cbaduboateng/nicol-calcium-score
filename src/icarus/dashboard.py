@@ -417,8 +417,9 @@ def _render_watchlist_tab(st) -> None:
                     st.caption(f"• **{sig['ticker']}** — {'; '.join(fails)}")
                 else:
                     st.caption(
-                        f"• **{sig['ticker']}** — passes every gate but was "
-                        "filtered by the cap band or scored below the cut."
+                        f"• **{sig['ticker']}** — passes every gate; if it "
+                        "isn't showing above after a refresh, that's a bug "
+                        "worth reporting."
                     )
     else:
         runbook_only = st.toggle(

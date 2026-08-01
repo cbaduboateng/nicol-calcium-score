@@ -467,6 +467,23 @@ def test_strict_mode_blocks_parabolic_blowoff():
     assert "D" in set(picks_loose["ticker"])
 
 
+def test_strict_mode_infinite_rr_passes_the_gate():
+    """Regression: a stock AT/BELOW its entry has R:R = +inf (zero downside
+    to the entry level). The strict gate rejected non-finite values, so the
+    best entries were excluded precisely because they were the best."""
+    view = _picks_view().copy()
+    view.loc[view["ticker"] == "A", "reward_risk"] = float("inf")
+    picks = pick_winners(view, top_n=10, strict_mode=True)
+    assert "A" in set(picks["ticker"])
+
+
+def test_strict_mode_nan_rr_still_fails():
+    view = _picks_view().copy()
+    view.loc[view["ticker"] == "A", "reward_risk"] = float("nan")
+    picks = pick_winners(view, top_n=10, strict_mode=True)
+    assert "A" not in set(picks["ticker"])
+
+
 def test_strict_mode_off_by_default_keeps_old_behaviour():
     base = pick_winners(_picks_view(), top_n=10)
     strict = pick_winners(_picks_view(), top_n=10, strict_mode=True)
