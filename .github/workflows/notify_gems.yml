@@ -1,0 +1,34 @@
+name: Gem push notifications
+
+# Scans the watchlist for gems on a schedule and pushes to the ntfy
+# topic in the NTFY_TOPIC repo secret. No secret -> quiet no-op.
+# Silence when there are no gems is intentional: the gates working.
+
+on:
+  schedule:
+    - cron: "45 14 * * 1-5"   # ~10:45 ET, after the US open settles
+    - cron: "30 18 * * 1-5"   # ~14:30 ET, midday check
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: congress-signal-extract
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install
+        run: pip install -e ".[prices]" pyarrow
+
+      - name: Scan and notify
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: python scripts/notify_gems.py
