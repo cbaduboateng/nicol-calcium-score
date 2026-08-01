@@ -1589,6 +1589,125 @@ def _render_track_record_tab(st) -> None:
         )
 
 
+def _render_about_tab(st) -> None:
+    """Plain-English guide to what the app is and how each piece works."""
+    st.subheader("ℹ️ What is Icarus?")
+    st.markdown(
+        """
+Icarus is a **stock-watching research tool**. It tracks a curated list of
+shares that an analyst has set buy and sell price targets for, compares those
+targets against live market prices every day, and tells you which — if any —
+deserve attention **today**.
+
+It does not place trades, it does not manage money, and nothing in it is
+financial advice. It ranks; you decide.
+
+---
+
+### The one-minute version
+
+Every stock on the watchlist has a **buy target** (the price at which it looks
+cheap) and a **sell target** (the price at which the gains have been made).
+When the live price falls to or below the buy target, the stock is **in the
+buy zone**. Being cheap isn't enough, though — a stock can be cheap because
+it's dying. So Icarus runs every buy-zone stock through a series of quality
+checks, and only the rare names that pass *everything* while also showing
+signs of life today are called **💎 Gems**. From the gems, one name is crowned
+**👑 Pick of the Day** — or the app explicitly says *"no trade today"*, which
+is a real answer, not a failure.
+
+---
+
+### The Watchlist tab, from top to bottom
+
+**🔎 Ticker lookup** — type any ticker to see its full picture: price,
+targets, stop, and exactly why it is or isn't a gem right now.
+
+**👑 Pick of the Day** — the single best opportunity across every pool,
+ranked by *trust-adjusted* score. Names with genuine analyst targets count
+fully; names whose targets were estimated by the app count less. If nothing
+clears the conviction bar, the verdict is "no trade today".
+
+**💎 Gems** — every stock that passed ALL of these at once:
+- price in the **buy zone**
+- its own momentum is positive over 3 months (not a falling knife)
+- its **theme** (AI, nuclear, biotech…) is rising as a group
+- the potential reward is at least **3× the risk** to the stop
+- it hasn't already gone parabolic (no chasing tops)
+- plus something is *happening* today — unusual volume, a fresh entry into
+  the zone, or news
+
+Empty most days **by design**. When it's empty, the app explains what the
+nearest misses failed on.
+
+**☀️ Today's signals** — the attention list: buy-zone stocks ranked by
+what's moving *today* (volume surges, fresh crossings, news). No quality
+checks here — it says "look at this", never "buy this".
+
+**🏆 Top picks** — a broader scored ranking of the whole watchlist, with a
+tuning panel (including the **⚡ £5k Runbook preset**, which switches
+everything to strict small-cap hunting mode).
+
+**Main table** — all tickers with status, price, targets, suggested stop,
+market cap and momentum. Tap any row for the company card.
+
+**Theme heat / Parabolic winners** — which themes are running as a group,
+and which individual names have moved most in 6 months.
+
+---
+
+### The other tabs
+
+**📊 Track record** — the honesty page. Every time a stock ever crossed
+into its buy zone, the app replays what would have happened next: hit the
+target 🎯, hit the stop 🛑, or timed out ⏰. No editing, no cherry-picking.
+It also hosts the **£5k Runbook backtest** — a simulation of a small,
+concentrated trading account run under strict rules. Give the record 30+
+closed signals before believing any of the percentages.
+
+**Top candidates / Actor leaderboard / Clusters / Catalyst calendar** —
+the congressional-trading side: which US politicians are trading what,
+which of them actually make money (leaderboard shows realised returns per
+member), and upcoming events that could move prices. Congressional buying
+is used as a *tailwind* signal only — filings arrive up to 45 days late,
+so it never gates a decision.
+
+---
+
+### Key terms
+
+| Term | Meaning |
+|---|---|
+| **Buy zone** | Live price at or below the analyst's buy target |
+| **Stop** | Pre-committed exit ~12% below your fill — set it *before* buying |
+| **R:R** | Reward-to-risk: upside to the sell target vs downside to the stop |
+| **Theme heat** | Median 3-month move of a theme's stocks — is the group running? |
+| **Market cap** | Company size. Small (<$300M) can multiply; big is steadier |
+| **Tgt A/D** | Target provenance: **A** = analyst-set, **D** = derived by the app from the analyst's pattern. Derived targets are estimates and count less |
+| **🧭 Explorer** | An optional wider universe of US small-caps, screened weekly. All its targets are derived, so its gems are trust-discounted |
+| **Gem score** | Half quality (the gates), half today (volume/freshness/news) |
+
+---
+
+### The philosophy in three lines
+
+1. **Agreement beats any single signal.** Cheap alone, or moving alone, or
+   newsy alone is noise. Cheap AND rising AND hot theme AND asymmetric AND
+   waking up today — that's a gem.
+2. **Not trading is a position.** Most days the right answer is nothing.
+   The app is built to say so plainly.
+3. **The record keeps us honest.** Signals are graded forward against real
+   prices, with the losses on display next to the wins.
+
+---
+
+*Research tool only. Prices via Yahoo Finance (may be delayed). Nothing here
+is financial advice — always do your own research, and never risk money you
+can't afford to lose.*
+        """
+    )
+
+
 def main() -> None:
     try:
         import streamlit as st
@@ -1664,9 +1783,10 @@ def main() -> None:
 
     enriched = _enrich_candidates(candidates, trades, actors)
 
-    tab_watchlist, tab_track, tab_top, tab_actors, tab_clusters, tab_catalysts = st.tabs(
+    (tab_watchlist, tab_track, tab_top, tab_actors, tab_clusters,
+     tab_catalysts, tab_about) = st.tabs(
         ["Watchlist", "📊 Track record", "Top candidates", "Actor leaderboard",
-         "Clusters", "Catalyst calendar"],
+         "Clusters", "Catalyst calendar", "ℹ️ About"],
     )
 
     # ---- Watchlist: analyst-curated picks with live alerts ----------------
@@ -1676,6 +1796,10 @@ def main() -> None:
     # ---- Track record: forward-marked signal history ----------------------
     with tab_track:
         _render_track_record_tab(st)
+
+    # ---- About: plain-English guide ---------------------------------------
+    with tab_about:
+        _render_about_tab(st)
 
 
     with tab_top:
