@@ -434,13 +434,27 @@ def _render_watchlist_tab(st) -> None:
 
     # ---- 🧭 Explorer pool (optional second universe, derived targets) ------
     explorer_gems = pd.DataFrame()
+    explorer_note: str | None = None
     try:
         from .target_inference import derive_targets, learn_target_pattern
         from .universe import load_explorer_watchlist
         explorer_wl = load_explorer_watchlist()
-        if not explorer_wl.empty:
+        if explorer_wl.empty:
+            explorer_note = (
+                "🧭 Explorer universe not built yet — run the **'Build "
+                "explorer universe'** workflow in GitHub Actions to add "
+                "~1,000+ screener candidates to the pick (weekly Sunday "
+                "refresh once it exists)."
+            )
+        else:
             exp_pattern = learn_target_pattern(watchlist, history)
-            if exp_pattern is not None:
+            if exp_pattern is None:
+                explorer_note = (
+                    f"🧭 Explorer list present ({len(explorer_wl)} names) but "
+                    "no target pattern could be learned from the curated "
+                    "list — explorer pool skipped this load."
+                )
+            else:
                 exp_tickers = sorted(set(explorer_wl["ticker"].tolist()))
                 exp_history = fetch_price_history(exp_tickers, period="1y")
                 if exp_history:
@@ -451,8 +465,19 @@ def _render_watchlist_tab(st) -> None:
                     explorer_gems = find_gems(
                         exp_view, exp_history, exp_volumes, top_n=5,
                     )
+                    explorer_note = (
+                        f"🧭 Explorer pool active: **{len(explorer_wl)} "
+                        f"candidates**, {len(explorer_gems)} gem"
+                        f"{'s' if len(explorer_gems) != 1 else ''} this load "
+                        "(trust-discounted ×0.85 in the pick)."
+                    )
+                else:
+                    explorer_note = (
+                        "🧭 Explorer list present but no prices available "
+                        "yet — pool skipped this load."
+                    )
     except Exception as exc:  # noqa: BLE001
-        st.caption(f"Explorer pool unavailable this load ({exc}).")
+        explorer_note = f"🧭 Explorer pool unavailable this load ({exc})."
 
     # ---- 👑 Pick of the day ------------------------------------------------
     from .daily_signals import pick_of_the_day
@@ -461,6 +486,8 @@ def _render_watchlist_tab(st) -> None:
         (explorer_gems, "explorer", 0.85),
     ])
     st.markdown("### 👑 Pick of the day")
+    if explorer_note:
+        st.caption(explorer_note)
     if verdict["pick"] is None:
         reason = verdict["reason"] or "no qualifying gem"
         st.info(
