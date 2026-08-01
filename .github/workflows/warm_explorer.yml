@@ -10,6 +10,9 @@ on:
   schedule:
     - cron: "0 4 * * 0"   # Sundays 04:00 UTC, before the week starts
   workflow_dispatch: {}
+  push:
+    branches: [congress-signal-extract]
+    paths: [".explorer-build-request"]   # touch this file to trigger a build
 
 permissions:
   contents: write
