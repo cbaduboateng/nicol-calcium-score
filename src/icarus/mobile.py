@@ -39,9 +39,159 @@ _PWA_HEAD_INJECTION = """
   meta('apple-mobile-web-app-title', 'Icarus');
   meta('apple-mobile-web-app-status-bar-style', 'black-translucent');
   meta('mobile-web-app-capable', 'yes');
-  meta('theme-color', '#0ea5e9');
+  meta('theme-color', '#101312');
 })();
 </script>
+"""
+
+# Icarus design language.
+#
+# Direction: editorial and restrained — warm ink surfaces, one gold accent
+# (the sun; Icarus flew at it), Fraunces for display type, Inter for data,
+# tabular numerals everywhere a number appears. Status colours (buy green /
+# sell red) are semantic only and always ship with a label, never colour
+# alone. Colours validated against the dark surface with the dataviz
+# palette validator (contrast >= 3:1).
+_DESIGN_CSS = """
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,530;9..144,640&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  --ink-bg: #101312;         /* app background */
+  --ink-surface: #181b19;    /* cards, inputs */
+  --ink-border: rgba(242,241,236,0.10);
+  --ink-border-strong: rgba(242,241,236,0.18);
+  --text-1: #f2f1ec;         /* primary ink */
+  --text-2: #b9b8ae;         /* secondary */
+  --text-3: #8a897f;         /* muted / captions */
+  --gold: #eda100;           /* the accent — used sparingly */
+  --gold-deep: #c98500;
+  --pos: #1baf7a;            /* semantic only, never decoration */
+  --neg: #e66767;
+}
+
+/* ---- Typography -------------------------------------------------------- */
+html, body, [class*="st-"] {
+  font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3 {
+  font-family: 'Fraunces', Georgia, serif !important;
+  font-weight: 530 !important;
+  letter-spacing: 0.01em;
+  color: var(--text-1) !important;
+}
+h1 { font-size: 2.0rem !important; }
+h2 { font-size: 1.45rem !important; }
+h3 { font-size: 1.2rem !important; margin-top: 0.75rem !important; }
+h4 { font-weight: 600 !important; color: var(--text-1) !important; }
+
+/* Numbers line up in columns everywhere they appear. */
+[data-testid="stMetricValue"], [data-testid="stDataFrame"],
+[data-testid="stTable"], code {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Captions: quiet, slightly spaced, never shouting. */
+[data-testid="stCaptionContainer"] {
+  color: var(--text-3) !important;
+  line-height: 1.5;
+}
+
+/* ---- Cards (st.container(border=True)) --------------------------------- */
+div[data-testid="stVerticalBlockBorderWrapper"] {
+  border: 1px solid var(--ink-border) !important;
+  border-radius: 14px !important;
+  background: var(--ink-surface);
+  padding: 0.35rem 0.5rem;
+  transition: border-color 120ms ease;
+}
+div[data-testid="stVerticalBlockBorderWrapper"]:hover {
+  border-color: var(--ink-border-strong) !important;
+}
+
+/* ---- Metric tiles ------------------------------------------------------ */
+div[data-testid="stMetric"] {
+  background: var(--ink-surface);
+  border: 1px solid var(--ink-border);
+  border-radius: 12px;
+  padding: 0.65rem 0.85rem;
+}
+div[data-testid="stMetric"] label p {
+  font-size: 0.72rem !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-3) !important;
+  font-weight: 600 !important;
+}
+div[data-testid="stMetricValue"] {
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+/* ---- Tabs: quiet pills, gold for the active one ------------------------ */
+div[data-baseweb="tab-list"] {
+  gap: 0.25rem;
+  padding: 0.35rem 0;
+}
+button[data-baseweb="tab"] {
+  border-radius: 999px !important;
+  padding: 0.35rem 0.95rem !important;
+  background: transparent !important;
+  color: var(--text-2) !important;
+}
+button[data-baseweb="tab"][aria-selected="true"] {
+  background: var(--ink-surface) !important;
+  color: var(--gold) !important;
+  border: 1px solid var(--ink-border-strong) !important;
+}
+div[data-baseweb="tab-highlight"] { display: none; }
+div[data-baseweb="tab-border"] { background: var(--ink-border) !important; }
+
+/* ---- Inputs & buttons -------------------------------------------------- */
+.stButton button, .stDownloadButton button {
+  border-radius: 10px !important;
+  border: 1px solid var(--ink-border-strong) !important;
+  font-weight: 500 !important;
+}
+.stButton button:hover {
+  border-color: var(--gold-deep) !important;
+  color: var(--gold) !important;
+}
+[data-testid="stTextInput"] input, [data-baseweb="select"] > div {
+  border-radius: 10px !important;
+}
+
+/* ---- Expanders & dividers ---------------------------------------------- */
+div[data-testid="stExpander"] {
+  border: 1px solid var(--ink-border) !important;
+  border-radius: 12px !important;
+}
+div[data-testid="stExpander"] summary {
+  color: var(--text-2) !important;
+  font-weight: 500;
+}
+hr {
+  border-color: var(--ink-border) !important;
+  margin: 1.1rem 0 !important;
+}
+
+/* ---- Dataframes -------------------------------------------------------- */
+div[data-testid="stDataFrame"] {
+  border: 1px solid var(--ink-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* ---- Alerts: keep them quiet, tint only the edge ----------------------- */
+div[data-testid="stAlert"] {
+  border-radius: 12px;
+  border-left: 3px solid var(--gold-deep);
+}
+
+/* Hide Streamlit's footer chrome; keep the header (Manage app lives there). */
+footer { visibility: hidden; }
+</style>
 """
 
 # Tightens padding on phones and improves tab readability.
@@ -111,7 +261,7 @@ div[data-baseweb="tab-list"] {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: var(--background-color, #0e1117);
+  background: var(--ink-bg, #101312);
   border-bottom: 1px solid rgba(250,250,250,0.1);
 }
 
@@ -132,7 +282,9 @@ div[data-baseweb="tab-list"] {
 
 
 def inject(st) -> None:
-    """Inject PWA meta tags + mobile CSS. Call once at top of dashboard."""
+    """Inject PWA meta tags + design + mobile CSS. Call once at top of
+    the dashboard. Design layer first so mobile rules can override it."""
     import streamlit.components.v1 as components
+    st.markdown(_DESIGN_CSS, unsafe_allow_html=True)
     st.markdown(_MOBILE_CSS, unsafe_allow_html=True)
     components.html(_PWA_HEAD_INJECTION, height=0, width=0)

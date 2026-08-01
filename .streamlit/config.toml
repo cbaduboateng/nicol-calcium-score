@@ -5,6 +5,12 @@ runOnSave = false
 [browser]
 gatherUsageStats = false
 
+# Icarus design language: warm ink surfaces, a single gold accent (the sun),
+# soft off-white text. Typography (Fraunces display / Inter data) is layered
+# on via the CSS in src/icarus/mobile.py.
 [theme]
 base = "dark"
-primaryColor = "#0ea5e9"
+primaryColor = "#eda100"
+backgroundColor = "#101312"
+secondaryBackgroundColor = "#181b19"
+textColor = "#f2f1ec"
