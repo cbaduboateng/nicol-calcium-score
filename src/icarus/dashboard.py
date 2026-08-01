@@ -382,6 +382,48 @@ def _render_watchlist_tab(st) -> None:
         if buy_zone_tickers else pd.DataFrame()
     )
 
+    # ---- 🔎 Ticker lookup (bypasses every filter) --------------------------
+    lookup_q = st.text_input(
+        "🔎 Look up any watchlist ticker",
+        placeholder="e.g. HIVE — shows status, targets, and why it is / isn't a gem",
+        key="ticker_lookup_box",
+    )
+    if lookup_q.strip():
+        q = lookup_q.strip().upper()
+        matches = view[view["ticker"].astype(str).str.contains(q, na=False)]
+        if matches.empty:
+            st.warning(f"No watchlist ticker matching **{q}**.")
+        else:
+            exact = matches[matches["ticker"] == q]
+            found = exact.iloc[0] if not exact.empty else matches.iloc[0]
+            if len(matches) > 1 and exact.empty:
+                st.caption(
+                    f"{len(matches)} matches ({', '.join(matches['ticker'].head(8))}"
+                    f"{'…' if len(matches) > 8 else ''}) — showing **{found['ticker']}**."
+                )
+            # Gem-gate diagnosis, right where the investigation happens
+            fails = gem_gate_failures(found, theme_3m_map)
+            if fails:
+                st.warning(f"**{found['ticker']} is not a gem right now:** {'; '.join(fails)}")
+            else:
+                st.success(
+                    f"**{found['ticker']} passes every strict gate** — if it isn't "
+                    "in 💎 Gems above, it scored below the top-5 cut."
+                )
+            src = found.get("tgt_src")
+            if src and src != "—/—":
+                st.caption(
+                    f"Target provenance: **{src}** (entry/exit; A = analyst, "
+                    "D = derived from the learned pattern — derived targets "
+                    "re-derive on data refresh and can drift slightly)."
+                )
+            _render_watchlist_ticker_card(
+                st, found,
+                congress_overlay=congress_overlay,
+                catalyst_overlay=catalyst_overlay,
+            )
+        st.divider()
+
     # ---- 💎 Gems (quality gates AND day-scale agreement) -------------------
     st.markdown("### 💎 Gems — every filter agrees")
     st.caption(
