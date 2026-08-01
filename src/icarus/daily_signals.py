@@ -310,6 +310,53 @@ def find_gems(
     return merged
 
 
+def gem_gate_failures(
+    row: pd.Series,
+    theme_3m: dict[str, float] | None = None,
+    *,
+    min_rr: float = 3.0,
+    blowoff_threshold_pct: float = 100.0,
+) -> list[str]:
+    """Explain which strict gates a candidate fails, in plain English.
+
+    Used by the Gems empty state so 'no gems today' comes with the
+    reason each near-miss didn't qualify — turning a dead end into a
+    diagnostic. An empty return list means the row passes every gate."""
+    themes = theme_3m or {}
+    fails: list[str] = []
+
+    if row.get("status") != "BUY ZONE":
+        fails.append(f"not in buy zone ({row.get('status', '—')})")
+
+    p3 = row.get("pct_3m")
+    if p3 is None or not np.isfinite(p3) or p3 <= 0:
+        if p3 is not None and np.isfinite(p3):
+            fails.append(f"own 3m momentum negative ({p3:+.0f}%)")
+        else:
+            fails.append("3m momentum unknown")
+
+    t3 = themes.get(row.get("theme"))
+    if t3 is None or not np.isfinite(t3) or t3 <= 0:
+        if t3 is not None and np.isfinite(t3):
+            fails.append(f"theme cold ({row.get('theme')}: {t3:+.0f}% 3m median)")
+        else:
+            fails.append(f"theme momentum unknown ({row.get('theme')})")
+
+    rr = row.get("reward_risk")
+    if rr is None or not np.isfinite(rr):
+        # inf means live <= entry — passes by design; NaN means no targets
+        if rr is None or (isinstance(rr, float) and math.isnan(rr)):
+            fails.append("no usable R:R (missing exit target)")
+    elif rr < min_rr:
+        fails.append(f"R:R {rr:.1f} below the {min_rr:.0f} floor")
+
+    p6 = row.get("pct_6m")
+    if p6 is not None and np.isfinite(p6) and p6 > blowoff_threshold_pct:
+        fails.append(f"already parabolic ({p6:+.0f}% in 6m)")
+
+    return fails
+
+
 def fetch_news_counts(
     tickers: list[str],
     *,

@@ -203,3 +203,54 @@ def test_find_gems_empty_inputs():
     # All strict-failers → empty even with histories present
     knife_only = _gems_view().iloc[[1]]
     assert find_gems(knife_only, _gems_histories(), _gems_volumes()).empty
+
+
+# ---- gem_gate_failures (the near-miss explainer) --------------------------
+
+
+def test_gate_failures_names_each_failed_gate():
+    from icarus.daily_signals import gem_gate_failures
+    knife = _gems_view().iloc[1]  # NOISY: buy zone, but -10% 3m, cold theme
+    fails = gem_gate_failures(knife, {"Cannabis": -12.0})
+    joined = " ".join(fails)
+    assert "own 3m momentum negative" in joined
+    assert "theme cold" in joined
+    assert "not in buy zone" not in joined  # it IS in the zone
+
+
+def test_gate_failures_empty_for_a_true_gem():
+    from icarus.daily_signals import gem_gate_failures
+    gem = _gems_view().iloc[0]
+    assert gem_gate_failures(gem, {"AI / Big Data": 22.0}) == []
+
+
+def test_gate_failures_flags_hold_status_and_weak_rr():
+    from icarus.daily_signals import gem_gate_failures
+    row = pd.Series({
+        "ticker": "X", "status": "HOLD", "theme": "AI / Big Data",
+        "pct_3m": 10.0, "pct_6m": 20.0, "reward_risk": 1.2,
+    })
+    fails = gem_gate_failures(row, {"AI / Big Data": 15.0})
+    joined = " ".join(fails)
+    assert "not in buy zone" in joined
+    assert "R:R 1.2 below the 3 floor" in joined
+
+
+def test_gate_failures_infinite_rr_passes():
+    from icarus.daily_signals import gem_gate_failures
+    row = pd.Series({
+        "ticker": "X", "status": "BUY ZONE", "theme": "AI / Big Data",
+        "pct_3m": 10.0, "pct_6m": 20.0, "reward_risk": float("inf"),
+    })
+    fails = gem_gate_failures(row, {"AI / Big Data": 15.0})
+    assert not any("R:R" in f for f in fails)
+
+
+def test_gate_failures_flags_parabolic():
+    from icarus.daily_signals import gem_gate_failures
+    row = pd.Series({
+        "ticker": "X", "status": "BUY ZONE", "theme": "AI / Big Data",
+        "pct_3m": 60.0, "pct_6m": 250.0, "reward_risk": 4.0,
+    })
+    fails = gem_gate_failures(row, {"AI / Big Data": 15.0})
+    assert any("parabolic" in f for f in fails)

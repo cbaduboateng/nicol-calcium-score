@@ -342,7 +342,12 @@ def _render_watchlist_tab(st) -> None:
             st.write(", ".join(missing_px))
 
     # ---- Shared day-scale inputs (volumes, news, overlays) -----------------
-    from .daily_signals import compute_daily_signals, fetch_news_counts, find_gems
+    from .daily_signals import (
+        compute_daily_signals,
+        fetch_news_counts,
+        find_gems,
+        gem_gate_failures,
+    )
     from .watchlist_alerts import fetch_volume_history
 
     congress_overlay = load_congress_overlay()
@@ -364,6 +369,19 @@ def _render_watchlist_tab(st) -> None:
             except Exception:
                 news = {}
 
+    heat_for_today = theme_heat(view)
+    theme_3m_map = (
+        dict(zip(heat_for_today["theme"], heat_for_today["median_3m"]))
+        if not heat_for_today.empty else {}
+    )
+    today = (
+        compute_daily_signals(
+            view, history, volumes,
+            news_counts=news, theme_3m=theme_3m_map, top_n=5,
+        )
+        if buy_zone_tickers else pd.DataFrame()
+    )
+
     # ---- 💎 Gems (quality gates AND day-scale agreement) -------------------
     st.markdown("### 💎 Gems — every filter agrees")
     st.caption(
@@ -383,9 +401,25 @@ def _render_watchlist_tab(st) -> None:
     if gems.empty:
         st.info(
             "💤 No gems today. That's the discipline, not a malfunction — "
-            "check ☀️ Today's signals below for what's *close*, but don't "
-            "loosen the gates to make this list less empty."
+            "the names below are *close*, but don't loosen the gates to "
+            "make this list less empty."
         )
+        # Diagnostic: say exactly which gate each top signal failed, so an
+        # empty list is a teaching moment instead of a dead end.
+        if not today.empty:
+            st.caption("**Why today's top signals aren't gems:**")
+            for _, sig in today.head(3).iterrows():
+                sig_row = view[view["ticker"] == sig["ticker"]]
+                if sig_row.empty:
+                    continue
+                fails = gem_gate_failures(sig_row.iloc[0], theme_3m_map)
+                if fails:
+                    st.caption(f"• **{sig['ticker']}** — {'; '.join(fails)}")
+                else:
+                    st.caption(
+                        f"• **{sig['ticker']}** — passes every gate but was "
+                        "filtered by the cap band or scored below the cut."
+                    )
     else:
         for _, gem in gems.iterrows():
             with st.container(border=True):
@@ -434,15 +468,6 @@ def _render_watchlist_tab(st) -> None:
     if not buy_zone_tickers:
         st.info("Nothing in the buy zone right now — no daily signals to rank.")
     else:
-        heat_for_today = theme_heat(view)
-        theme_3m_map = (
-            dict(zip(heat_for_today["theme"], heat_for_today["median_3m"]))
-            if not heat_for_today.empty else {}
-        )
-        today = compute_daily_signals(
-            view, history, volumes,
-            news_counts=news, theme_3m=theme_3m_map, top_n=5,
-        )
         if today.empty:
             st.info("No buy-zone stock produced a rankable signal today.")
         else:
