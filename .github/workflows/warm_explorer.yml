@@ -45,4 +45,7 @@ jobs:
             exit 0
           fi
           git commit -m "Refresh explorer universe + caches"
+          # The branch may have moved during the (long) build — rebase so
+          # our push isn't rejected as non-fast-forward.
+          git pull --rebase origin congress-signal-extract
           git push origin congress-signal-extract
