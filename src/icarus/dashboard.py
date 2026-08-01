@@ -1682,7 +1682,7 @@ so it never gates a decision.
 | **Stop** | Pre-committed exit ~12% below your fill — set it *before* buying |
 | **R:R** | Reward-to-risk: upside to the sell target vs downside to the stop |
 | **Theme heat** | Median 3-month move of a theme's stocks — is the group running? |
-| **Market cap** | Company size. Small (<$300M) can multiply; big is steadier |
+| **Market cap** | Company size. Small (under \\$300M) can multiply; big is steadier |
 | **Tgt A/D** | Target provenance: **A** = analyst-set, **D** = derived by the app from the analyst's pattern. Derived targets are estimates and count less |
 | **🧭 Explorer** | An optional wider universe of US small-caps, screened weekly. All its targets are derived, so its gems are trust-discounted |
 | **Gem score** | Half quality (the gates), half today (volume/freshness/news) |
