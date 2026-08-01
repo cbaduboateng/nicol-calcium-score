@@ -213,6 +213,7 @@ def map_theme(description: str | None, sector: str | None = None) -> str:
 
 
 APPROACHING_PCT_ABOVE_ENTRY = 0.15  # within 15% above entry counts as approaching
+DEFAULT_STOP_PCT = 0.12             # suggested stop: 12% below the fill
 
 
 def compute_status(
@@ -233,6 +234,28 @@ def compute_status(
     if has_entry and live_price <= target_entry * (1 + APPROACHING_PCT_ABOVE_ENTRY):
         return "APPROACHING"
     return "HOLD"
+
+
+def suggested_stop(
+    live: float | None,
+    entry: float | None,
+    status: str,
+    *,
+    stop_pct: float = DEFAULT_STOP_PCT,
+) -> float:
+    """The stop level to pre-commit before buying.
+
+    Anchored to your realistic FILL, not an abstract level:
+      - In the BUY ZONE the fill is the live price -> stop below live.
+      - Otherwise the plan is to buy at the entry target -> stop below it.
+    Returns NaN when there's nothing to anchor to."""
+    has_live = live is not None and np.isfinite(live) and live > 0
+    has_entry = entry is not None and np.isfinite(entry) and entry > 0
+    if status == "BUY ZONE" and has_live:
+        return float(live) * (1.0 - stop_pct)
+    if has_entry:
+        return float(entry) * (1.0 - stop_pct)
+    return float("nan")
 
 
 def gap_to_entry_pct(live: float, entry: float | None) -> float:
@@ -372,6 +395,7 @@ def build_watchlist_view(
             "pct_12m": snap.pct_12m,
             "market_cap_usd": (fact.market_cap_usd if fact else None),
             "cap_bucket": (fact.cap if fact else None),
+            "stop_price": suggested_stop(snap.live_price, entry, status),
         })
     df = pd.DataFrame(rows)
     return df

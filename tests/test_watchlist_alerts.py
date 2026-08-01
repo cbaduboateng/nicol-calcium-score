@@ -72,6 +72,26 @@ def test_reward_risk_infinite_when_in_buy_zone():
     assert math.isinf(rr)
 
 
+def test_suggested_stop_uses_live_price_in_buy_zone():
+    from icarus.watchlist_alerts import suggested_stop
+    # Fill would be the live price (2.83), not the entry target (2.87)
+    assert suggested_stop(2.83, 2.87, "BUY ZONE") == pytest.approx(2.83 * 0.88)
+
+
+def test_suggested_stop_uses_entry_target_when_not_in_zone():
+    from icarus.watchlist_alerts import suggested_stop
+    assert suggested_stop(12.0, 10.0, "HOLD") == pytest.approx(8.8)
+    assert suggested_stop(12.0, 10.0, "APPROACHING") == pytest.approx(8.8)
+
+
+def test_suggested_stop_nan_when_nothing_to_anchor():
+    import math
+
+    from icarus.watchlist_alerts import suggested_stop
+    assert math.isnan(suggested_stop(None, None, "WATCH"))
+    assert math.isnan(suggested_stop(10.0, None, "WATCH"))  # no entry, not in zone
+
+
 # ---- theme mapping -------------------------------------------------------
 
 

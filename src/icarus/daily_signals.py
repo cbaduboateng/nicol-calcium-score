@@ -207,6 +207,7 @@ def compute_daily_signals(
             "live_price": r.get("live_price"),
             "target_entry": entry,
             "target_exit": r.get("target_exit"),
+            "stop_price": r.get("stop_price"),
             "today_score": score,
             "rel_volume": rv,
             "days_in_zone": dz,

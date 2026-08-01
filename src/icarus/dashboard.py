@@ -466,13 +466,16 @@ def _render_watchlist_tab(st) -> None:
                     live = gem.get("live_price")
                     entry = gem.get("target_entry")
                     exit_ = gem.get("target_exit")
+                    stop = gem.get("stop_price")
                     live_s = f"{live:,.2f}" if pd.notna(live) else "—"
                     entry_s = f"{entry:,.2f}" if pd.notna(entry) else "—"
                     exit_s = f"{exit_:,.2f}" if pd.notna(exit_) else "—"
+                    stop_s = f"{stop:,.2f}" if pd.notna(stop) else "—"
                     st.markdown(
                         f"Gem score **{gem['gem_score']:.2f}** "
                         f"(quality {gem['composite']:.2f} · today {gem['today_score']:.2f})  \n"
-                        f"Live {live_s} · Buy ≤ {entry_s} · Sell ≥ {exit_s}  \n"
+                        f"Live {live_s} · Buy ≤ {entry_s} · Sell ≥ {exit_s} · "
+                        f"**Stop {stop_s}**  \n"
                         f"{cap_line}"
                     )
                 with st.expander("Company card"):
@@ -515,11 +518,13 @@ def _render_watchlist_tab(st) -> None:
                         score_pct = f"{sig['today_score']:.2f}"
                         live = sig.get("live_price")
                         entry = sig.get("target_entry")
+                        stop = sig.get("stop_price")
                         live_s = f"{live:,.2f}" if pd.notna(live) else "—"
                         entry_s = f"{entry:,.2f}" if pd.notna(entry) else "—"
+                        stop_s = f"{stop:,.2f}" if pd.notna(stop) else "—"
                         st.markdown(
                             f"Today score **{score_pct}**  \n"
-                            f"Live {live_s} · Buy ≤ {entry_s}"
+                            f"Live {live_s} · Buy ≤ {entry_s} · Stop {stop_s}"
                         )
             st.caption(
                 "⚠️ Volume and news are *attention* signals, not quality "
@@ -831,12 +836,12 @@ def _render_watchlist_tab(st) -> None:
     )
     compact_main_cols = [
         "status", "ticker", "mkt_cap",
-        "live_price", "target_entry", "tgt_src", "gap_to_entry_pct",
-        "pct_3m",
+        "live_price", "target_entry", "stop_price", "tgt_src",
+        "gap_to_entry_pct", "pct_3m",
     ]
     full_main_cols = [
         "status", "ticker", "name", "theme", "mkt_cap",
-        "live_price", "target_entry", "target_exit", "tgt_src",
+        "live_price", "target_entry", "target_exit", "stop_price", "tgt_src",
         "gap_to_entry_pct", "reward_risk",
         "pct_1m", "pct_3m", "pct_6m", "pct_12m",
         "description",
@@ -864,6 +869,12 @@ def _render_watchlist_tab(st) -> None:
             "live_price": st.column_config.NumberColumn("Live", format="%.2f"),
             "target_entry": st.column_config.NumberColumn("Buy ≤", format="%.2f"),
             "target_exit": st.column_config.NumberColumn("Sell ≥", format="%.2f"),
+            "stop_price": st.column_config.NumberColumn(
+                "Stop", format="%.2f",
+                help="Suggested stop: 12% below your fill — the live price "
+                     "when in the buy zone, otherwise the entry target. "
+                     "Pre-commit it before you buy.",
+            ),
             "tgt_src": st.column_config.TextColumn(
                 "Tgt",
                 help="Target provenance, entry/exit: A = analyst-set, "
@@ -1044,8 +1055,10 @@ def _render_watchlist_ticker_card(
             if meta_bits:
                 st.caption(" · ".join(b for b in meta_bits if b))
         with header_r:
+            stop = row.get("stop_price")
             st.markdown(
-                f"**Live** {_fmt(live)}  ·  **Buy ≤** {_fmt(entry)}  ·  **Sell ≥** {_fmt(exit_)}  \n"
+                f"**Live** {_fmt(live)}  ·  **Buy ≤** {_fmt(entry)}  ·  **Sell ≥** {_fmt(exit_)}"
+                f"  ·  **Stop** {_fmt(stop)}  \n"
                 f"3m {_fmt_pct(pct_3m)}  ·  6m {_fmt_pct(pct_6m)}  ·  Status **{status or '—'}**"
             )
 
