@@ -63,11 +63,45 @@ def main() -> int:
         catalyst_overlay=load_catalyst_overlay() or None,
         top_n=5,
     )
-    if gems.empty:
+
+    # Explorer pool, when the weekly job has produced one.
+    import pandas as pd
+    explorer_gems = pd.DataFrame()
+    try:
+        from icarus.universe import load_explorer_watchlist
+        explorer_wl = load_explorer_watchlist()
+        if not explorer_wl.empty and pattern is not None:
+            exp_tickers = sorted(set(explorer_wl["ticker"].astype(str)))
+            exp_history = fetch_price_history(exp_tickers, period="1y")
+            if exp_history:
+                explorer_wl = derive_targets(explorer_wl, exp_history, pattern)
+                exp_view = build_watchlist_view(explorer_wl, exp_history)
+                exp_view["tgt_src"] = "D/D"
+                exp_volumes = fetch_volume_history(exp_tickers, period="3mo")
+                explorer_gems = find_gems(exp_view, exp_history, exp_volumes, top_n=5)
+    except Exception as exc:  # noqa: BLE001
+        log.warning("Explorer pool skipped (%s)", exc)
+
+    if gems.empty and explorer_gems.empty:
         log.info("No gems this scan — staying silent")
         return 0
 
+    from icarus.daily_signals import pick_of_the_day
+    verdict = pick_of_the_day([
+        (gems, "curated", 1.0),
+        (explorer_gems, "explorer", 0.85),
+    ])
+
     lines: list[str] = []
+    if verdict["pick"] is not None:
+        p = verdict["pick"]
+        lines.append(
+            f"👑 PICK: {p['ticker']} adj {p['adjusted_score']:.2f} "
+            f"({p['pool']})"
+        )
+        lines.append("")
+    if not explorer_gems.empty:
+        gems = pd.concat([gems, explorer_gems], ignore_index=True)
     for _, g in gems.iterrows():
         live = g.get("live_price")
         entry = g.get("target_entry")

@@ -208,6 +208,7 @@ def compute_daily_signals(
             "target_entry": entry,
             "target_exit": r.get("target_exit"),
             "stop_price": r.get("stop_price"),
+            "tgt_src": r.get("tgt_src"),
             "today_score": score,
             "rel_volume": rv,
             "days_in_zone": dz,
@@ -309,6 +310,73 @@ def find_gems(
     )
     merged.insert(0, "rank", merged.index + 1)
     return merged
+
+
+DEFAULT_CONVICTION_FLOOR = 0.50
+
+
+def pick_of_the_day(
+    pools: list[tuple[pd.DataFrame, str, float]],
+    *,
+    conviction_floor: float = DEFAULT_CONVICTION_FLOOR,
+) -> dict:
+    """Merge gem pools into ONE trust-weighted daily verdict.
+
+    ``pools`` is a list of (gems_df, pool_name, trust) — e.g.
+    ``[(curated_gems, "curated", 1.0), (explorer_gems, "explorer", 0.85)]``.
+    Trust discounts reflect target provenance: analyst-set levels are
+    the real edge; fully derived levels are a screener approximation and
+    must be meaningfully stronger to win. Rows whose ``tgt_src``
+    contains a derived component get a further 0.93x within their pool.
+
+    adjusted_score = gem_score x trust. The single highest adjusted
+    score wins — unless it's below ``conviction_floor``, in which case
+    the verdict is an explicit "no trade today". Abstention is a
+    feature, not a failure.
+
+    Returns {"pick": Series|None, "runners": DataFrame, "reason": str|None}.
+    """
+    frames: list[pd.DataFrame] = []
+    for df, pool_name, trust in pools:
+        if df is None or df.empty:
+            continue
+        d = df.copy()
+        d["pool"] = pool_name
+
+        def _row_trust(src, base=trust) -> float:
+            s = str(src or "")
+            if "D" in s:
+                return base * 0.93
+            return base
+
+        if "tgt_src" in d.columns:
+            d["trust"] = d["tgt_src"].apply(_row_trust)
+        else:
+            d["trust"] = trust
+        d["adjusted_score"] = d["gem_score"] * d["trust"]
+        frames.append(d)
+
+    if not frames:
+        return {"pick": None, "runners": pd.DataFrame(),
+                "reason": "no gems in any pool"}
+
+    merged = (
+        pd.concat(frames, ignore_index=True)
+        .sort_values("adjusted_score", ascending=False)
+        .reset_index(drop=True)
+    )
+    best = merged.iloc[0]
+    if float(best["adjusted_score"]) < conviction_floor:
+        return {
+            "pick": None,
+            "runners": merged.head(5),
+            "reason": (
+                f"best adjusted score {best['adjusted_score']:.2f} "
+                f"({best['ticker']}) is below the {conviction_floor:.2f} "
+                "conviction floor"
+            ),
+        }
+    return {"pick": best, "runners": merged.iloc[1:6], "reason": None}
 
 
 def gem_gate_failures(

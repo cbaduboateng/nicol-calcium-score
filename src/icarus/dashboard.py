@@ -424,6 +424,86 @@ def _render_watchlist_tab(st) -> None:
             )
         st.divider()
 
+    gems = find_gems(
+        view, history, volumes,
+        news_counts=news,
+        congress_overlay=congress_overlay or None,
+        catalyst_overlay=catalyst_overlay or None,
+        top_n=5,
+    )
+
+    # ---- 🧭 Explorer pool (optional second universe, derived targets) ------
+    explorer_gems = pd.DataFrame()
+    try:
+        from .target_inference import derive_targets, learn_target_pattern
+        from .universe import load_explorer_watchlist
+        explorer_wl = load_explorer_watchlist()
+        if not explorer_wl.empty:
+            exp_pattern = learn_target_pattern(watchlist, history)
+            if exp_pattern is not None:
+                exp_tickers = sorted(set(explorer_wl["ticker"].tolist()))
+                exp_history = fetch_price_history(exp_tickers, period="1y")
+                if exp_history:
+                    explorer_wl = derive_targets(explorer_wl, exp_history, exp_pattern)
+                    exp_view = build_watchlist_view(explorer_wl, exp_history)
+                    exp_view["tgt_src"] = "D/D"
+                    exp_volumes = fetch_volume_history(exp_tickers, period="3mo")
+                    explorer_gems = find_gems(
+                        exp_view, exp_history, exp_volumes, top_n=5,
+                    )
+    except Exception as exc:  # noqa: BLE001
+        st.caption(f"Explorer pool unavailable this load ({exc}).")
+
+    # ---- 👑 Pick of the day ------------------------------------------------
+    from .daily_signals import pick_of_the_day
+    verdict = pick_of_the_day([
+        (gems, "curated", 1.0),
+        (explorer_gems, "explorer", 0.85),
+    ])
+    st.markdown("### 👑 Pick of the day")
+    if verdict["pick"] is None:
+        reason = verdict["reason"] or "no qualifying gem"
+        st.info(
+            f"**No trade today** — {reason}. Abstention is the system "
+            "working; the runner-up detail is below in 💎 Gems."
+        )
+    else:
+        p = verdict["pick"]
+        pool_label = (
+            "curated watchlist (analyst-anchored)"
+            if p["pool"] == "curated"
+            else "🧭 explorer universe (fully derived targets — screener grade)"
+        )
+        with st.container(border=True):
+            pl, pr = st.columns([3, 2])
+            with pl:
+                st.markdown(f"#### 👑 {p['ticker']} — {p.get('name') or ''}")
+                st.caption(p.get("reasons") or "")
+                st.caption(f"Pool: {pool_label}")
+            with pr:
+                def _p(v):
+                    return f"{v:,.2f}" if pd.notna(v) else "—"
+                st.markdown(
+                    f"Adjusted score **{p['adjusted_score']:.2f}** "
+                    f"(gem {p['gem_score']:.2f} × trust {p['trust']:.2f})  \n"
+                    f"Live {_p(p.get('live_price'))} · Buy ≤ {_p(p.get('target_entry'))} · "
+                    f"**Stop {_p(p.get('stop_price'))}** · Sell ≥ {_p(p.get('target_exit'))}"
+                )
+        runners = verdict["runners"]
+        if runners is not None and not runners.empty:
+            runner_bits = [
+                f"{r['ticker']} ({r['adjusted_score']:.2f}, {r['pool']})"
+                for _, r in runners.iterrows()
+            ]
+            st.caption("Runners-up: " + " · ".join(runner_bits))
+        st.caption(
+            "⚠️ One name, ranked by trust-adjusted gem score. Read the "
+            "company card and pre-commit the stop before acting. Not "
+            "financial advice."
+        )
+
+    st.divider()
+
     # ---- 💎 Gems (quality gates AND day-scale agreement) -------------------
     st.markdown("### 💎 Gems — every filter agrees")
     st.caption(
@@ -433,13 +513,12 @@ def _render_watchlist_tab(st) -> None:
         "only — never a gate, since STOCK Act filings lag up to 45 days. "
         "**Empty most days by design** — six signal families rarely agree."
     )
-    gems = find_gems(
-        view, history, volumes,
-        news_counts=news,
-        congress_overlay=congress_overlay or None,
-        catalyst_overlay=catalyst_overlay or None,
-        top_n=5,
-    )
+    if not explorer_gems.empty:
+        st.caption(
+            f"🧭 Explorer pool contributed **{len(explorer_gems)} additional "
+            "gems** (fully derived targets, trust-discounted) — shown in the "
+            "Pick of the Day ranking above."
+        )
     if gems.empty:
         st.info(
             "💤 No gems today. That's the discipline, not a malfunction — "

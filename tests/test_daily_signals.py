@@ -214,6 +214,58 @@ def test_find_gems_empty_inputs():
     assert find_gems(knife_only, _gems_histories(), _gems_volumes()).empty
 
 
+# ---- pick_of_the_day -------------------------------------------------------
+
+
+def _pool(rows: list[dict]) -> pd.DataFrame:
+    return pd.DataFrame(rows)
+
+
+def test_pick_prefers_curated_over_slightly_stronger_explorer():
+    from icarus.daily_signals import pick_of_the_day
+    curated = _pool([{"ticker": "CUR", "gem_score": 0.60, "tgt_src": "A/A"}])
+    explorer = _pool([{"ticker": "EXP", "gem_score": 0.65}])
+    # 0.60 x 1.0 = 0.60 beats 0.65 x 0.85 = 0.5525
+    v = pick_of_the_day([(curated, "curated", 1.0), (explorer, "explorer", 0.85)])
+    assert v["pick"]["ticker"] == "CUR"
+
+
+def test_pick_lets_a_much_stronger_explorer_win():
+    from icarus.daily_signals import pick_of_the_day
+    curated = _pool([{"ticker": "CUR", "gem_score": 0.55, "tgt_src": "A/A"}])
+    explorer = _pool([{"ticker": "EXP", "gem_score": 0.80}])
+    # 0.80 x 0.85 = 0.68 beats 0.55
+    v = pick_of_the_day([(curated, "curated", 1.0), (explorer, "explorer", 0.85)])
+    assert v["pick"]["ticker"] == "EXP"
+
+
+def test_pick_abstains_below_conviction_floor():
+    from icarus.daily_signals import pick_of_the_day
+    weak = _pool([{"ticker": "MEH", "gem_score": 0.45, "tgt_src": "A/A"}])
+    v = pick_of_the_day([(weak, "curated", 1.0)])
+    assert v["pick"] is None
+    assert "conviction floor" in v["reason"]
+    assert "MEH" in v["reason"]
+
+
+def test_pick_derived_targets_get_row_level_discount():
+    from icarus.daily_signals import pick_of_the_day
+    pool = _pool([
+        {"ticker": "ANA", "gem_score": 0.60, "tgt_src": "A/A"},
+        {"ticker": "DER", "gem_score": 0.62, "tgt_src": "D/D"},
+    ])
+    # DER: 0.62 x 0.93 = 0.5766 < ANA: 0.60
+    v = pick_of_the_day([(pool, "curated", 1.0)])
+    assert v["pick"]["ticker"] == "ANA"
+
+
+def test_pick_empty_pools_abstain():
+    from icarus.daily_signals import pick_of_the_day
+    v = pick_of_the_day([(pd.DataFrame(), "curated", 1.0)])
+    assert v["pick"] is None
+    assert v["reason"] == "no gems in any pool"
+
+
 # ---- gem_gate_failures (the near-miss explainer) --------------------------
 
 
