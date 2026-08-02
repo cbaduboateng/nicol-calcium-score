@@ -328,6 +328,26 @@ div[data-baseweb="tab-list"] {
 }
 .clear-sel:hover { color: var(--gold) !important; }
 
+/* Floating reload button — the PWA has no browser chrome, so this is
+   the only always-visible way to refresh. Full navigation (not a
+   Streamlit rerun) so it also revives stale sessions. */
+.refresh-fab {
+  position: fixed; bottom: 20px; left: 16px; z-index: 999;
+  width: 46px; height: 46px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--ink-surface);
+  border: 1px solid var(--ink-border-strong);
+  color: var(--gold) !important;
+  font-size: 21px; line-height: 1;
+  text-decoration: none !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.45);
+  transition: transform 120ms ease, border-color 120ms ease;
+}
+.refresh-fab:hover, .refresh-fab:active {
+  border-color: var(--gold-deep);
+  transform: rotate(45deg);
+}
+
 /* Price header + change chips (Trading212-style) */
 .px-big {
   font-size: 1.7rem; font-weight: 600; color: var(--text-1);
