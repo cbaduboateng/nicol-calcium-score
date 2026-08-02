@@ -250,6 +250,49 @@ def derive_targets(
     return out
 
 
+STALE_LOOKBACK_SESSIONS = 126     # ~6 months of trading days
+STALE_ABOVE_ENTRY_PCT = 50.0      # "far above" = >50% over the buy target
+
+
+def flag_stale_targets(
+    view: pd.DataFrame,
+    price_history: dict[str, pd.Series],
+    *,
+    lookback_sessions: int = STALE_LOOKBACK_SESSIONS,
+    above_entry_pct: float = STALE_ABOVE_ENTRY_PCT,
+) -> pd.DataFrame:
+    """Mark buy targets the market has left behind.
+
+    A target is STALE when the price has spent the ENTIRE lookback
+    window (~6 months) more than ``above_entry_pct`` above the entry —
+    i.e. it never even came close to the zone. Such targets usually mean
+    the analyst's level predates a re-rating: the alert can never fire,
+    and if it ever did (a −50% collapse to the level), the thesis that
+    set the level probably died on the way down.
+
+    Adds a boolean ``target_stale`` column. Surfacing only — staleness
+    deliberately does NOT gate or score anything until the Lab produces
+    evidence that it should. The durable fix is refreshing the analyst
+    source, not hiding rows.
+    """
+    out = view.copy()
+    flags: list[bool] = []
+    for _, r in out.iterrows():
+        entry = r.get("target_entry")
+        stale = False
+        if entry is not None and pd.notna(entry) and float(entry) > 0:
+            s = price_history.get(str(r.get("ticker") or "").upper())
+            if s is not None:
+                closes = s.dropna()
+                if len(closes) >= lookback_sessions:
+                    window = closes.iloc[-lookback_sessions:]
+                    threshold = float(entry) * (1.0 + above_entry_pct / 100.0)
+                    stale = bool((window > threshold).all())
+        flags.append(stale)
+    out["target_stale"] = flags
+    return out
+
+
 def derive_exits_from_entries(
     watchlist: pd.DataFrame,
     *,

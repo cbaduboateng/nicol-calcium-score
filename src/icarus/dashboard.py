@@ -104,7 +104,8 @@ def _instrument_row_html(
     live = row.get("live_price")
     px = f"{live:,.2f}" if pd.notna(live) else "—"
     cap_s = _fmt_cap_short(row.get("market_cap_usd"))
-    sub_bits = [b for b in (name, cap_s if cap_s != "—" else "") if b]
+    stale_mark = "⏳ stale target" if bool(row.get("target_stale")) else ""
+    sub_bits = [b for b in (name, cap_s if cap_s != "—" else "", stale_mark) if b]
     dot = _STATUS_DOT.get(str(row.get("status") or ""), "hold")
     chip = _change_chip(day_pct) or '<span class="chip hold"></span>'
     return (
@@ -558,8 +559,19 @@ def _render_watchlist_tab(st) -> None:
             + "/"
             + view["exit_source"].map({"analyst": "A", "derived": "D"}).fillna("—")
         )
+    from .target_inference import flag_stale_targets
+    view = flag_stale_targets(view, history)
+    n_stale = int(view["target_stale"].sum())
     n_with_price = int(view["live_price"].notna().sum())
     st.caption(f"Live price available for **{n_with_price} / {len(view)}**.")
+    if n_stale:
+        st.caption(
+            f"⚠️ **{n_stale} buy targets look stale** — price has spent the "
+            "last ~6 months more than 50% above the target, so the alert can "
+            "never fire and the level likely predates a re-rating. They're "
+            "flagged ⏳ in the list; the durable fix is refreshing the "
+            "analyst source."
+        )
     missing_px = view[view["live_price"].isna()]["ticker"].astype(str).tolist()
     if missing_px:
         with st.expander(f"⚠️ {len(missing_px)} tickers without prices"):
@@ -1504,6 +1516,14 @@ def _render_watchlist_ticker_card(
             )
         elif live is not None and pd.notna(live):
             st.markdown(f'<span class="px-big">{live:,.2f}</span>', unsafe_allow_html=True)
+
+        if bool(row.get("target_stale")):
+            st.warning(
+                "⏳ **Stale buy target.** Price has spent ~6 months more than "
+                "50% above this level — the alert can never fire, and if price "
+                "ever fell this far the original thesis likely broke on the "
+                "way down. Treat the level as historical until refreshed."
+            )
 
         # What they do
         summary = (fact.summary if fact else "") or ""

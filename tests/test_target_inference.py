@@ -171,3 +171,36 @@ def test_describe_pattern_is_human_readable():
     text = describe_pattern(p)
     assert "52-week low" in text
     assert "2.0×" in text
+
+
+# ---- target staleness ------------------------------------------------------
+
+
+def _px(vals, start="2025-06-01"):
+    idx = pd.date_range(start, periods=len(vals), freq="D")
+    return pd.Series(vals, index=idx)
+
+
+def test_stale_when_price_never_neared_the_zone():
+    from icarus.target_inference import flag_stale_targets
+    view = pd.DataFrame([
+        {"ticker": "FAR", "target_entry": 10.0},    # price lived at ~30
+        {"ticker": "NEAR", "target_entry": 10.0},   # dips toward the zone
+        {"ticker": "NOTGT", "target_entry": float("nan")},
+    ])
+    hist = {
+        "FAR": _px([30.0] * 200),
+        "NEAR": _px([30.0] * 100 + [12.0] * 100),   # within 50% band recently
+    }
+    out = flag_stale_targets(view, hist, lookback_sessions=126)
+    by = out.set_index("ticker")["target_stale"]
+    assert bool(by["FAR"]) is True
+    assert bool(by["NEAR"]) is False
+    assert bool(by["NOTGT"]) is False
+
+
+def test_not_stale_without_enough_history():
+    from icarus.target_inference import flag_stale_targets
+    view = pd.DataFrame([{"ticker": "NEWCO", "target_entry": 10.0}])
+    out = flag_stale_targets(view, {"NEWCO": _px([30.0] * 40)})
+    assert bool(out.iloc[0]["target_stale"]) is False  # benefit of the doubt
