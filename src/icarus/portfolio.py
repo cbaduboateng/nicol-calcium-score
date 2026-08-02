@@ -217,6 +217,158 @@ def fetch_live_quotes(tickers: list[str]) -> dict[str, dict]:
 
 
 DEFAULT_PORTFOLIO_STOP_PCT = 0.12
+PICKS_PATH = "portfolio/picks.csv"
+PICK_COLUMNS = ["date", "ticker", "adjusted_score", "pool"]
+
+
+def portfolio_risk(
+    positions: pd.DataFrame,
+    quotes: dict[str, dict],
+    *,
+    stop_pct: float = DEFAULT_PORTFOLIO_STOP_PCT,
+) -> dict:
+    """The number that prevents ruin: total loss if EVERY holding fell to
+    its stop tomorrow. Positions already below their stop contribute
+    zero remaining risk (the loss beyond the stop has already happened —
+    the breach alert owns that)."""
+    total_risk = 0.0
+    total_value = 0.0
+    n_below = 0
+    for _, p in positions.iterrows():
+        q = quotes.get(p["ticker"]) or {}
+        px = q.get("price")
+        px = float(px) if px is not None and pd.notna(px) else float(p["avg_cost"])
+        stop = float(p["avg_cost"]) * (1.0 - stop_pct)
+        value = float(p["qty"]) * px
+        total_value += value
+        if px <= stop:
+            n_below += 1
+            continue
+        total_risk += float(p["qty"]) * (px - stop)
+    return {
+        "risk_at_stops": total_risk,
+        "risk_pct_of_value": (total_risk / total_value * 100.0) if total_value > 0 else 0.0,
+        "n_below_stop": n_below,
+    }
+
+
+def theme_concentration(
+    positions: pd.DataFrame,
+    quotes: dict[str, dict],
+    themes: dict[str, str],
+) -> dict:
+    """How much of the portfolio is secretly one bet. Values each holding
+    (live price, cost fallback), groups by theme, returns the largest
+    theme's share."""
+    by_theme: dict[str, float] = {}
+    total = 0.0
+    for _, p in positions.iterrows():
+        q = quotes.get(p["ticker"]) or {}
+        px = q.get("price")
+        px = float(px) if px is not None and pd.notna(px) else float(p["avg_cost"])
+        value = float(p["qty"]) * px
+        theme = themes.get(p["ticker"], "Other") or "Other"
+        by_theme[theme] = by_theme.get(theme, 0.0) + value
+        total += value
+    if not by_theme or total <= 0:
+        return {"top_theme": None, "top_share_pct": 0.0, "themes": {}}
+    top = max(by_theme, key=by_theme.get)
+    return {
+        "top_theme": top,
+        "top_share_pct": by_theme[top] / total * 100.0,
+        "themes": {k: v / total * 100.0 for k, v in by_theme.items()},
+    }
+
+
+def adherence(
+    picks: pd.DataFrame,
+    trades: pd.DataFrame,
+    *,
+    window_days: int = 3,
+) -> pd.DataFrame:
+    """Mark each logged pick 'acted' when a BUY of that ticker exists
+    within ``window_days`` after the pick date. The behavioural mirror:
+    over time the Track Record can answer whether your overrides beat
+    the system."""
+    if picks is None or picks.empty:
+        return pd.DataFrame(columns=[*PICK_COLUMNS, "acted"])
+    p = picks.copy()
+    p["date"] = pd.to_datetime(p["date"], errors="coerce").dt.date
+    p = p.dropna(subset=["date"])
+    t = normalise_trades(trades) if trades is not None else empty_trades()
+    buys = t[t["side"] == "buy"]
+    acted: list[bool] = []
+    for _, row in p.iterrows():
+        hit = False
+        for _, b in buys[buys["ticker"] == str(row["ticker"]).upper()].iterrows():
+            delta = (b["date"] - row["date"]).days
+            if 0 <= delta <= window_days:
+                hit = True
+                break
+        acted.append(hit)
+    p["acted"] = acted
+    return p.sort_values("date", ascending=False).reset_index(drop=True)
+
+
+def load_public_picks(
+    repo: str,
+    *, branch: str = PORTFOLIO_BRANCH, path: str = PICKS_PATH,
+) -> pd.DataFrame:
+    """Tokenless read of the pick log (public repo)."""
+    import requests
+    url = f"https://raw.githubusercontent.com/{repo}/{branch}/{path}"
+    try:
+        resp = requests.get(url, timeout=20)
+        if resp.status_code == 404 or not resp.text.strip():
+            return pd.DataFrame(columns=PICK_COLUMNS)
+        resp.raise_for_status()
+        df = pd.read_csv(io.StringIO(resp.text), dtype=str)
+        for c in PICK_COLUMNS:
+            if c not in df.columns:
+                df[c] = ""
+        return df[PICK_COLUMNS]
+    except Exception as exc:  # noqa: BLE001
+        log.warning("Public pick read failed (%s)", exc)
+        return pd.DataFrame(columns=PICK_COLUMNS)
+
+
+def append_pick(token: str, repo: str, pick: dict) -> None:
+    """Append today's pick to picks.csv on the data branch (one per
+    date — re-runs the same day are deduped)."""
+    import requests
+    _ensure_branch(token, repo, PORTFOLIO_BRANCH)
+    resp = requests.get(
+        f"{GITHUB_API}/repos/{repo}/contents/{PICKS_PATH}",
+        params={"ref": PORTFOLIO_BRANCH}, headers=_gh_headers(token), timeout=20,
+    )
+    sha = None
+    existing = pd.DataFrame(columns=PICK_COLUMNS)
+    if resp.status_code == 200:
+        payload = resp.json()
+        sha = payload.get("sha")
+        raw = base64.b64decode(payload["content"]).decode("utf-8")
+        if raw.strip():
+            existing = pd.read_csv(io.StringIO(raw), dtype=str)
+    elif resp.status_code != 404:
+        resp.raise_for_status()
+    if "date" in existing.columns and str(pick.get("date")) in set(existing["date"].astype(str)):
+        log.info("Pick for %s already logged — skipping", pick.get("date"))
+        return
+    updated = pd.concat([existing, pd.DataFrame([pick])], ignore_index=True)
+    body = {
+        "message": f"Log pick {pick.get('ticker')} ({pick.get('date')})",
+        "content": base64.b64encode(
+            updated[PICK_COLUMNS].to_csv(index=False).encode()
+        ).decode("ascii"),
+        "branch": PORTFOLIO_BRANCH,
+    }
+    if sha:
+        body["sha"] = sha
+    put = requests.put(
+        f"{GITHUB_API}/repos/{repo}/contents/{PICKS_PATH}",
+        headers=_gh_headers(token), json=body, timeout=20,
+    )
+    put.raise_for_status()
 
 
 def stop_breaches(

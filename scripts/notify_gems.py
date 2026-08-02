@@ -159,6 +159,25 @@ def main() -> int:
         (explorer_gems, "explorer", 0.85),
     ])
 
+    # ---- Log the pick for the adherence mirror -----------------------------
+    if verdict["pick"] is not None:
+        pick_tok = os.environ.get("PICKLOG_TOKEN", "").strip()
+        if pick_tok:
+            try:
+                from datetime import date as _date
+
+                from icarus.portfolio import append_pick
+                pk = verdict["pick"]
+                append_pick(pick_tok, "cbaduboateng/nicol-calcium-score", {
+                    "date": _date.today().isoformat(),
+                    "ticker": str(pk["ticker"]),
+                    "adjusted_score": f"{pk['adjusted_score']:.3f}",
+                    "pool": str(pk["pool"]),
+                })
+                log.info("Pick logged to portfolio-data")
+            except Exception as exc:  # noqa: BLE001
+                log.warning("Pick logging failed (%s)", exc)
+
     lines: list[str] = []
     if verdict["pick"] is not None:
         p = verdict["pick"]

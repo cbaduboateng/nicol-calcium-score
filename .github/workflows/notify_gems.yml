@@ -11,7 +11,7 @@ on:
   workflow_dispatch: {}
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   scan:
@@ -31,4 +31,5 @@ jobs:
       - name: Scan and notify
         env:
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          PICKLOG_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python scripts/notify_gems.py

@@ -1985,6 +1985,51 @@ def _render_portfolio_tab(st) -> None:
     else:
         st.info("No open positions yet — log your first trade below.")
 
+    # ---- Risk view ---------------------------------------------------------
+    if totals["n_positions"]:
+        from .portfolio import portfolio_risk, theme_concentration
+        from .ticker_facts import lookup as _facts
+        from .watchlist_alerts import load_watchlist as _lw, map_theme as _mt
+
+        wl_desc = {}
+        try:
+            _wl = _lw()
+            wl_desc = dict(zip(_wl["ticker"], _wl["description"]))
+        except Exception:  # noqa: BLE001
+            pass
+        themes = {}
+        for t in positions["ticker"]:
+            fact = _facts(t, cache_only=True)
+            themes[t] = _mt(wl_desc.get(t, ""), sector=(fact.sector if fact else None))
+
+        risk = portfolio_risk(positions, quotes)
+        conc = theme_concentration(positions, quotes, themes)
+        r = st.columns(2)
+        r[0].metric(
+            "Risk at stops",
+            f"{_fmt_dollar(risk['risk_at_stops'])} · {risk['risk_pct_of_value']:.1f}%",
+            help="Total loss if EVERY holding fell to its stop (avg cost −12%) "
+                 "tomorrow. The number that prevents ruin — keep it a size "
+                 "you can shrug off.",
+        )
+        if conc["top_theme"]:
+            r[1].metric(
+                "Top theme", f"{conc['top_theme']} · {conc['top_share_pct']:.0f}%",
+                help="Share of portfolio value in the largest theme.",
+            )
+        if conc["top_share_pct"] > 50:
+            st.warning(
+                f"⚠️ **{conc['top_share_pct']:.0f}% of the portfolio is one "
+                f"theme ({conc['top_theme']})** — several tickers, one bet. "
+                "Fine if intentional; dangerous if accidental."
+            )
+        if risk["n_below_stop"]:
+            st.error(
+                f"🛑 {risk['n_below_stop']} holding(s) already below their "
+                "stop — the rule says these should have been sold. See the "
+                "push alerts."
+            )
+
     # ---- Holdings as T212-style rows --------------------------------------
     if totals["n_positions"]:
         rows_html = ['<div class="ilist">']
@@ -2105,6 +2150,37 @@ def _render_portfolio_tab(st) -> None:
             st.rerun()
         except Exception as exc:  # noqa: BLE001
             st.error(f"Import failed: {exc}")
+
+    # ---- Pick adherence (the behavioural mirror) ---------------------------
+    from .portfolio import adherence, load_public_picks
+    picks_log = load_public_picks(repo)
+    if not picks_log.empty:
+        st.markdown("### 🎯 Pick adherence")
+        adh = adherence(picks_log, trades)
+        acted_pct = float(adh["acted"].mean() * 100.0) if len(adh) else 0.0
+        st.caption(
+            f"**{len(adh)} picks logged** · you acted on "
+            f"**{acted_pct:.0f}%** (a buy within 3 days of the pick). Over "
+            "time this answers the question most traders never get to ask: "
+            "do your overrides beat the system, or does the system beat you?"
+        )
+        st.dataframe(
+            adh.head(15).assign(
+                followed=adh.head(15)["acted"].map({True: "✅", False: "—"}),
+            )[["date", "ticker", "adjusted_score", "pool", "followed"]],
+            use_container_width=True, hide_index=True,
+            column_config={
+                "date": "Date", "ticker": "Pick",
+                "adjusted_score": "Adj score", "pool": "Pool",
+                "followed": "Acted",
+            },
+        )
+    else:
+        st.caption(
+            "🎯 Pick adherence: the notifier now logs every 👑 Pick of the Day "
+            "to your portfolio branch — the adherence mirror appears here "
+            "once the first picks accumulate."
+        )
 
     st.caption(
         "Average-cost accounting, like your broker shows. Research tool — "
