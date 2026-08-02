@@ -2204,6 +2204,55 @@ def _render_lab_tab(st) -> None:
         "advice."
     )
 
+    # ---- Exit-policy panel -------------------------------------------------
+    st.divider()
+    st.markdown("### 🚪 Exit policies — same entries, different exits")
+    st.caption(
+        "The track record's 1% hit rate exposed that analyst 2.5× targets "
+        "are almost never reached in 6 months — today's profits come from "
+        "*accidental* timeouts. This panel fixes the entries to the "
+        "validated 6m gate set and varies ONLY the exit: longer holds, "
+        "wider stops (microcaps gap through 10% routinely), a 20-day-low "
+        "trailing exit, taking half at +30%, and pure trend-following with "
+        "no target. Same walk-forward honesty rules."
+    )
+    if st.button("▶ Run the exit comparison", key="exit_lab_run"):
+        from .signal_lab import compare_exit_variants
+        with st.spinner("Replaying 7 exit policies over the same entries..."):
+            st.session_state["exit_lab_result"] = compare_exit_variants(
+                expanded, history,
+            )
+    exit_lab = st.session_state.get("exit_lab_result")
+    if exit_lab is not None:
+        if exit_lab.empty:
+            st.info("No entries fired — run after the caches warm.")
+        else:
+            xd = exit_lab.copy()
+            xd["win_rate"] = xd["win_rate"] * 100.0
+            st.dataframe(
+                xd, use_container_width=True, hide_index=True,
+                column_config={
+                    "variant": "Exit policy",
+                    "n_signals": st.column_config.NumberColumn("Signals", format="%d"),
+                    "n_closed": st.column_config.NumberColumn("Closed", format="%d"),
+                    "win_rate": st.column_config.NumberColumn("Win rate", format="%.0f%%"),
+                    "avg_return_pct": st.column_config.NumberColumn("Avg ret", format="%+.1f%%"),
+                    "median_return_pct": st.column_config.NumberColumn("Median", format="%+.1f%%"),
+                    "avg_days_held": st.column_config.NumberColumn("Avg days", format="%.0f"),
+                    "n_train": st.column_config.NumberColumn("n 1st half", format="%d"),
+                    "avg_train_pct": st.column_config.NumberColumn("1st half", format="%+.1f%%"),
+                    "n_test": st.column_config.NumberColumn("n 2nd half", format="%d"),
+                    "avg_test_pct": st.column_config.NumberColumn("2nd half", format="%+.1f%%"),
+                },
+            )
+            st.caption(
+                "Same evidence bar as above: beat the baseline in BOTH "
+                "halves at n ≥ 15 per half before believing it. Caveat: "
+                "close-only data — trailing exits and wide stops behave "
+                "worse intraday than daily closes suggest. If a policy "
+                "wins decisively, tell Claude to make it the default."
+            )
+
 
 def _render_about_tab(st) -> None:
     """Plain-English guide to what the app is and how each piece works."""

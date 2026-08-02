@@ -72,6 +72,157 @@ DEFAULT_VARIANTS: tuple[SignalVariant, ...] = (
 )
 
 
+@dataclass(frozen=True)
+class ExitVariant:
+    """One exit policy, applied to the SAME validated entries.
+
+    The track record showed hit-rate ~1%: analyst 2.5x targets are almost
+    never reached in 6 months, so all profit currently comes from lucky
+    timeouts — the exit policy is accidental. This panel makes it chosen.
+    """
+    name: str
+    stop_pct: float = 0.10
+    timeout_days: int = 180
+    trail_low_days: int | None = None   # exit on close below the N-day low
+    take_half_at_pct: float | None = None  # realise half at +X%, ride the rest
+    use_target: bool = True             # False = pure trend-follow, no target
+
+
+DEFAULT_EXIT_VARIANTS: tuple[ExitVariant, ...] = (
+    ExitVariant("baseline: 10% stop / target / 6m"),
+    ExitVariant("hold longer: 12m timeout", timeout_days=365),
+    ExitVariant("wide stop 15%", stop_pct=0.15),
+    ExitVariant("wide stop 20%", stop_pct=0.20),
+    ExitVariant("trail the 20d low", trail_low_days=20),
+    ExitVariant("take half at +30%", take_half_at_pct=30.0),
+    ExitVariant("trend only: trail, no target",
+                trail_low_days=20, use_target=False, timeout_days=365),
+)
+
+
+def _mark_forward_exit(
+    series: pd.Series,
+    roll_low: pd.Series | None,
+    sig: dict,
+    v: ExitVariant,
+) -> dict:
+    """Walk one entry forward under an exit policy. Conservative ordering
+    per bar: stop, then trailing, then target, then timeout. With
+    take-half active, half the position locks at +X% and the final
+    return blends 50/50 with the remainder's outcome."""
+    entry = float(sig["entry_price"])
+    d0 = pd.Timestamp(sig["signal_date"])
+    stop = entry * (1.0 - v.stop_pct)
+    target = sig.get("target_exit") if v.use_target else None
+    timeout_d = d0 + pd.Timedelta(days=v.timeout_days)
+    half_locked: float | None = None
+
+    def _blend(r: float) -> float:
+        return 0.5 * half_locked + 0.5 * r if half_locked is not None else r
+
+    after = series[series.index > d0]
+    for ts, px in after.items():
+        if not np.isfinite(px):
+            continue
+        px = float(px)
+        gain_pct = (px - entry) / entry * 100.0
+        if (half_locked is None and v.take_half_at_pct is not None
+                and gain_pct >= v.take_half_at_pct):
+            half_locked = float(v.take_half_at_pct)
+        reason = None
+        if px <= stop:
+            reason = "stop"
+        elif v.trail_low_days and roll_low is not None:
+            low = roll_low.get(ts, np.nan)
+            if np.isfinite(low) and px < float(low):
+                reason = "trail"
+        if reason is None and target is not None and pd.notna(target) and px >= float(target):
+            reason = "target"
+        if reason is None and ts >= timeout_d:
+            reason = "timeout"
+        if reason:
+            return {
+                "return_pct": _blend(gain_pct),
+                "days_held": int((ts - d0).days),
+                "close_reason": reason,
+                "open": False,
+            }
+    last = float(series.dropna().iloc[-1])
+    return {
+        "return_pct": _blend((last - entry) / entry * 100.0),
+        "days_held": int((series.index[-1] - d0).days),
+        "close_reason": "open",
+        "open": True,
+    }
+
+
+def compare_exit_variants(
+    watchlist: pd.DataFrame,
+    price_history: dict[str, pd.Series],
+    variants: tuple[ExitVariant, ...] = DEFAULT_EXIT_VARIANTS,
+    *,
+    as_of: date | None = None,
+) -> pd.DataFrame:
+    """Fix the ENTRY definition to the Lab-validated 6m gate set and vary
+    only the exit. One summary row per exit policy, with the same
+    walk-forward split as the entry comparison."""
+    entry_def = SignalVariant("entries: validated 6m gates", momentum_days=126)
+    entries = run_variant(watchlist, price_history, entry_def, as_of=as_of)
+    if entries.empty:
+        return pd.DataFrame()
+
+    prices = _prices_frame(price_history)
+    d0, d1 = prices.index.min(), prices.index.max()
+    midpoint = d0 + (d1 - d0) / 2
+
+    series_by_ticker = {
+        t: prices[t].dropna() for t in entries["ticker"].unique()
+        if t in prices.columns
+    }
+
+    out: list[dict] = []
+    for v in variants:
+        roll_by_ticker: dict[str, pd.Series] = {}
+        if v.trail_low_days:
+            roll_by_ticker = {
+                t: s.rolling(v.trail_low_days).min().shift(1)
+                for t, s in series_by_ticker.items()
+            }
+        marked: list[dict] = []
+        for _, sig in entries.iterrows():
+            s = series_by_ticker.get(sig["ticker"])
+            if s is None or s.empty:
+                continue
+            m = _mark_forward_exit(
+                s, roll_by_ticker.get(sig["ticker"]), sig.to_dict(), v,
+            )
+            m["signal_date"] = sig["signal_date"]
+            marked.append(m)
+        mdf = pd.DataFrame(marked)
+        if mdf.empty:
+            continue
+        closed = mdf[~mdf["open"]]
+        sd = pd.to_datetime(mdf["signal_date"])
+        train, test = mdf[sd <= midpoint], mdf[sd > midpoint]
+        out.append({
+            "variant": v.name,
+            "n_signals": len(mdf),
+            "n_closed": len(closed),
+            "win_rate": float((closed["return_pct"] > 0).mean()) if len(closed) else np.nan,
+            "avg_return_pct": float(closed["return_pct"].mean()) if len(closed) else np.nan,
+            "median_return_pct": float(closed["return_pct"].median()) if len(closed) else np.nan,
+            "avg_days_held": float(closed["days_held"].mean()) if len(closed) else np.nan,
+            "n_train": len(train),
+            "avg_train_pct": float(train["return_pct"].mean()) if len(train) else np.nan,
+            "n_test": len(test),
+            "avg_test_pct": float(test["return_pct"].mean()) if len(test) else np.nan,
+        })
+    df = pd.DataFrame(out)
+    return df.sort_values(
+        "avg_return_pct", ascending=False, na_position="last",
+    ).reset_index(drop=True) if not df.empty else df
+
+
 def _prices_frame(price_history: dict[str, pd.Series]) -> pd.DataFrame:
     cols = {}
     for t, s in price_history.items():
