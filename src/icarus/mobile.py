@@ -280,6 +280,19 @@ div[data-baseweb="tab-list"] {
   label[data-testid="stCheckbox"] { padding: 0.35rem 0; }
 }
 
+/* Price header + change chips (Trading212-style) */
+.px-big {
+  font-size: 1.7rem; font-weight: 600; color: var(--text-1);
+  font-variant-numeric: tabular-nums; letter-spacing: -0.01em;
+}
+.chip {
+  display: inline-block; padding: 2px 10px; border-radius: 999px;
+  font-size: 0.85rem; font-weight: 600; vertical-align: 3px;
+  font-variant-numeric: tabular-nums;
+}
+.chip.up { background: rgba(27,175,122,0.16); color: #2fcf96; }
+.chip.down { background: rgba(230,103,103,0.16); color: #ef8585; }
+
 /* The detail card on mobile reads better as a vertical stack. */
 .icarus-card { padding: 0.5rem 0; }
 .icarus-card h4 { margin: 0 0 0.25rem 0; }

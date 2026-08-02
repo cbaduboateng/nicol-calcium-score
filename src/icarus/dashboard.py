@@ -43,6 +43,177 @@ def _fmt_cap_short(mcap: float | None) -> str:
     return f"${mcap / 1e6:.0f}M"
 
 
+_POS = "#1baf7a"
+_NEG = "#e66767"
+_GOLD = "#eda100"
+
+
+def _sparkline_values(series: pd.Series | None, n: int = 30) -> list[float] | None:
+    """Last n closes as a plain list for inline sparkline columns."""
+    if series is None:
+        return None
+    s = series.dropna()
+    if len(s) < 2:
+        return None
+    return [float(v) for v in s.iloc[-n:].tolist()]
+
+
+def _change_chip(pct: float | None, label: str = "") -> str:
+    """Green/red pill for a % change, Trading212-style."""
+    if pct is None or not pd.notna(pct):
+        return ""
+    cls = "up" if pct >= 0 else "down"
+    arrow = "▲" if pct >= 0 else "▼"
+    suffix = f" {label}" if label else ""
+    return f'<span class="chip {cls}">{arrow} {pct:+.2f}%{suffix}</span>'
+
+
+def _render_price_chart(
+    st,
+    series: pd.Series | None,
+    *,
+    entry: float | None = None,
+    exit_: float | None = None,
+    stop: float | None = None,
+    key: str = "chart",
+) -> None:
+    """T212-style gradient area chart with range pills — plus the one
+    thing a broker chart never shows: the analyst buy / sell / stop
+    levels drawn on the price."""
+    if series is None or series.dropna().shape[0] < 5:
+        st.caption("Not enough price history to chart.")
+        return
+    import altair as alt
+
+    rng = st.radio(
+        "Range", ["1M", "3M", "6M", "1Y"],
+        horizontal=True, index=2, key=f"{key}_range",
+        label_visibility="collapsed",
+    )
+    days = {"1M": 21, "3M": 63, "6M": 126, "1Y": 252}[rng]
+    s = series.dropna().iloc[-days:]
+    if len(s) < 2:
+        st.caption("Not enough history for that range.")
+        return
+
+    first, last = float(s.iloc[0]), float(s.iloc[-1])
+    change = (last / first - 1.0) * 100.0 if first > 0 else 0.0
+    color = _POS if change >= 0 else _NEG
+
+    st.markdown(
+        f'<span class="px-big">{last:,.2f}</span>&nbsp;'
+        f'{_change_chip(change, rng)}',
+        unsafe_allow_html=True,
+    )
+
+    df = pd.DataFrame({"date": pd.to_datetime(s.index), "price": s.values})
+    base = alt.Chart(df).encode(
+        x=alt.X("date:T", axis=alt.Axis(
+            title=None, grid=False, labelColor="#8a897f",
+            domainColor="rgba(242,241,236,0.15)", tickColor="rgba(242,241,236,0.15)",
+        )),
+    )
+    area = base.mark_area(
+        line={"color": color, "strokeWidth": 2},
+        color=alt.Gradient(
+            gradient="linear",
+            stops=[
+                alt.GradientStop(color=color, offset=0),
+                alt.GradientStop(color="#101312", offset=1),
+            ],
+            x1=1, x2=1, y1=0, y2=1,
+        ),
+        opacity=0.45,
+        interpolate="monotone",
+    ).encode(
+        y=alt.Y("price:Q", scale=alt.Scale(zero=False), axis=alt.Axis(
+            title=None, labelColor="#8a897f",
+            gridColor="rgba(242,241,236,0.06)", domainOpacity=0,
+        )),
+        tooltip=[
+            alt.Tooltip("date:T", title="Date"),
+            alt.Tooltip("price:Q", title="Price", format=",.2f"),
+        ],
+    )
+    layers = [area]
+    lo, hi = float(s.min()), float(s.max())
+    pad = (hi - lo) * 0.25 if hi > lo else hi * 0.05
+    for level, label, lcolor, dash in (
+        (entry, "Buy", _GOLD, [5, 4]),
+        (exit_, "Sell", _POS, [2, 3]),
+        (stop, "Stop", _NEG, [7, 3]),
+    ):
+        if level is None or not pd.notna(level) or level <= 0:
+            continue
+        if not (lo - pad) <= float(level) <= (hi + pad):
+            continue  # level far off-screen — don't crush the price scale
+        ldf = pd.DataFrame({
+            "y": [float(level)],
+            "label": [f"{label} {level:,.2f}"],
+            "date": [pd.to_datetime(s.index[-1])],
+        })
+        layers.append(
+            alt.Chart(ldf).mark_rule(
+                color=lcolor, strokeDash=dash, opacity=0.85, strokeWidth=1.2,
+            ).encode(y="y:Q")
+        )
+        layers.append(
+            alt.Chart(ldf).mark_text(
+                align="right", baseline="bottom", dx=0, dy=-3,
+                color=lcolor, fontSize=10, fontWeight=600,
+            ).encode(x="date:T", y="y:Q", text="label:N")
+        )
+    chart = (
+        alt.layer(*layers)
+        .properties(height=230, background="transparent")
+        .configure_view(strokeWidth=0)
+    )
+    st.altair_chart(chart, use_container_width=True)
+
+
+def _render_area_chart(st, series: pd.Series, *, height: int = 240) -> None:
+    """Gradient area chart for cumulative series (P&L, equity), coloured
+    by the sign of the final value."""
+    s2 = series.dropna()
+    if s2.empty:
+        return
+    import altair as alt
+    color = _POS if float(s2.iloc[-1]) >= 0 else _NEG
+    df = pd.DataFrame({"date": pd.to_datetime(s2.index), "value": s2.values})
+    chart = (
+        alt.Chart(df)
+        .mark_area(
+            line={"color": color, "strokeWidth": 2},
+            color=alt.Gradient(
+                gradient="linear",
+                stops=[
+                    alt.GradientStop(color=color, offset=0),
+                    alt.GradientStop(color="#101312", offset=1),
+                ],
+                x1=1, x2=1, y1=0, y2=1,
+            ),
+            opacity=0.45,
+            interpolate="monotone",
+        )
+        .encode(
+            x=alt.X("date:T", axis=alt.Axis(
+                title=None, grid=False, labelColor="#8a897f",
+            )),
+            y=alt.Y("value:Q", axis=alt.Axis(
+                title=None, labelColor="#8a897f",
+                gridColor="rgba(242,241,236,0.06)", format="~s",
+            )),
+            tooltip=[
+                alt.Tooltip("date:T", title="Date"),
+                alt.Tooltip("value:Q", title="Value", format=",.0f"),
+            ],
+        )
+        .properties(height=height, background="transparent")
+        .configure_view(strokeWidth=0)
+    )
+    st.altair_chart(chart, use_container_width=True)
+
+
 def _read_parquet(path: Path) -> pd.DataFrame:
     if not path.exists():
         return pd.DataFrame()
@@ -428,6 +599,8 @@ def _render_watchlist_tab(st) -> None:
                 st, found,
                 insider_overlay=insider_overlay,
                 catalyst_overlay=catalyst_overlay,
+                price_series=history.get(str(found["ticker"])),
+                chart_key="lookup",
             )
         st.divider()
 
@@ -640,6 +813,8 @@ def _render_watchlist_tab(st) -> None:
                             st, gem_row.iloc[0],
                             insider_overlay=insider_overlay,
                             catalyst_overlay=catalyst_overlay,
+                            price_series=history.get(str(gem["ticker"])),
+                            chart_key="gem",
                         )
 
     st.divider()
@@ -856,6 +1031,9 @@ def _render_watchlist_tab(st) -> None:
         picks = picks.copy()
         if "market_cap_usd" in picks.columns:
             picks["mkt_cap"] = picks["market_cap_usd"].apply(_fmt_cap_short)
+        picks["spark"] = picks["ticker"].map(
+            lambda t: _sparkline_values(history.get(str(t)))
+        )
         # Compact default for phones — fewer columns means no horizontal scroll.
         # Power users can flip the toggle to see every sub-score.
         show_all_picks = st.toggle(
@@ -865,7 +1043,7 @@ def _render_watchlist_tab(st) -> None:
             help="Reveals the per-layer sub-scores and target prices. Off by default for phone-friendly width.",
         )
         compact_picks_cols = [
-            "rank", "ticker", "name", "status",
+            "rank", "ticker", "spark", "name", "status",
             "mkt_cap", "composite",
             "reward_risk", "pct_3m", "pct_6m",
         ]
@@ -890,6 +1068,9 @@ def _render_watchlist_tab(st) -> None:
             column_config={
                 "rank": st.column_config.NumberColumn("#", format="%d"),
                 "ticker": "Ticker",
+                "spark": st.column_config.AreaChartColumn(
+                    "30d", width="small", help="Last 30 daily closes.",
+                ),
                 "name": "Name",
                 "theme": "Theme",
                 "status": "Status",
@@ -984,6 +1165,9 @@ def _render_watchlist_tab(st) -> None:
     cut = cut.copy()
     if "market_cap_usd" in cut.columns:
         cut["mkt_cap"] = cut["market_cap_usd"].apply(_fmt_cap_short)
+    cut["spark"] = cut["ticker"].map(
+        lambda t: _sparkline_values(history.get(str(t)))
+    )
     show_all_main = st.toggle(
         "📊 Show all columns",
         value=False,
@@ -991,12 +1175,12 @@ def _render_watchlist_tab(st) -> None:
         help="Reveals theme, exit target, all four momentum periods, and the analyst note. Off for phone-friendly width.",
     )
     compact_main_cols = [
-        "status", "ticker", "mkt_cap",
+        "status", "ticker", "spark", "mkt_cap",
         "live_price", "target_entry", "stop_price", "tgt_src",
         "gap_to_entry_pct", "pct_3m",
     ]
     full_main_cols = [
-        "status", "ticker", "name", "theme", "mkt_cap",
+        "status", "ticker", "spark", "name", "theme", "mkt_cap",
         "live_price", "target_entry", "target_exit", "stop_price", "tgt_src",
         "gap_to_entry_pct", "reward_risk",
         "pct_1m", "pct_3m", "pct_6m", "pct_12m",
@@ -1018,6 +1202,10 @@ def _render_watchlist_tab(st) -> None:
             "ticker": "Ticker",
             "name": "Name",
             "theme": "Theme",
+            "spark": st.column_config.AreaChartColumn(
+                "30d", width="small",
+                help="Last 30 daily closes.",
+            ),
             "mkt_cap": st.column_config.TextColumn(
                 "Mkt cap",
                 help="Compact market cap: $50M, $1.2B, '—' for unknown.",
@@ -1062,6 +1250,8 @@ def _render_watchlist_tab(st) -> None:
             st, selected_row,
             insider_overlay=insider_overlay,
             catalyst_overlay=catalyst_overlay,
+            price_series=history.get(selected_ticker),
+            chart_key="main",
         )
 
     # ---- Theme heat + parabolic ranking ------------------------------------
@@ -1119,6 +1309,8 @@ def _render_watchlist_tab(st) -> None:
             st, sel_row,
             insider_overlay=insider_overlay,
             catalyst_overlay=catalyst_overlay,
+            price_series=history.get(sel_ticker),
+            chart_key="para",
         )
 
     # ---- Theme drill-down --------------------------------------------------
@@ -1141,6 +1333,8 @@ def _render_watchlist_tab(st) -> None:
                 st, row,
                 insider_overlay=insider_overlay,
                 catalyst_overlay=catalyst_overlay,
+                price_series=history.get(str(row.get("ticker"))),
+                chart_key="drill",
             )
     else:
         st.info(
@@ -1161,10 +1355,12 @@ def _render_watchlist_ticker_card(
     *,
     insider_overlay: dict | None = None,
     catalyst_overlay: dict | None = None,
+    price_series: pd.Series | None = None,
+    chart_key: str = "card",
 ) -> None:
     """Compact card for a single watchlist ticker: name, live vs targets,
-    short company description, and any catalyst hook. Falls back to the
-    analyst note from the CSV when curated facts are missing.
+    a T212-style price chart with the buy/sell/stop levels drawn on it,
+    short company description, and any catalyst hook.
 
     When `insider_overlay` / `catalyst_overlay` are passed, surfaces the
     matching ticker's detail (who, when, upcoming events) inside the card."""
@@ -1213,10 +1409,21 @@ def _render_watchlist_ticker_card(
         with header_r:
             stop = row.get("stop_price")
             st.markdown(
-                f"**Live** {_fmt(live)}  ·  **Buy ≤** {_fmt(entry)}  ·  **Sell ≥** {_fmt(exit_)}"
+                f"**Buy ≤** {_fmt(entry)}  ·  **Sell ≥** {_fmt(exit_)}"
                 f"  ·  **Stop** {_fmt(stop)}  \n"
                 f"3m {_fmt_pct(pct_3m)}  ·  6m {_fmt_pct(pct_6m)}  ·  Status **{status or '—'}**"
             )
+
+        # Price chart with the levels drawn on it (T212 look, but with
+        # the buy/sell/stop lines a broker never shows).
+        if price_series is not None:
+            _render_price_chart(
+                st, price_series,
+                entry=entry, exit_=exit_, stop=row.get("stop_price"),
+                key=f"px_{chart_key}_{ticker}",
+            )
+        elif live is not None and pd.notna(live):
+            st.markdown(f'<span class="px-big">{live:,.2f}</span>', unsafe_allow_html=True)
 
         # What they do
         summary = (fact.summary if fact else "") or ""
@@ -1382,7 +1589,7 @@ def _render_track_record_tab(st) -> None:
     if not pnl.empty:
         st.markdown("#### Cumulative realised P&L")
         chart_df = pnl.set_index("close_date")["cumulative_usd"]
-        st.line_chart(chart_df, height=240)
+        _render_area_chart(st, chart_df, height=240)
 
     # ---- Recent closed ----------------------------------------------------
     closed = signals[~signals["open"]].copy()
@@ -1551,7 +1758,7 @@ def _render_track_record_tab(st) -> None:
             equity = result["equity"]
             if not equity.empty:
                 st.markdown("#### Equity curve")
-                st.line_chart(equity.set_index("date")["equity"], height=240)
+                _render_area_chart(st, equity.set_index("date")["equity"], height=240)
 
             trades = result["trades"]
             if not trades.empty:
