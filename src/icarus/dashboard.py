@@ -1326,7 +1326,7 @@ def _render_track_record_tab(st) -> None:
             position_size_usd = st.number_input(
                 "Position size ($)",
                 min_value=1_000.0, max_value=50_000_000.0,
-                value=float(DEFAULT_POSITION_SIZE_USD), step=100_000.0,
+                value=float(DEFAULT_POSITION_SIZE_USD), step=1_000.0,
                 help="Notional per signal. Doesn't change relative performance — only the dollar headlines.",
             )
 

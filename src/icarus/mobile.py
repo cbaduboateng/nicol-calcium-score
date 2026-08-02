@@ -75,6 +75,14 @@ html, body, [class*="st-"] {
   font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
 }
+/* Streamlit renders its chevrons/icons as Material Symbols ligatures; the
+   Inter override above must NOT catch them or the ligature text renders
+   literally ("keyboard_arrow_right" over the expander label). */
+[data-testid="stIconMaterial"],
+[class*="material-symbols"],
+span[data-testid="stExpanderToggleIcon"] {
+  font-family: 'Material Symbols Rounded' !important;
+}
 h1, h2, h3 {
   font-family: 'Fraunces', Georgia, serif !important;
   font-weight: 530 !important;

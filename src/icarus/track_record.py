@@ -42,12 +42,13 @@ import pandas as pd
 log = logging.getLogger(__name__)
 
 
-# Defaults match the retail screener convention so dollar figures are
-# directly comparable. The size doesn't change relative performance.
+# Position size only scales the dollar headlines, never the relative
+# performance. \$10k per signal reads as a realistic personal notional;
+# the slider allows anything.
 DEFAULT_STOP_PCT: float = 0.10            # 10% below entry = stop
 DEFAULT_TIMEOUT_DAYS: int = 180           # ~6 months
 DEFAULT_COOLDOWN_DAYS: int = 30           # min gap between re-signals
-DEFAULT_POSITION_SIZE_USD: float = 5_000_000.0
+DEFAULT_POSITION_SIZE_USD: float = 10_000.0
 
 
 def _mark_forward(
