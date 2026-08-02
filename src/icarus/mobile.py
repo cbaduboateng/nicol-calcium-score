@@ -32,22 +32,26 @@ _PWA_HEAD_INJECTION = """
   // layout, so no container overflow/transform can swallow it. Survives
   // reruns via the id guard.
   if (!parentDoc.getElementById('icarus-refresh-fab')) {
-    const b = parentDoc.createElement('button');
+    // A real <a href> — not a scripted button. Our script runs in a
+    // sandboxed iframe that may ADD elements to the parent but is
+    // forbidden from NAVIGATING it; a native link in the parent's own
+    // DOM navigates without needing any script permission.
+    const b = parentDoc.createElement('a');
     b.id = 'icarus-refresh-fab';
     b.textContent = '\u21bb';
     b.setAttribute('aria-label', 'Reload the app');
+    b.setAttribute('href', parentDoc.location.pathname);
+    b.setAttribute('target', '_self');
     b.style.cssText = [
       'position:fixed', 'bottom:20px', 'left:16px',
       'z-index:2147483647', 'width:46px', 'height:46px',
       'border-radius:50%', 'background:#181b19',
       'border:1px solid rgba(242,241,236,0.25)', 'color:#eda100',
       'font-size:22px', 'line-height:1', 'cursor:pointer',
+      'text-decoration:none',
       'box-shadow:0 4px 16px rgba(0,0,0,0.5)',
       'display:flex', 'align-items:center', 'justify-content:center',
     ].join(';');
-    b.onclick = function () {
-      parentDoc.location.href = parentDoc.location.pathname;
-    };
     parentDoc.body.appendChild(b);
   }
 
