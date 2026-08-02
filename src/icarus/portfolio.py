@@ -216,6 +216,79 @@ def fetch_live_quotes(tickers: list[str]) -> dict[str, dict]:
     return out
 
 
+DEFAULT_PORTFOLIO_STOP_PCT = 0.12
+
+
+def stop_breaches(
+    positions: pd.DataFrame,
+    latest_closes: dict[str, float],
+    *,
+    stop_pct: float = DEFAULT_PORTFOLIO_STOP_PCT,
+    warn_within_pct: float = 3.0,
+) -> pd.DataFrame:
+    """The most valuable alert the app can send: 'your rule says sell'.
+
+    Stop convention: avg_cost × (1 − stop_pct) — the runbook's 12% below
+    the fill. Returns one row per holding that has BREACHED its stop
+    (close ≤ stop) or is WITHIN ``warn_within_pct`` above it, columns:
+    ticker, qty, avg_cost, stop, close, distance_pct, state
+    ('breached' | 'near'). Holdings without a close are skipped —
+    silence must never be mistaken for safety, so callers should report
+    unpriced holdings separately."""
+    rows: list[dict] = []
+    if positions is None or positions.empty:
+        return pd.DataFrame(columns=[
+            "ticker", "qty", "avg_cost", "stop", "close",
+            "distance_pct", "state",
+        ])
+    for _, p in positions.iterrows():
+        close = latest_closes.get(p["ticker"])
+        if close is None or not pd.notna(close) or close <= 0:
+            continue
+        stop = float(p["avg_cost"]) * (1.0 - stop_pct)
+        if stop <= 0:
+            continue
+        distance_pct = (float(close) - stop) / stop * 100.0
+        if float(close) <= stop:
+            state = "breached"
+        elif distance_pct <= warn_within_pct:
+            state = "near"
+        else:
+            continue
+        rows.append({
+            "ticker": p["ticker"],
+            "qty": float(p["qty"]),
+            "avg_cost": float(p["avg_cost"]),
+            "stop": stop,
+            "close": float(close),
+            "distance_pct": distance_pct,
+            "state": state,
+        })
+    return pd.DataFrame(rows)
+
+
+def load_public_trades(
+    repo: str,
+    *, branch: str = PORTFOLIO_BRANCH, path: str = PORTFOLIO_PATH,
+) -> pd.DataFrame:
+    """Tokenless read of the trade log via raw.githubusercontent — the
+    repo is public, so the notifier can check stops without any secret."""
+    import requests
+    url = f"https://raw.githubusercontent.com/{repo}/{branch}/{path}"
+    try:
+        resp = requests.get(url, timeout=20)
+        if resp.status_code == 404:
+            return empty_trades()
+        resp.raise_for_status()
+        text = resp.text
+        if not text.strip():
+            return empty_trades()
+        return normalise_trades(pd.read_csv(io.StringIO(text), dtype=str))
+    except Exception as exc:  # noqa: BLE001
+        log.warning("Public trade read failed (%s)", exc)
+        return empty_trades()
+
+
 # ---------------------------------------------------------------------------
 # GitHub-backed persistence (portfolio-data branch)
 # ---------------------------------------------------------------------------

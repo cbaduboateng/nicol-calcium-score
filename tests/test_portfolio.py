@@ -114,6 +114,40 @@ def test_totals_with_quotes_and_fallback():
     assert t["n_priced"] == 1 and t["n_positions"] == 2
 
 
+def test_stop_breaches_flags_breached_and_near():
+    from icarus.portfolio import stop_breaches
+    trades = pd.DataFrame([
+        _t("GONE", "buy", 10, 10.00, "2026-01-05"),   # stop 8.80
+        _t("NEAR", "buy", 10, 10.00, "2026-01-05"),   # stop 8.80
+        _t("SAFE", "buy", 10, 10.00, "2026-01-05"),
+        _t("NOPX", "buy", 10, 10.00, "2026-01-05"),
+    ])
+    pos, _ = positions_from_trades(trades)
+    closes = {"GONE": 8.50, "NEAR": 8.95, "SAFE": 11.00}
+    out = stop_breaches(pos, closes)
+    by = out.set_index("ticker")
+    assert by.loc["GONE", "state"] == "breached"
+    assert by.loc["NEAR", "state"] == "near"
+    assert "SAFE" not in by.index
+    assert "NOPX" not in by.index          # unpriced skipped, reported by caller
+    assert by.loc["GONE", "stop"] == pytest.approx(8.80)
+
+
+def test_stop_breaches_respects_custom_stop_pct():
+    from icarus.portfolio import stop_breaches
+    trades = pd.DataFrame([_t("AAA", "buy", 10, 10.00, "2026-01-05")])
+    pos, _ = positions_from_trades(trades)
+    # At 20% stop (8.00), a 8.50 close is safe-ish (6.25% above, > 3% band)
+    out = stop_breaches(pos, {"AAA": 8.50}, stop_pct=0.20)
+    assert out.empty
+
+
+def test_stop_breaches_empty_positions():
+    from icarus.portfolio import stop_breaches
+    pos, _ = positions_from_trades(empty_trades())
+    assert stop_breaches(pos, {"AAA": 1.0}).empty
+
+
 def test_new_trade_and_empty_frames():
     tr = new_trade("hive", "buy", 100, 2.87)
     assert tr["ticker"] == "HIVE" and tr["id"]
