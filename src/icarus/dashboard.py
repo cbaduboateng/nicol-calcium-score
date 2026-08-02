@@ -2260,45 +2260,44 @@ def _render_lab_tab(st) -> None:
     lab = st.session_state.get("signal_lab_result")
     if lab is None:
         st.info("👆 Press the button — the comparison takes a minute or two.")
-        return
-    if lab.empty:
+    elif lab.empty:
         st.info("No signals fired for any variant — not enough targets or history.")
-        return
-    lab_disp = lab.copy()
-    lab_disp["win_rate"] = lab_disp["win_rate"] * 100.0
-    st.dataframe(
-        lab_disp, use_container_width=True, hide_index=True,
-        column_config={
-            "variant": "Signal definition",
-            "n_signals": st.column_config.NumberColumn("Signals", format="%d"),
-            "n_closed": st.column_config.NumberColumn("Closed", format="%d"),
-            "win_rate": st.column_config.NumberColumn("Win rate", format="%.0f%%"),
-            "avg_return_pct": st.column_config.NumberColumn(
-                "Avg ret", format="%+.1f%%",
-                help="Equal-weighted mean return of closed signals.",
-            ),
-            "median_return_pct": st.column_config.NumberColumn("Median", format="%+.1f%%"),
-            "avg_days_held": st.column_config.NumberColumn("Avg days", format="%.0f"),
-            "n_train": st.column_config.NumberColumn("n 1st half", format="%d"),
-            "avg_train_pct": st.column_config.NumberColumn(
-                "1st half", format="%+.1f%%",
-                help="Mean return of signals fired in the FIRST half of the date range.",
-            ),
-            "n_test": st.column_config.NumberColumn("n 2nd half", format="%d"),
-            "avg_test_pct": st.column_config.NumberColumn(
-                "2nd half", format="%+.1f%%",
-                help="Mean return of signals fired in the SECOND half — the out-of-sample check.",
-            ),
-        },
-    )
-    st.caption(
-        "How to read it: a variant earns trust only if its average return "
-        "beats the control in BOTH halves with a reasonable sample "
-        "(n ≥ 15 per half). Win rate alone misleads — a 60% win rate on "
-        "2:1 payoffs beats 80% on 0.5:1. If a variant wins decisively "
-        "here, tell Claude to make it the default gate set. Not financial "
-        "advice."
-    )
+    else:
+        lab_disp = lab.copy()
+        lab_disp["win_rate"] = lab_disp["win_rate"] * 100.0
+        st.dataframe(
+            lab_disp, use_container_width=True, hide_index=True,
+            column_config={
+                "variant": "Signal definition",
+                "n_signals": st.column_config.NumberColumn("Signals", format="%d"),
+                "n_closed": st.column_config.NumberColumn("Closed", format="%d"),
+                "win_rate": st.column_config.NumberColumn("Win rate", format="%.0f%%"),
+                "avg_return_pct": st.column_config.NumberColumn(
+                    "Avg ret", format="%+.1f%%",
+                    help="Equal-weighted mean return of closed signals.",
+                ),
+                "median_return_pct": st.column_config.NumberColumn("Median", format="%+.1f%%"),
+                "avg_days_held": st.column_config.NumberColumn("Avg days", format="%.0f"),
+                "n_train": st.column_config.NumberColumn("n 1st half", format="%d"),
+                "avg_train_pct": st.column_config.NumberColumn(
+                    "1st half", format="%+.1f%%",
+                    help="Mean return of signals fired in the FIRST half of the date range.",
+                ),
+                "n_test": st.column_config.NumberColumn("n 2nd half", format="%d"),
+                "avg_test_pct": st.column_config.NumberColumn(
+                    "2nd half", format="%+.1f%%",
+                    help="Mean return of signals fired in the SECOND half — the out-of-sample check.",
+                ),
+            },
+        )
+        st.caption(
+            "How to read it: a variant earns trust only if its average return "
+            "beats the control in BOTH halves with a reasonable sample "
+            "(n ≥ 15 per half). Win rate alone misleads — a 60% win rate on "
+            "2:1 payoffs beats 80% on 0.5:1. If a variant wins decisively "
+            "here, tell Claude to make it the default gate set. Not financial "
+            "advice."
+        )
 
     # ---- Exit-policy panel -------------------------------------------------
     st.divider()
