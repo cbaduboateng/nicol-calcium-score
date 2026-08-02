@@ -351,6 +351,38 @@ def test_top_up_recovers_missing_and_respects_cooldown(tmp_path):
     assert out2 == out
 
 
+def test_fresh_cache_with_wrong_tickers_is_not_served(tmp_path, monkeypatch):
+    """Regression: a cache full of OTHER tickers (e.g. explorer symbols)
+    must not satisfy a curated-watchlist request just because it has many
+    columns — coverage is measured against the REQUESTED tickers."""
+    from icarus.watchlist_alerts import _fetch_field_history
+    idx = pd.date_range("2026-01-01", periods=5, freq="D")
+    # Cache holds 100 irrelevant tickers, freshly written.
+    wrong = pd.DataFrame({f"EXP{i}": [1.0] * 5 for i in range(100)}, index=idx)
+    cache_file = tmp_path / "watchlist_prices_v2_1y.parquet"
+    wrong.to_parquet(cache_file)
+
+    fetched: list[list[str]] = []
+
+    def fake_bulk(symbols, period, field):
+        fetched.append(list(symbols))
+        return {"AAA": pd.Series([2.0] * 5, index=idx)}
+
+    monkeypatch.setattr(
+        "icarus.watchlist_alerts._bulk_field_download", fake_bulk,
+    )
+    out = _fetch_field_history(
+        ["AAA", "BBB"],
+        field="Close", period="1y", cache_dir=tmp_path,
+        cache_stem="watchlist_prices_v2", legacy_stem="watchlist_prices",
+        max_cache_age_hours=24.0,
+    )
+    assert fetched, "must refetch instead of serving the wrong-ticker cache"
+    assert "AAA" in out
+    # Backfill keeps the explorer columns around too (merged, not lost).
+    assert "EXP0" in out
+
+
 def test_top_up_skips_when_few_missing(tmp_path):
     from icarus.watchlist_alerts import _maybe_top_up
     idx = pd.date_range("2026-01-01", periods=3, freq="D")

@@ -1049,21 +1049,24 @@ def _fetch_field_history(
         age_h = (_time.time() - cache_file.stat().st_mtime) / 3600.0
         if age_h < max_cache_age_hours:
             df = _read_cached_frame(cache_file)
-            # Coverage sanity check: a fresh-looking cache that covers less
-            # than half the requested tickers is a poisoned artefact of a
-            # rate-limited fetch — fall through and refetch (it still serves
-            # as backfill below).
-            if df is not None and len(df.columns) >= 0.5 * len(set(tickers)):
-                data = _frame_to_dict(df)
-                return _maybe_top_up(
-                    data, tickers,
-                    field=field, period=period, cache_file=cache_file,
-                )
+            # Coverage sanity check — INTERSECTION with the requested
+            # tickers, not raw column count. A cache full of explorer
+            # symbols is useless for a curated-watchlist request even
+            # though it has thousands of columns; counting columns
+            # globally let exactly that bug serve an empty page.
             if df is not None:
+                requested = set(tickers)
+                covered = len(requested & set(df.columns))
+                if covered >= 0.5 * len(requested):
+                    data = _frame_to_dict(df)
+                    return _maybe_top_up(
+                        data, tickers,
+                        field=field, period=period, cache_file=cache_file,
+                    )
                 log.warning(
-                    "%s cache covers only %d/%d tickers — treating as "
-                    "poisoned and refetching", field, len(df.columns),
-                    len(set(tickers)),
+                    "%s cache covers only %d/%d REQUESTED tickers — "
+                    "refetching (cache still used as backfill)",
+                    field, covered, len(requested),
                 )
 
     sym_map = yahoo_symbol_map(tickers)  # original -> yahoo symbol

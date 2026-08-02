@@ -122,6 +122,26 @@ def main() -> int:
     import pandas as pd  # noqa: F811
     pd.DataFrame(rows).to_csv(OUT_PATH, index=False)
     log.info("Wrote %s (%d tickers)", OUT_PATH, len(rows))
+
+    # ---- Warm the CURATED list too --------------------------------------
+    # The committed caches serve BOTH pools. Skipping the curated side
+    # here once produced a cache with thousands of explorer symbols and
+    # none of the user's own watchlist — a full-looking cache serving an
+    # empty page.
+    curated_list = sorted(curated)
+    c1 = fetch_price_history(curated_list, period="1y")
+    log.info("Curated 1y prices: %d / %d", len(c1), len(curated_list))
+    c2 = fetch_price_history(curated_list, period="2y")
+    log.info("Curated 2y prices (track record): %d / %d", len(c2), len(curated_list))
+    cv = fetch_volume_history(curated_list, period="3mo")
+    log.info("Curated volumes: %d / %d", len(cv), len(curated_list))
+    n_curated_facts = prewarm(curated_list, max_workers=12)
+    log.info("Curated facts prewarmed: %d new", n_curated_facts)
+
+    if len(c1) < 0.5 * len(curated_list):
+        log.error("Curated 1y coverage below 50%% — failing so a thin "
+                  "cache is never blessed")
+        return 1
     return 0
 
 

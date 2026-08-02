@@ -1384,7 +1384,9 @@ def _render_track_record_tab(st) -> None:
     if not closed.empty:
         st.markdown("#### Recent closed signals")
         closed = closed.sort_values("close_date", ascending=False).head(15)
-        closed["realised_usd"] = closed["return_pct"] / 100.0 * position_size_usd
+        closed["realised_usd"] = (
+            closed["return_pct"] / 100.0 * position_size_usd
+        ).apply(_fmt_dollar)
         result_label = closed["close_reason"].map({
             "target": "🎯 Hit target",
             "stop": "🛑 Hit stop",
@@ -1402,7 +1404,7 @@ def _render_track_record_tab(st) -> None:
                 "entry_price": st.column_config.NumberColumn("Entry", format="$%.2f"),
                 "close_price": st.column_config.NumberColumn("Exit", format="$%.2f"),
                 "return_pct": st.column_config.NumberColumn("Return", format="%+.1f%%"),
-                "realised_usd": st.column_config.NumberColumn("P&L $", format="$%.0f"),
+                "realised_usd": st.column_config.TextColumn("P&L"),
                 "days_held": st.column_config.NumberColumn("Days", format="%d"),
                 "result": "Result",
             },
@@ -1413,7 +1415,9 @@ def _render_track_record_tab(st) -> None:
     if not open_signals.empty:
         st.markdown("#### Live signals (still in play)")
         open_signals = open_signals.sort_values("return_pct", ascending=False)
-        open_signals["mtm_usd"] = open_signals["return_pct"] / 100.0 * position_size_usd
+        open_signals["mtm_usd"] = (
+            open_signals["return_pct"] / 100.0 * position_size_usd
+        ).apply(_fmt_dollar)
         st.dataframe(
             open_signals[[
                 "signal_date", "ticker", "entry_price", "close_price",
@@ -1426,7 +1430,7 @@ def _render_track_record_tab(st) -> None:
                 "entry_price": st.column_config.NumberColumn("Entry", format="$%.2f"),
                 "close_price": st.column_config.NumberColumn("Current", format="$%.2f"),
                 "return_pct": st.column_config.NumberColumn("Move", format="%+.1f%%"),
-                "mtm_usd": st.column_config.NumberColumn("MTM $", format="$%.0f"),
+                "mtm_usd": st.column_config.TextColumn("MTM"),
                 "days_held": st.column_config.NumberColumn("Days", format="%d"),
             },
         )
