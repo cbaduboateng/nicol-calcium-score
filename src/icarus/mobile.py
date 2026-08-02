@@ -83,16 +83,23 @@ html, body, [class*="st-"] {
 span[data-testid="stExpanderToggleIcon"] {
   font-family: 'Material Symbols Rounded' !important;
 }
-h1, h2, h3 {
+/* T212-style: clean sans throughout; the serif lives ONLY on the app
+   title, as a brand accent. */
+h1 {
   font-family: 'Fraunces', Georgia, serif !important;
   font-weight: 530 !important;
   letter-spacing: 0.01em;
+  font-size: 2.0rem !important;
   color: var(--text-1) !important;
 }
-h1 { font-size: 2.0rem !important; }
-h2 { font-size: 1.45rem !important; }
-h3 { font-size: 1.2rem !important; margin-top: 0.75rem !important; }
-h4 { font-weight: 600 !important; color: var(--text-1) !important; }
+h2, h3, h4 {
+  font-family: 'Inter', -apple-system, sans-serif !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em;
+  color: var(--text-1) !important;
+}
+h2 { font-size: 1.35rem !important; }
+h3 { font-size: 1.1rem !important; margin-top: 0.75rem !important; }
 
 /* Numbers line up in columns everywhere they appear. */
 [data-testid="stMetricValue"], [data-testid="stDataFrame"],
@@ -279,6 +286,47 @@ div[data-baseweb="tab-list"] {
   /* Wider tap zone for checkboxes specifically (the box itself is tiny). */
   label[data-testid="stCheckbox"] { padding: 0.35rem 0; }
 }
+
+/* T212-style instrument rows: name | sparkline | price+chip, tappable */
+.ilist { margin: 0.25rem 0 0.5rem 0; }
+.irow {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 6px;
+  border-bottom: 1px solid var(--ink-border);
+  text-decoration: none !important;
+  border-radius: 10px;
+  transition: background 120ms ease;
+}
+.irow:hover { background: rgba(242,241,236,0.04); }
+.irow-l { flex: 1 1 40%; min-width: 0; }
+.irow-name {
+  color: var(--text-1); font-weight: 600; font-size: 0.95rem;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.irow-sub {
+  color: var(--text-3); font-size: 0.78rem;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.irow-spark { flex: 0 0 auto; line-height: 0; }
+.irow-r { flex: 0 0 auto; text-align: right; }
+.irow-px {
+  color: var(--text-1); font-weight: 600; font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+}
+.irow .chip { font-size: 0.75rem; padding: 1px 8px; vertical-align: 0; }
+.dot {
+  display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+  margin-right: 6px; vertical-align: 1px;
+}
+.dot.buy { background: #2fcf96; }
+.dot.appr { background: #eda100; }
+.dot.hold { background: #8a897f; }
+.dot.sell { background: #ef8585; }
+.clear-sel {
+  color: var(--text-3) !important; font-size: 0.85rem;
+  text-decoration: none !important;
+}
+.clear-sel:hover { color: var(--gold) !important; }
 
 /* Price header + change chips (Trading212-style) */
 .px-big {

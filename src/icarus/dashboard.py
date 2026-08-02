@@ -58,6 +58,67 @@ def _sparkline_values(series: pd.Series | None, n: int = 30) -> list[float] | No
     return [float(v) for v in s.iloc[-n:].tolist()]
 
 
+def _svg_spark(
+    values: list[float] | None, *, w: int = 96, h: int = 32,
+) -> str:
+    """Inline SVG sparkline (line + soft area fill), coloured by
+    direction. Pure string — renders inside the T212-style row list
+    without a chart library, so hundreds of rows stay instant."""
+    if not values or len(values) < 2:
+        return f'<svg width="{w}" height="{h}"></svg>'
+    lo, hi = min(values), max(values)
+    span = (hi - lo) or 1.0
+    n = len(values)
+    pts = [
+        (i * (w - 2) / (n - 1) + 1, (h - 3) - (v - lo) / span * (h - 6) + 1.5)
+        for i, v in enumerate(values)
+    ]
+    line = " ".join(f"{x:.1f},{y:.1f}" for x, y in pts)
+    area = f"1,{h - 1} " + line + f" {w - 1},{h - 1}"
+    up = values[-1] >= values[0]
+    stroke = "#2fcf96" if up else "#ef8585"
+    fill = "rgba(27,175,122,0.14)" if up else "rgba(230,103,103,0.14)"
+    return (
+        f'<svg width="{w}" height="{h}" viewBox="0 0 {w} {h}">'
+        f'<polygon points="{area}" fill="{fill}"/>'
+        f'<polyline points="{line}" fill="none" stroke="{stroke}" '
+        f'stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>'
+        f"</svg>"
+    )
+
+
+_STATUS_DOT = {
+    "BUY ZONE": "buy", "APPROACHING": "appr", "HOLD": "hold",
+    "SELL ZONE": "sell", "WATCH": "hold", "PRICE MISSING": "hold",
+}
+
+
+def _instrument_row_html(
+    row: pd.Series, spark: list[float] | None, day_pct: float | None,
+) -> str:
+    """One tappable T212-style row: dot+ticker+name | sparkline | price+chip.
+    The anchor sets ?sel=<ticker> which the tab reads to open the
+    instrument view."""
+    ticker = str(row.get("ticker") or "")
+    name = str(row.get("name") or "")
+    live = row.get("live_price")
+    px = f"{live:,.2f}" if pd.notna(live) else "—"
+    cap_s = _fmt_cap_short(row.get("market_cap_usd"))
+    sub_bits = [b for b in (name, cap_s if cap_s != "—" else "") if b]
+    dot = _STATUS_DOT.get(str(row.get("status") or ""), "hold")
+    chip = _change_chip(day_pct) or '<span class="chip hold"></span>'
+    return (
+        f'<a class="irow" href="?sel={ticker}" target="_self">'
+        f'<div class="irow-l">'
+        f'<div class="irow-name"><span class="dot {dot}"></span>{ticker}</div>'
+        f'<div class="irow-sub">{" · ".join(sub_bits)}</div>'
+        f"</div>"
+        f'<div class="irow-spark">{_svg_spark(spark)}</div>'
+        f'<div class="irow-r"><div class="irow-px">{px}</div>{chip}</div>'
+        f"</a>"
+    )
+
+
 def _change_chip(pct: float | None, label: str = "") -> str:
     """Green/red pill for a % change, Trading212-style."""
     if pct is None or not pd.notna(pct):
@@ -559,6 +620,34 @@ def _render_watchlist_tab(st) -> None:
         )
         if buy_zone_tickers else pd.DataFrame()
     )
+
+    # ---- Instrument view (opened by tapping a T212-style list row) ---------
+    sel_param = None
+    try:
+        sel_param = st.query_params.get("sel")
+    except Exception:  # noqa: BLE001
+        pass
+    if sel_param:
+        sel_t = str(sel_param).upper()
+        sel_rows = view[view["ticker"] == sel_t]
+        if not sel_rows.empty:
+            st.markdown(
+                '<a class="clear-sel" href="?" target="_self">✕ Close instrument view</a>',
+                unsafe_allow_html=True,
+            )
+            sel_fails = gem_gate_failures(sel_rows.iloc[0], theme_6m_map)
+            if sel_fails:
+                st.caption(f"Not a gem right now: {'; '.join(sel_fails)}")
+            else:
+                st.caption("✅ Passes every strict gate.")
+            _render_watchlist_ticker_card(
+                st, sel_rows.iloc[0],
+                insider_overlay=insider_overlay,
+                catalyst_overlay=catalyst_overlay,
+                price_series=history.get(sel_t),
+                chart_key="selrow",
+            )
+            st.divider()
 
     # ---- 🔎 Ticker lookup (bypasses every filter) --------------------------
     lookup_q = st.text_input(
@@ -1161,43 +1250,47 @@ def _render_watchlist_tab(st) -> None:
     cols[2].metric("🔴 In sell zone", n_sell)
     cols[3].metric("Total tracked", len(view))
 
-    # ---- Main table --------------------------------------------------------
+    # ---- Instrument list (T212-style tappable rows) ------------------------
     cut = cut.copy()
     if "market_cap_usd" in cut.columns:
         cut["mkt_cap"] = cut["market_cap_usd"].apply(_fmt_cap_short)
     cut["spark"] = cut["ticker"].map(
         lambda t: _sparkline_values(history.get(str(t)))
     )
-    show_all_main = st.toggle(
-        "📊 Show all columns",
-        value=False,
-        key="main_show_all_cols",
-        help="Reveals theme, exit target, all four momentum periods, and the analyst note. Off for phone-friendly width.",
-    )
-    compact_main_cols = [
-        "status", "ticker", "spark", "mkt_cap",
-        "live_price", "target_entry", "stop_price", "tgt_src",
-        "gap_to_entry_pct", "pct_3m",
-    ]
-    full_main_cols = [
-        "status", "ticker", "spark", "name", "theme", "mkt_cap",
-        "live_price", "target_entry", "target_exit", "stop_price", "tgt_src",
-        "gap_to_entry_pct", "reward_risk",
-        "pct_1m", "pct_3m", "pct_6m", "pct_12m",
-        "description",
-    ]
-    display_cols = full_main_cols if show_all_main else compact_main_cols
-    display_cols = [c for c in display_cols if c in cut.columns]
-    st.caption("👇 Click any row to expand the company description below.")
-    cut_display = cut[display_cols].reset_index(drop=True)
-    main_event = st.dataframe(
-        cut_display,
-        use_container_width=True,
-        hide_index=True,
-        on_select="rerun",
-        selection_mode="single-row",
-        key="watchlist_main_table",
-        column_config={
+
+    from .daily_signals import pct_change_over
+    max_rows = 40
+    shown = cut.head(max_rows)
+    row_html: list[str] = ['<div class="ilist">']
+    for _, r in shown.iterrows():
+        t = str(r.get("ticker") or "")
+        day_pct = pct_change_over(history.get(t), 1)
+        day_pct = day_pct if pd.notna(day_pct) else None
+        row_html.append(_instrument_row_html(r, r.get("spark"), day_pct))
+    row_html.append("</div>")
+    st.markdown("".join(row_html), unsafe_allow_html=True)
+    if len(cut) > max_rows:
+        st.caption(
+            f"Showing the first {max_rows} of {len(cut)} matches — tighten "
+            "the filters above, or open the table view for everything."
+        )
+    st.caption("Tap a row to open the instrument view at the top of the page.")
+
+    # Full spreadsheet for power users (and the accessibility table view).
+    with st.expander("📋 Table view — every column, all rows"):
+        cut_display = cut[[c for c in (
+            "status", "ticker", "spark", "name", "theme", "mkt_cap",
+            "live_price", "target_entry", "target_exit", "stop_price", "tgt_src",
+            "gap_to_entry_pct", "reward_risk",
+            "pct_1m", "pct_3m", "pct_6m", "pct_12m",
+            "description",
+        ) if c in cut.columns]].reset_index(drop=True)
+        st.dataframe(
+            cut_display,
+            use_container_width=True,
+            hide_index=True,
+            key="watchlist_main_table",
+            column_config={
             "status": "Status",
             "ticker": "Ticker",
             "name": "Name",
@@ -1233,25 +1326,12 @@ def _render_watchlist_tab(st) -> None:
                 "R:R", format="%.2f",
                 help="Upside-to-exit divided by downside-to-entry, from current price.",
             ),
-            "pct_1m": st.column_config.NumberColumn("1m", format="%+.1f%%"),
-            "pct_3m": st.column_config.NumberColumn("3m", format="%+.1f%%"),
-            "pct_6m": st.column_config.NumberColumn("6m", format="%+.1f%%"),
-            "pct_12m": st.column_config.NumberColumn("12m", format="%+.1f%%"),
-            "description": "Notes",
-        },
-    )
-    if main_event is not None and main_event.selection.rows:
-        selected_idx = main_event.selection.rows[0]
-        # The main table is filtered + sorted, so go through the displayed
-        # ticker rather than positional index from `view`.
-        selected_ticker = str(cut_display.iloc[selected_idx]["ticker"])
-        selected_row = view[view["ticker"] == selected_ticker].iloc[0]
-        _render_watchlist_ticker_card(
-            st, selected_row,
-            insider_overlay=insider_overlay,
-            catalyst_overlay=catalyst_overlay,
-            price_series=history.get(selected_ticker),
-            chart_key="main",
+                "pct_1m": st.column_config.NumberColumn("1m", format="%+.1f%%"),
+                "pct_3m": st.column_config.NumberColumn("3m", format="%+.1f%%"),
+                "pct_6m": st.column_config.NumberColumn("6m", format="%+.1f%%"),
+                "pct_12m": st.column_config.NumberColumn("12m", format="%+.1f%%"),
+                "description": "Notes",
+            },
         )
 
     # ---- Theme heat + parabolic ranking ------------------------------------
