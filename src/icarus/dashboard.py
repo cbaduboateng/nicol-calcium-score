@@ -2514,11 +2514,6 @@ def main() -> None:
         },
     )
     inject_mobile(st)
-    st.markdown(
-        '<a class="refresh-fab" href="?" target="_self" '
-        'aria-label="Reload the app">↻</a>',
-        unsafe_allow_html=True,
-    )
     st.title(f"{APP_ICON_EMOJI} {APP_TITLE}")
     st.caption(
         "Analyst-watchlist screen with quality gates, day-scale signals and "

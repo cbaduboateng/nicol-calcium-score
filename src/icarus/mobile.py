@@ -26,7 +26,32 @@ _PWA_HEAD_INJECTION = """
 <script>
 (function() {
   const parentDoc = window.parent && window.parent.document;
-  if (!parentDoc || parentDoc.head.querySelector('meta[name="apple-mobile-web-app-title"]')) {
+  if (!parentDoc) { return; }
+
+  // Reload FAB: appended to <body> with inline styles, outside Streamlit's
+  // layout, so no container overflow/transform can swallow it. Survives
+  // reruns via the id guard.
+  if (!parentDoc.getElementById('icarus-refresh-fab')) {
+    const b = parentDoc.createElement('button');
+    b.id = 'icarus-refresh-fab';
+    b.textContent = '\u21bb';
+    b.setAttribute('aria-label', 'Reload the app');
+    b.style.cssText = [
+      'position:fixed', 'bottom:20px', 'left:16px',
+      'z-index:2147483647', 'width:46px', 'height:46px',
+      'border-radius:50%', 'background:#181b19',
+      'border:1px solid rgba(242,241,236,0.25)', 'color:#eda100',
+      'font-size:22px', 'line-height:1', 'cursor:pointer',
+      'box-shadow:0 4px 16px rgba(0,0,0,0.5)',
+      'display:flex', 'align-items:center', 'justify-content:center',
+    ].join(';');
+    b.onclick = function () {
+      parentDoc.location.href = parentDoc.location.pathname;
+    };
+    parentDoc.body.appendChild(b);
+  }
+
+  if (parentDoc.head.querySelector('meta[name="apple-mobile-web-app-title"]')) {
     return;
   }
   const meta = (name, content) => {
