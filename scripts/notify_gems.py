@@ -64,7 +64,10 @@ def main() -> int:
             positions_from_trades,
             stop_breaches,
         )
-        pt = load_public_trades("cbaduboateng/nicol-calcium-score")
+        pt = load_public_trades(
+            "cbaduboateng/nicol-calcium-score",
+            token=os.environ.get("PICKLOG_TOKEN", "").strip(),
+        )
         positions, _ = positions_from_trades(pt)
         if not positions.empty:
             closes: dict[str, float] = {}

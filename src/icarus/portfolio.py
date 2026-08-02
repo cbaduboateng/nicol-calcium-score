@@ -313,22 +313,39 @@ def adherence(
 def load_public_picks(
     repo: str,
     *, branch: str = PORTFOLIO_BRANCH, path: str = PICKS_PATH,
+    token: str = "",
 ) -> pd.DataFrame:
-    """Tokenless read of the pick log (public repo)."""
+    """Read the pick log. Token → authenticated API (private-repo safe);
+    no token → raw endpoint (public repos only)."""
     import requests
-    url = f"https://raw.githubusercontent.com/{repo}/{branch}/{path}"
     try:
-        resp = requests.get(url, timeout=20)
-        if resp.status_code == 404 or not resp.text.strip():
+        if token:
+            resp = requests.get(
+                f"{GITHUB_API}/repos/{repo}/contents/{path}",
+                params={"ref": branch}, headers=_gh_headers(token), timeout=20,
+            )
+            if resp.status_code == 404:
+                return pd.DataFrame(columns=PICK_COLUMNS)
+            resp.raise_for_status()
+            text = base64.b64decode(resp.json()["content"]).decode("utf-8")
+        else:
+            resp = requests.get(
+                f"https://raw.githubusercontent.com/{repo}/{branch}/{path}",
+                timeout=20,
+            )
+            if resp.status_code == 404 or not resp.text.strip():
+                return pd.DataFrame(columns=PICK_COLUMNS)
+            resp.raise_for_status()
+            text = resp.text
+        if not text.strip():
             return pd.DataFrame(columns=PICK_COLUMNS)
-        resp.raise_for_status()
-        df = pd.read_csv(io.StringIO(resp.text), dtype=str)
+        df = pd.read_csv(io.StringIO(text), dtype=str)
         for c in PICK_COLUMNS:
             if c not in df.columns:
                 df[c] = ""
         return df[PICK_COLUMNS]
     except Exception as exc:  # noqa: BLE001
-        log.warning("Public pick read failed (%s)", exc)
+        log.warning("Pick-log read failed (%s)", exc)
         return pd.DataFrame(columns=PICK_COLUMNS)
 
 
@@ -422,22 +439,36 @@ def stop_breaches(
 def load_public_trades(
     repo: str,
     *, branch: str = PORTFOLIO_BRANCH, path: str = PORTFOLIO_PATH,
+    token: str = "",
 ) -> pd.DataFrame:
-    """Tokenless read of the trade log via raw.githubusercontent — the
-    repo is public, so the notifier can check stops without any secret."""
+    """Read the trade log. With a token, uses the authenticated contents
+    API (works on PRIVATE repos); without one, falls back to the raw
+    endpoint (public repos only)."""
     import requests
-    url = f"https://raw.githubusercontent.com/{repo}/{branch}/{path}"
     try:
-        resp = requests.get(url, timeout=20)
-        if resp.status_code == 404:
-            return empty_trades()
-        resp.raise_for_status()
-        text = resp.text
+        if token:
+            resp = requests.get(
+                f"{GITHUB_API}/repos/{repo}/contents/{path}",
+                params={"ref": branch}, headers=_gh_headers(token), timeout=20,
+            )
+            if resp.status_code == 404:
+                return empty_trades()
+            resp.raise_for_status()
+            text = base64.b64decode(resp.json()["content"]).decode("utf-8")
+        else:
+            resp = requests.get(
+                f"https://raw.githubusercontent.com/{repo}/{branch}/{path}",
+                timeout=20,
+            )
+            if resp.status_code == 404:
+                return empty_trades()
+            resp.raise_for_status()
+            text = resp.text
         if not text.strip():
             return empty_trades()
         return normalise_trades(pd.read_csv(io.StringIO(text), dtype=str))
     except Exception as exc:  # noqa: BLE001
-        log.warning("Public trade read failed (%s)", exc)
+        log.warning("Trade-log read failed (%s)", exc)
         return empty_trades()
 
 

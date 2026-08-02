@@ -2153,7 +2153,7 @@ def _render_portfolio_tab(st) -> None:
 
     # ---- Pick adherence (the behavioural mirror) ---------------------------
     from .portfolio import adherence, load_public_picks
-    picks_log = load_public_picks(repo)
+    picks_log = load_public_picks(repo, token=token)
     if not picks_log.empty:
         st.markdown("### 🎯 Pick adherence")
         adh = adherence(picks_log, trades)
@@ -2355,84 +2355,93 @@ def _render_about_tab(st) -> None:
     st.subheader("ℹ️ What is Icarus?")
     st.markdown(
         """
-Icarus is a **stock-watching research tool**. It tracks a curated list of
-shares that an analyst has set buy and sell price targets for, compares those
-targets against live market prices every day, and tells you which — if any —
-deserve attention **today**.
+Icarus is a **stock-watching and trade-tracking research tool**. It watches a
+curated list of shares with analyst buy/sell price targets, compares them
+against live market prices, tells you which — if any — deserve attention
+**today**, and then keeps score of the trades you actually make.
 
 It does not place trades, it does not manage money, and nothing in it is
-financial advice. It ranks; you decide.
+financial advice. It ranks and records; you decide.
 
 ---
 
 ### The one-minute version
 
-Every stock on the watchlist has a **buy target** (the price at which it looks
-cheap) and a **sell target** (the price at which the gains have been made).
-When the live price falls to or below the buy target, the stock is **in the
-buy zone**. Being cheap isn't enough, though — a stock can be cheap because
-it's dying. So Icarus runs every buy-zone stock through a series of quality
-checks, and only the rare names that pass *everything* while also showing
-signs of life today are called **💎 Gems**. From the gems, one name is crowned
-**👑 Pick of the Day** — or the app explicitly says *"no trade today"*, which
-is a real answer, not a failure.
+Every stock has a **buy target** (where it looks cheap) and a **sell target**
+(where the gains have been made). When the live price reaches the buy target,
+the stock is **in the buy zone**. Cheap isn't enough — a stock can be cheap
+because it's dying — so buy-zone stocks pass through quality checks, and only
+the rare names passing *everything* while showing signs of life today become
+**💎 Gems**. One gem is crowned **👑 Pick of the Day** — or the app says
+*"no trade today"*, which is a real answer. If you then buy, you log the trade
+in **💼 Portfolio**, and the app tracks it against your levels, warns you when
+a stop is hit, and remembers whether following the picks worked.
 
 ---
 
-### The Watchlist tab, from top to bottom
+### Watchlist tab, top to bottom
 
-**🔎 Ticker lookup** — type any ticker to see its full picture: price,
-targets, stop, and exactly why it is or isn't a gem right now.
+**🔎 Ticker lookup** — type any ticker for its full picture: price chart with
+your levels drawn on it, targets, stop, and why it is or isn't a gem.
 
-**👑 Pick of the Day** — the single best opportunity across every pool,
-ranked by *trust-adjusted* score. Names with genuine analyst targets count
-fully; names whose targets were estimated by the app count less. If nothing
-clears the conviction bar, the verdict is "no trade today".
+**👑 Pick of the Day** — the single best opportunity across the curated list
+and the wider 🧭 Explorer universe, ranked by trust-adjusted score (analyst
+targets count fully; app-derived targets count less). Every pick is logged
+automatically so your adherence can be measured later.
 
-**💎 Gems** — every stock that passed ALL of these at once:
-- price in the **buy zone**
-- its own momentum is positive over 6 months (not a falling knife) —\n  the window the 🧪 Signal Lab chose empirically
-- its **theme** (AI, nuclear, biotech…) is rising as a group over 6 months
-- the potential reward is at least **3× the risk** to the stop
-- it hasn't already gone parabolic (no chasing tops)
-- plus something is *happening* today — unusual volume, a fresh entry into
-  the zone, or news
+**💎 Gems** — passed ALL of: buy zone · own 6-month momentum positive · theme
+rising on the 6-month median · reward at least 3× the risk · not already
+parabolic — **horizons chosen by backtest evidence in the 🧪 Lab, not by
+opinion** — plus something happening today (volume, freshness, news).
+Insider buying (SEC filings, 2-day lag) adds a soft 💼 boost. Empty most
+days by design; when empty, the near-misses explain which gate they failed.
 
-Empty most days **by design**. When it's empty, the app explains what the
-nearest misses failed on.
+**☀️ Today's signals** — the attention list: buy-zone stocks ranked by what's
+moving today. No quality gates — "look here", never "buy this".
 
-**☀️ Today's signals** — the attention list: buy-zone stocks ranked by
-what's moving *today* (volume surges, fresh crossings, news). No quality
-checks here — it says "look at this", never "buy this".
-
-**🏆 Top picks** — a broader scored ranking of the whole watchlist, with a
-tuning panel (including the **⚡ £5k Runbook preset**, which switches
-everything to strict small-cap hunting mode).
-
-**Main table** — all tickers with status, price, targets, suggested stop,
-market cap and momentum. Tap any row for the company card.
-
-**Theme heat / Parabolic winners** — which themes are running as a group,
-and which individual names have moved most in 6 months.
+**The instrument list** — tappable rows (status dot · ticker · sparkline ·
+price · day change), Trading212-style. Tap to open the chart view. Targets
+the market has ignored for 6+ months are flagged **⏳ stale** — those alerts
+can never fire and the level likely predates a re-rating.
 
 ---
 
-### The other tabs
+### 💼 Portfolio
 
-**📊 Track record** — the honesty page. Every time a stock ever crossed
-into its buy zone, the app replays what would have happened next: hit the
-target 🎯, hit the stop 🛑, or timed out ⏰. No editing, no cherry-picking.
-It also hosts the **£5k Runbook backtest** — a simulation of a small,
-concentrated trading account run under strict rules. Give the record 30+
-closed signals before believing any of the percentages.
+Log the trades you actually make (buy/sell, quantity, price). The app then:
 
-**Where did the congress tabs go?** Retired. Congressional-trade
-filings arrive up to 45 days late and failed validation as a standalone
-signal, so they've been replaced by something faster and stronger:
-**insider buying** (SEC Form 4). When a company's own executives buy
-their stock on the open market — filed within 2 business days — that
-shows up as a 💼 line on gem cards and the company card, and adds soft
-weight to the picks. Like every overlay: a tailwind, never a gate.
+- values everything at near-live quotes with day and all-time change chips
+- computes **Risk at stops** — your total loss if every holding fell to its
+  stop tomorrow. Keep this a number you can shrug at.
+- warns when most of your money is secretly **one theme** — several tickers,
+  one bet
+- sends a **🛑 push alert when a holding closes at or below its stop** —
+  "the rule says sell", repeated every scan until you act — and an early
+  warning when a close comes within 3% of the stop
+- tracks **🎯 adherence**: every daily pick is logged, and the tab shows how
+  often you acted on them — building toward the answer to "do my overrides
+  beat the system?"
+
+Trades are stored as commits in your own GitHub repository — versioned,
+auditable, and durable across app updates.
+
+---
+
+### 📊 Track record
+
+The honesty page. Every historical buy-zone entry is replayed forward —
+🎯 hit target, 🛑 hit stop, ⏰ timed out — with no editing and no
+cherry-picking, plus the £5k concentrated-trading simulation. Wait for 30+
+closed signals before believing any percentage.
+
+### 🧪 Lab
+
+Where signal arguments go to be settled. Two panels: **entry definitions**
+(momentum windows, gates switched off one at a time, a no-gate control) and
+**exit policies** (longer holds, wider stops, trailing exits, partial
+profit-taking). Every comparison uses a walk-forward split — a variant must
+win in BOTH halves of history with a decent sample before it changes any
+default. The current 6-month gates were chosen exactly this way.
 
 ---
 
@@ -2441,31 +2450,31 @@ weight to the picks. Like every overlay: a tailwind, never a gate.
 | Term | Meaning |
 |---|---|
 | **Buy zone** | Live price at or below the analyst's buy target |
-| **Stop** | Pre-committed exit ~12% below your fill — set it *before* buying |
+| **Stop** | Pre-commit exit ~12% below your fill — the app alerts when it's hit |
 | **R:R** | Reward-to-risk: upside to the sell target vs downside to the stop |
-| **Theme heat** | Median 3-month move of a theme's stocks — is the group running? |
-| **Market cap** | Company size. Small (under \\$300M) can multiply; big is steadier |
-| **Tgt A/D** | Target provenance: **A** = analyst-set, **D** = derived by the app from the analyst's pattern. Derived targets are estimates and count less |
-| **🧭 Explorer** | An optional wider universe of US small-caps, screened weekly. All its targets are derived, so its gems are trust-discounted |
-| **Gem score** | Half quality (the gates), half today (volume/freshness/news) |
+| **⏳ Stale target** | Price has ignored the level for 6+ months — treat as historical |
+| **Tgt A/D** | Target provenance: Analyst-set vs Derived by the app (counts less) |
+| **🧭 Explorer** | Wider screened universe of US small caps; fully derived targets |
+| **Risk at stops** | Total loss if every stop hits tomorrow — the ruin-prevention number |
+| **Adherence** | How often you actually acted on the logged daily picks |
 
 ---
 
 ### The philosophy in three lines
 
-1. **Agreement beats any single signal.** Cheap alone, or moving alone, or
-   newsy alone is noise. Cheap AND rising AND hot theme AND asymmetric AND
-   waking up today — that's a gem.
-2. **Not trading is a position.** Most days the right answer is nothing.
-   The app is built to say so plainly.
-3. **The record keeps us honest.** Signals are graded forward against real
-   prices, with the losses on display next to the wins.
+1. **Agreement beats any single signal** — cheap AND rising AND hot theme AND
+   asymmetric AND waking up today.
+2. **Not trading is a position.** Most days the right answer is nothing, and
+   the app says so plainly.
+3. **Evidence changes the rules; opinions don't.** Gates and exits are set by
+   backtests in the Lab, picks are logged before outcomes are known, and the
+   track record grades everything in public.
 
 ---
 
 *Research tool only. Prices via Yahoo Finance (may be delayed). Nothing here
-is financial advice — always do your own research, and never risk money you
-can't afford to lose.*
+is financial advice — do your own research, and never risk money you can't
+afford to lose.*
         """
     )
 
