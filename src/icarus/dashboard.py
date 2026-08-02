@@ -1618,13 +1618,24 @@ def _render_lab_tab(st) -> None:
     if tradable.empty:
         st.warning("No watchlist tickers have a buy target — nothing to test.")
         return
+
+    # Expand the testable universe: fill missing EXIT targets as
+    # analyst_entry × the analyst's own exit multiple. Price-free, so
+    # unlike price-anchored entry derivation this does NOT contaminate
+    # the backtest — the R:R gate just stops strangling the sample.
+    from .target_inference import derive_exits_from_entries
+    expanded, exit_mult = derive_exits_from_entries(tradable)
+    n_analyst_x = int((expanded["exit_source"] == "analyst").sum())
+    n_derived_x = int((expanded["exit_source"] == "derived").sum())
     st.caption(
-        f"Universe: **{len(tradable)} curated tickers** with buy targets, "
-        "replayed over up to 2 years of daily closes."
+        f"Universe: **{len(expanded)} curated tickers** with buy targets — "
+        f"exits: {n_analyst_x} analyst-set + {n_derived_x} derived as "
+        f"entry × {exit_mult:.1f} (the analyst's own median multiple; "
+        "price-free, so non-circular). Replayed over up to 2 years."
     )
 
     if st.button("▶ Run the signal comparison", key="signal_lab_run"):
-        tickers = sorted(set(tradable["ticker"].tolist()))
+        tickers = sorted(set(expanded["ticker"].tolist()))
         with st.spinner(f"Loading 2y history for {len(tickers)} tickers..."):
             try:
                 history = fetch_price_history(tickers, period="2y")
@@ -1638,9 +1649,9 @@ def _render_lab_tab(st) -> None:
             )
             return
         st.caption(f"History loaded for **{len(history)} / {len(tickers)}** tickers.")
-        with st.spinner("Replaying 7 signal variants..."):
+        with st.spinner("Replaying 8 signal variants..."):
             st.session_state["signal_lab_result"] = compare_variants(
-                tradable, history,
+                expanded, history,
             )
 
     lab = st.session_state.get("signal_lab_result")

@@ -122,6 +122,49 @@ def test_absurd_multiples_excluded_from_learning():
     assert p["exit_multiple"] == pytest.approx(2.0, abs=0.05)
 
 
+def test_derive_exits_from_entries_uses_analyst_median_multiple():
+    from icarus.target_inference import derive_exits_from_entries
+    wl = pd.DataFrame([
+        {"ticker": "A", "target_entry": 10.0, "target_exit": 25.0},   # 2.5x
+        {"ticker": "B", "target_entry": 20.0, "target_exit": 50.0},   # 2.5x
+        {"ticker": "C", "target_entry": 8.0, "target_exit": float("nan")},
+        {"ticker": "D", "target_entry": float("nan"), "target_exit": float("nan")},
+    ])
+    filled, mult = derive_exits_from_entries(wl)
+    assert mult == pytest.approx(2.5)
+    c = filled[filled["ticker"] == "C"].iloc[0]
+    assert c["target_exit"] == pytest.approx(20.0)   # 8 × 2.5
+    assert c["exit_source"] == "derived"
+    # Analyst exits untouched, no-entry rows untouched
+    assert filled[filled["ticker"] == "A"].iloc[0]["target_exit"] == 25.0
+    assert filled[filled["ticker"] == "A"].iloc[0]["exit_source"] == "analyst"
+    assert pd.isna(filled[filled["ticker"] == "D"].iloc[0]["target_exit"])
+
+
+def test_derive_exits_excludes_mis_set_multiples():
+    from icarus.target_inference import derive_exits_from_entries
+    wl = pd.DataFrame([
+        {"ticker": "A", "target_entry": 10.0, "target_exit": 20.0},   # 2.0x
+        {"ticker": "B", "target_entry": 10.0, "target_exit": 3.0},    # 0.3x mis-set
+        {"ticker": "C", "target_entry": 10.0, "target_exit": float("nan")},
+    ])
+    filled, mult = derive_exits_from_entries(wl)
+    assert mult == pytest.approx(2.0)   # the 0.3x row is excluded
+
+
+def test_derive_exits_falls_back_to_default_when_no_pairs():
+    from icarus.target_inference import (
+        DEFAULT_EXIT_MULTIPLE,
+        derive_exits_from_entries,
+    )
+    wl = pd.DataFrame([
+        {"ticker": "A", "target_entry": 10.0, "target_exit": float("nan")},
+    ])
+    filled, mult = derive_exits_from_entries(wl)
+    assert mult == DEFAULT_EXIT_MULTIPLE
+    assert filled.iloc[0]["target_exit"] == pytest.approx(10.0 * DEFAULT_EXIT_MULTIPLE)
+
+
 def test_describe_pattern_is_human_readable():
     wl, hist = _watchlist_consistent_low52()
     p = learn_target_pattern(wl, hist)

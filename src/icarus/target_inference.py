@@ -250,6 +250,42 @@ def derive_targets(
     return out
 
 
+def derive_exits_from_entries(
+    watchlist: pd.DataFrame,
+    *,
+    multiple: float | None = None,
+) -> tuple[pd.DataFrame, float]:
+    """Fill missing EXIT targets as analyst_entry × the analyst's own
+    exit multiple. Returns (filled_watchlist, multiple_used).
+
+    Deliberately price-free and therefore non-circular: the multiple is
+    the median exit/entry across rows where the analyst set both
+    (mis-set rows excluded via the usual clip), and each fill anchors on
+    the analyst's OWN entry level — market prices are never consulted,
+    so a backtest over the filled universe isn't grading targets derived
+    from the prices it replays. This is what makes the expanded Signal
+    Lab sample legitimate, unlike price-anchored entry derivation which
+    stays quarantined to screening.
+    """
+    out = watchlist.copy()
+    has_entry = out["target_entry"].notna() & (out["target_entry"] > 0)
+    has_exit = out["target_exit"].notna() & (out["target_exit"] > 0)
+
+    if multiple is None:
+        both = out[has_entry & has_exit]
+        mults = (both["target_exit"] / both["target_entry"])
+        mults = mults[(mults >= MULT_MIN) & (mults <= MULT_MAX)]
+        multiple = float(mults.median()) if len(mults) else DEFAULT_EXIT_MULTIPLE
+
+    out["exit_source"] = np.where(has_exit, "analyst", None)
+    fill = has_entry & ~has_exit
+    out.loc[fill, "target_exit"] = (
+        out.loc[fill, "target_entry"] * multiple
+    ).apply(_round_sig)
+    out.loc[fill, "exit_source"] = "derived"
+    return out, multiple
+
+
 def describe_pattern(pattern: dict) -> str:
     """One-line human-readable summary of the learned rule for the UI."""
     anchor_label = {

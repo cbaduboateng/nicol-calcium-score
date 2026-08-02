@@ -64,6 +64,11 @@ DEFAULT_VARIANTS: tuple[SignalVariant, ...] = (
     SignalVariant("no theme gate", require_positive_theme=False),
     SignalVariant("no momentum gate", require_positive_momentum=False),
     SignalVariant("looser R:R (2)", min_rr=2.0),
+    # Completes the ablation matrix: with 'no momentum' = theme+RR and
+    # 'no theme' = momentum+RR, this isolates what R:R does alone.
+    SignalVariant("rr only (no theme, no momentum)",
+                  require_positive_momentum=False,
+                  require_positive_theme=False, min_rr=3.0),
 )
 
 
