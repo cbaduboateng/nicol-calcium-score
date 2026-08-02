@@ -1877,6 +1877,221 @@ def _render_track_record_tab(st) -> None:
 
 
 
+def _render_portfolio_tab(st) -> None:
+    """💼 Portfolio: log real trades, marked to near-real-time quotes.
+
+    Persistence: GitHub 'portfolio-data' branch via PORTFOLIO_GH_TOKEN
+    secret (each trade = a commit; no app redeploys since Streamlit only
+    watches the deploy branch). Falls back to session-only storage with
+    CSV download/upload when no token is configured."""
+    import os
+
+    from .portfolio import (
+        empty_trades,
+        fetch_live_quotes,
+        load_remote_trades,
+        new_trade,
+        normalise_trades,
+        portfolio_totals,
+        positions_from_trades,
+        save_remote_trades,
+    )
+
+    st.subheader("💼 Portfolio")
+
+    repo = "cbaduboateng/nicol-calcium-score"
+    token = ""
+    try:
+        token = str(st.secrets.get("PORTFOLIO_GH_TOKEN", "")).strip()
+    except Exception:  # noqa: BLE001
+        pass
+    token = token or os.environ.get("PORTFOLIO_GH_TOKEN", "").strip()
+
+    remote = bool(token)
+    if remote:
+        if "portfolio_trades" not in st.session_state:
+            try:
+                trades, sha = load_remote_trades(token, repo)
+                st.session_state["portfolio_trades"] = trades
+                st.session_state["portfolio_sha"] = sha
+            except Exception as exc:  # noqa: BLE001
+                st.error(f"Could not load the portfolio branch: {exc}")
+                remote = False
+    if "portfolio_trades" not in st.session_state:
+        st.session_state["portfolio_trades"] = empty_trades()
+
+    trades = st.session_state["portfolio_trades"]
+
+    if not remote:
+        st.warning(
+            "**Session-only storage** — trades vanish when this session ends. "
+            "For permanent storage: GitHub → Settings → Developer settings → "
+            "Fine-grained tokens → new token with **Contents: read & write** "
+            "on this repo only → add it to Streamlit Secrets as "
+            "`PORTFOLIO_GH_TOKEN`. Each trade then becomes a commit on a "
+            "`portfolio-data` branch: versioned, auditable, deploy-proof."
+        )
+
+    # ---- Positions + quotes ------------------------------------------------
+    positions, realised = positions_from_trades(trades)
+    held = sorted(positions["ticker"].tolist())
+    quotes: dict = {}
+    if held:
+        with st.spinner("Fetching live quotes..."):
+            try:
+                quotes = fetch_live_quotes(held)
+            except Exception:  # noqa: BLE001
+                quotes = {}
+    totals = portfolio_totals(positions, quotes)
+    realised_total = float(realised["realised_pnl"].sum()) if not realised.empty else 0.0
+
+    # ---- Hero --------------------------------------------------------------
+    if totals["n_positions"]:
+        st.markdown(
+            f'<span class="px-big">${totals["value"]:,.2f}</span>&nbsp;'
+            f'{_change_chip(totals["day_pct"], "today")}&nbsp;'
+            f'{_change_chip(totals["unrealised_pct"], "all")}',
+            unsafe_allow_html=True,
+        )
+        h = st.columns(3)
+        h[0].metric("Unrealised", _fmt_dollar(totals["unrealised"]))
+        h[1].metric("Day P&L", _fmt_dollar(totals["day_pnl"]))
+        h[2].metric("Realised", _fmt_dollar(realised_total))
+        if totals["n_priced"] < totals["n_positions"]:
+            st.caption(
+                f"Live quotes for {totals['n_priced']}/{totals['n_positions']} "
+                "holdings — the rest are valued at cost until quotes return."
+            )
+    else:
+        st.info("No open positions yet — log your first trade below.")
+
+    # ---- Holdings as T212-style rows --------------------------------------
+    if totals["n_positions"]:
+        rows_html = ['<div class="ilist">']
+        for _, p in positions.iterrows():
+            q = quotes.get(p["ticker"]) or {}
+            px = q.get("price")
+            prev = q.get("prev_close")
+            day_pct = (
+                (px / prev - 1.0) * 100.0
+                if px and prev and pd.notna(px) and pd.notna(prev) and prev > 0
+                else None
+            )
+            value = float(p["qty"]) * float(px) if px and pd.notna(px) else float(p["invested"])
+            unreal_pct = (
+                (value / float(p["invested"]) - 1.0) * 100.0
+                if float(p["invested"]) > 0 else 0.0
+            )
+            px_s = f"{px:,.2f}" if px and pd.notna(px) else "—"
+            chip = _change_chip(day_pct) if day_pct is not None else ""
+            unreal_chip = _change_chip(unreal_pct)
+            rows_html.append(
+                f'<a class="irow" href="?sel={p["ticker"]}" target="_self">'
+                f'<div class="irow-l">'
+                f'<div class="irow-name">{p["ticker"]}</div>'
+                f'<div class="irow-sub">{p["qty"]:g} @ {p["avg_cost"]:,.2f} · '
+                f'now {px_s}</div></div>'
+                f'<div class="irow-r"><div class="irow-px">${value:,.2f}</div>'
+                f"{unreal_chip}{chip}</div></a>"
+            )
+        rows_html.append("</div>")
+        st.markdown("".join(rows_html), unsafe_allow_html=True)
+        st.caption(
+            "Value on the right; chips = all-time and today. Tap a holding "
+            "to open its chart on the Watchlist tab."
+        )
+
+    # ---- Log a trade -------------------------------------------------------
+    st.markdown("### ➕ Log a trade")
+    with st.form("log_trade", clear_on_submit=True):
+        f = st.columns([2, 1, 1, 1])
+        with f[0]:
+            t_ticker = st.text_input("Ticker", placeholder="HIVE")
+        with f[1]:
+            t_side = st.selectbox("Side", ["buy", "sell"])
+        with f[2]:
+            t_qty = st.number_input("Quantity", min_value=0.0, step=1.0, format="%g")
+        with f[3]:
+            t_price = st.number_input("Price", min_value=0.0, step=0.01, format="%.4f")
+        f2 = st.columns([1, 3])
+        with f2[0]:
+            t_date = st.date_input("Date", value=None, format="YYYY-MM-DD")
+        with f2[1]:
+            t_note = st.text_input("Note (optional)", placeholder="gem pick · stop 2.49")
+        submitted = st.form_submit_button("Log trade")
+    if submitted:
+        if not t_ticker.strip() or t_qty <= 0 or t_price <= 0:
+            st.error("Ticker, a positive quantity and a positive price are required.")
+        else:
+            trade = new_trade(
+                t_ticker, t_side, t_qty, t_price,
+                trade_date=t_date, note=t_note,
+            )
+            updated = normalise_trades(pd.concat(
+                [trades, pd.DataFrame([trade])], ignore_index=True,
+            ))
+            if remote:
+                try:
+                    sha = save_remote_trades(
+                        token, repo, updated, st.session_state.get("portfolio_sha"),
+                        message=f"Log {t_side} {t_qty:g} {trade['ticker']} @ {t_price}",
+                    )
+                    st.session_state["portfolio_sha"] = sha
+                except Exception as exc:  # noqa: BLE001
+                    st.error(f"Saving to GitHub failed: {exc}")
+            st.session_state["portfolio_trades"] = updated
+            st.rerun()
+
+    # ---- History + realised + backup --------------------------------------
+    if not realised.empty:
+        with st.expander(f"Realised P&L ({len(realised)} closes)"):
+            r = realised.copy()
+            r["realised_pnl"] = r["realised_pnl"].apply(_fmt_dollar)
+            st.dataframe(
+                r, use_container_width=True, hide_index=True,
+                column_config={
+                    "date": "Date", "ticker": "Ticker",
+                    "qty": st.column_config.NumberColumn("Qty", format="%g"),
+                    "sell_price": st.column_config.NumberColumn("Sold @", format="%.2f"),
+                    "avg_cost": st.column_config.NumberColumn("Avg cost", format="%.2f"),
+                    "realised_pnl": st.column_config.TextColumn("P&L"),
+                    "oversold": st.column_config.CheckboxColumn(
+                        "Clamped", help="Sell exceeded held quantity and was clamped.",
+                    ),
+                },
+            )
+    if not trades.empty:
+        with st.expander(f"Trade history ({len(trades)})"):
+            st.dataframe(trades, use_container_width=True, hide_index=True)
+            st.download_button(
+                "⬇️ Download trades.csv",
+                trades.to_csv(index=False).encode(),
+                file_name="trades.csv", mime="text/csv",
+            )
+    up = st.file_uploader(
+        "Restore / import trades.csv", type=["csv"], key="portfolio_upload",
+        help="Replaces the current trade log with the uploaded file.",
+    )
+    if up is not None and st.button("Import uploaded trades", key="portfolio_import"):
+        try:
+            imported = normalise_trades(pd.read_csv(up, dtype=str))
+            if remote:
+                sha = save_remote_trades(
+                    token, repo, imported, st.session_state.get("portfolio_sha"),
+                    message="Import trades.csv",
+                )
+                st.session_state["portfolio_sha"] = sha
+            st.session_state["portfolio_trades"] = imported
+            st.rerun()
+        except Exception as exc:  # noqa: BLE001
+            st.error(f"Import failed: {exc}")
+
+    st.caption(
+        "Average-cost accounting, like your broker shows. Research tool — "
+        "reconcile against your broker statements; not financial advice."
+    )
+
+
 def _render_lab_tab(st) -> None:
     """🧪 Signal Lab in its own tab — self-contained data load with an
     explicit message at every guard, so it can never silently vanish
@@ -2152,13 +2367,17 @@ def main() -> None:
         f"financial advice. · build `{_build_sha()}`"
     )
 
-    tab_watchlist, tab_track, tab_lab, tab_about = st.tabs(
-        ["Watchlist", "📊 Track record", "🧪 Lab", "ℹ️ About"],
+    tab_watchlist, tab_portfolio, tab_track, tab_lab, tab_about = st.tabs(
+        ["Watchlist", "💼 Portfolio", "📊 Track record", "🧪 Lab", "ℹ️ About"],
     )
 
     # ---- Watchlist: analyst-curated picks with live alerts ----------------
     with tab_watchlist:
         _render_watchlist_tab(st)
+
+    # ---- Portfolio: real trades, marked to market -------------------------
+    with tab_portfolio:
+        _render_portfolio_tab(st)
 
     # ---- Track record: forward-marked signal history ----------------------
     with tab_track:
