@@ -2314,10 +2314,23 @@ def _render_lab_tab(st) -> None:
     )
     if st.button("▶ Run the exit comparison", key="exit_lab_run"):
         from .signal_lab import compare_exit_variants
-        with st.spinner("Replaying 7 exit policies over the same entries..."):
-            st.session_state["exit_lab_result"] = compare_exit_variants(
-                expanded, history,
+        exit_tickers = sorted(set(expanded["ticker"].tolist()))
+        with st.spinner(f"Loading 2y history for {len(exit_tickers)} tickers..."):
+            try:
+                exit_history = fetch_price_history(exit_tickers, period="2y")
+            except Exception as exc:
+                st.error(f"Price fetch failed: {exc}")
+                exit_history = {}
+        if not exit_history:
+            st.warning(
+                "No 2-year price history available yet — run the warm-cache "
+                "workflow or retry after the next scheduled warm."
             )
+        else:
+            with st.spinner("Replaying 7 exit policies over the same entries..."):
+                st.session_state["exit_lab_result"] = compare_exit_variants(
+                    expanded, exit_history,
+                )
     exit_lab = st.session_state.get("exit_lab_result")
     if exit_lab is not None:
         if exit_lab.empty:
