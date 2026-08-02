@@ -1583,9 +1583,20 @@ def _render_track_record_tab(st) -> None:
             "not an expectation, and not financial advice."
         )
 
-    # ---- 🧪 Signal Lab: comparison backtest across signal variants ---------
-    st.divider()
-    st.markdown("### 🧪 Signal Lab — which signal definition actually works?")
+
+
+def _render_lab_tab(st) -> None:
+    """🧪 Signal Lab in its own tab — self-contained data load with an
+    explicit message at every guard, so it can never silently vanish
+    behind another tab's early returns again."""
+    from .signal_lab import compare_variants
+    from .watchlist_alerts import (
+        WATCHLIST_PATH,
+        fetch_price_history,
+        load_watchlist,
+    )
+
+    st.subheader("🧪 Signal Lab — which signal definition actually works?")
     st.caption(
         "The gem gates were designed from priors, not proof. This replays "
         "SEVEN signal definitions over the same price history with the same "
@@ -1596,52 +1607,84 @@ def _render_track_record_tab(st) -> None:
         "variants that win in BOTH halves** of history — one-half winners "
         "are curve-fit noise."
     )
+
+    watchlist = load_watchlist(WATCHLIST_PATH)
+    if watchlist.empty:
+        st.warning(f"No watchlist file at `{WATCHLIST_PATH}` — nothing to test.")
+        return
+    tradable = watchlist[
+        watchlist["target_entry"].notna() & (watchlist["target_entry"] > 0)
+    ]
+    if tradable.empty:
+        st.warning("No watchlist tickers have a buy target — nothing to test.")
+        return
+    st.caption(
+        f"Universe: **{len(tradable)} curated tickers** with buy targets, "
+        "replayed over up to 2 years of daily closes."
+    )
+
     if st.button("▶ Run the signal comparison", key="signal_lab_run"):
-        from .signal_lab import compare_variants
-        with st.spinner("Replaying 7 signal variants over 2y of history..."):
+        tickers = sorted(set(tradable["ticker"].tolist()))
+        with st.spinner(f"Loading 2y history for {len(tickers)} tickers..."):
+            try:
+                history = fetch_price_history(tickers, period="2y")
+            except Exception as exc:
+                st.error(f"Price fetch failed: {exc}")
+                return
+        if not history:
+            st.warning(
+                "No 2-year price history available yet — run the warm-cache "
+                "workflow or retry after the next scheduled warm."
+            )
+            return
+        st.caption(f"History loaded for **{len(history)} / {len(tickers)}** tickers.")
+        with st.spinner("Replaying 7 signal variants..."):
             st.session_state["signal_lab_result"] = compare_variants(
                 tradable, history,
             )
+
     lab = st.session_state.get("signal_lab_result")
-    if lab is not None:
-        if lab.empty:
-            st.info("No signals fired for any variant — not enough targets or history.")
-        else:
-            lab_disp = lab.copy()
-            lab_disp["win_rate"] = lab_disp["win_rate"] * 100.0
-            st.dataframe(
-                lab_disp, use_container_width=True, hide_index=True,
-                column_config={
-                    "variant": "Signal definition",
-                    "n_signals": st.column_config.NumberColumn("Signals", format="%d"),
-                    "n_closed": st.column_config.NumberColumn("Closed", format="%d"),
-                    "win_rate": st.column_config.NumberColumn("Win rate", format="%.0f%%"),
-                    "avg_return_pct": st.column_config.NumberColumn(
-                        "Avg ret", format="%+.1f%%",
-                        help="Equal-weighted mean return of closed signals.",
-                    ),
-                    "median_return_pct": st.column_config.NumberColumn("Median", format="%+.1f%%"),
-                    "avg_days_held": st.column_config.NumberColumn("Avg days", format="%.0f"),
-                    "n_train": st.column_config.NumberColumn("n 1st half", format="%d"),
-                    "avg_train_pct": st.column_config.NumberColumn(
-                        "1st half", format="%+.1f%%",
-                        help="Mean return of signals fired in the FIRST half of the date range.",
-                    ),
-                    "n_test": st.column_config.NumberColumn("n 2nd half", format="%d"),
-                    "avg_test_pct": st.column_config.NumberColumn(
-                        "2nd half", format="%+.1f%%",
-                        help="Mean return of signals fired in the SECOND half — the out-of-sample check.",
-                    ),
-                },
-            )
-            st.caption(
-                "How to read it: a variant earns trust only if its average "
-                "return beats the control in BOTH halves with a reasonable "
-                "sample (n ≥ 15 per half). Win rate alone misleads — a 60% "
-                "win rate on 2:1 payoffs beats 80% on 0.5:1. If a variant "
-                "wins decisively here, tell Claude to make it the default "
-                "gate set. Not financial advice."
-            )
+    if lab is None:
+        st.info("👆 Press the button — the comparison takes a minute or two.")
+        return
+    if lab.empty:
+        st.info("No signals fired for any variant — not enough targets or history.")
+        return
+    lab_disp = lab.copy()
+    lab_disp["win_rate"] = lab_disp["win_rate"] * 100.0
+    st.dataframe(
+        lab_disp, use_container_width=True, hide_index=True,
+        column_config={
+            "variant": "Signal definition",
+            "n_signals": st.column_config.NumberColumn("Signals", format="%d"),
+            "n_closed": st.column_config.NumberColumn("Closed", format="%d"),
+            "win_rate": st.column_config.NumberColumn("Win rate", format="%.0f%%"),
+            "avg_return_pct": st.column_config.NumberColumn(
+                "Avg ret", format="%+.1f%%",
+                help="Equal-weighted mean return of closed signals.",
+            ),
+            "median_return_pct": st.column_config.NumberColumn("Median", format="%+.1f%%"),
+            "avg_days_held": st.column_config.NumberColumn("Avg days", format="%.0f"),
+            "n_train": st.column_config.NumberColumn("n 1st half", format="%d"),
+            "avg_train_pct": st.column_config.NumberColumn(
+                "1st half", format="%+.1f%%",
+                help="Mean return of signals fired in the FIRST half of the date range.",
+            ),
+            "n_test": st.column_config.NumberColumn("n 2nd half", format="%d"),
+            "avg_test_pct": st.column_config.NumberColumn(
+                "2nd half", format="%+.1f%%",
+                help="Mean return of signals fired in the SECOND half — the out-of-sample check.",
+            ),
+        },
+    )
+    st.caption(
+        "How to read it: a variant earns trust only if its average return "
+        "beats the control in BOTH halves with a reasonable sample "
+        "(n ≥ 15 per half). Win rate alone misleads — a 60% win rate on "
+        "2:1 payoffs beats 80% on 0.5:1. If a variant wins decisively "
+        "here, tell Claude to make it the default gate set. Not financial "
+        "advice."
+    )
 
 
 def _render_about_tab(st) -> None:
@@ -1764,6 +1807,20 @@ can't afford to lose.*
     )
 
 
+def _build_sha() -> str:
+    """Short git SHA of the running deploy, shown in the header caption so
+    'which version am I looking at?' is answerable at a glance. Falls back
+    gracefully when .git isn't available."""
+    try:
+        import subprocess
+        return subprocess.check_output(
+            ["git", "rev-parse", "--short", "HEAD"],
+            text=True, timeout=3, stderr=subprocess.DEVNULL,
+        ).strip()
+    except Exception:  # noqa: BLE001
+        return "unknown"
+
+
 def main() -> None:
     try:
         import streamlit as st
@@ -1788,12 +1845,12 @@ def main() -> None:
     st.title(f"{APP_ICON_EMOJI} {APP_TITLE}")
     st.caption(
         "Analyst-watchlist screen with quality gates, day-scale signals and "
-        "a forward-marked track record. Read-only research view — not "
-        "financial advice."
+        f"a forward-marked track record. Read-only research view — not "
+        f"financial advice. · build `{_build_sha()}`"
     )
 
-    tab_watchlist, tab_track, tab_about = st.tabs(
-        ["Watchlist", "📊 Track record", "ℹ️ About"],
+    tab_watchlist, tab_track, tab_lab, tab_about = st.tabs(
+        ["Watchlist", "📊 Track record", "🧪 Lab", "ℹ️ About"],
     )
 
     # ---- Watchlist: analyst-curated picks with live alerts ----------------
@@ -1803,6 +1860,10 @@ def main() -> None:
     # ---- Track record: forward-marked signal history ----------------------
     with tab_track:
         _render_track_record_tab(st)
+
+    # ---- Lab: signal-definition comparison backtest -----------------------
+    with tab_lab:
+        _render_lab_tab(st)
 
     # ---- About: plain-English guide ---------------------------------------
     with tab_about:
