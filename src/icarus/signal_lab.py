@@ -51,7 +51,10 @@ class SignalVariant:
     require_positive_momentum: bool = True
     require_positive_theme: bool = True
     min_rr: float = 3.0                 # 0 disables the gate
-    stop_pct: float = DEFAULT_STOP_PCT
+    # Pinned at 0.10, NOT the (now 20%) replay default: this is only the
+    # R:R-gate denominator, and the entry set was validated with it at
+    # 10%. Changing it would silently mutate the validated entries.
+    stop_pct: float = 0.10
     timeout_days: int = DEFAULT_TIMEOUT_DAYS
 
 

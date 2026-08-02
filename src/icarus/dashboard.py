@@ -1621,7 +1621,7 @@ def _render_track_record_tab(st) -> None:
         prm = st.columns(4)
         with prm[0]:
             stop_pct = st.slider(
-                "Stop %", 5, 25, 10, step=1,
+                "Stop %", 5, 25, 20, step=1,
                 help="How far below entry triggers the stop.",
             ) / 100.0
         with prm[1]:
@@ -2357,8 +2357,9 @@ def _render_lab_tab(st) -> None:
                 "Same evidence bar as above: beat the baseline in BOTH "
                 "halves at n ≥ 15 per half before believing it. Caveat: "
                 "close-only data — trailing exits and wide stops behave "
-                "worse intraday than daily closes suggest. If a policy "
-                "wins decisively, tell Claude to make it the default."
+                "worse intraday than daily closes suggest. **Adopted "
+                "2026-08-03: the 20% stop won in both halves and is now "
+                "the track-record default.**"
             )
 
 

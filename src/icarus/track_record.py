@@ -45,7 +45,13 @@ log = logging.getLogger(__name__)
 # Position size only scales the dollar headlines, never the relative
 # performance. \$10k per signal reads as a realistic personal notional;
 # the slider allows anything.
-DEFAULT_STOP_PCT: float = 0.10            # 10% below entry = stop
+# 20% stop chosen by Exit-policy Lab evidence (2026-08-03 run, n=51
+# entries, 17/34 walk-forward split): vs the old 10% stop it lifted win
+# rate 33%->51%, avg +20.5%->+32.1%, flipped the MEDIAN positive
+# (+6.8%), and beat baseline in BOTH halves — the only policy to do so.
+# The 10% stop was shaking positions out of eventual winners (microcap
+# noise, not breakdowns). Change only with new Lab evidence.
+DEFAULT_STOP_PCT: float = 0.20
 DEFAULT_TIMEOUT_DAYS: int = 180           # ~6 months
 DEFAULT_COOLDOWN_DAYS: int = 30           # min gap between re-signals
 DEFAULT_POSITION_SIZE_USD: float = 10_000.0
