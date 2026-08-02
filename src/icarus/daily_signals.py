@@ -247,9 +247,10 @@ def find_gems(
 ) -> pd.DataFrame:
     """The intersection filter: quality gates AND day-scale signals.
 
-    A gem must FIRST survive every strict hard gate (BUY ZONE, own 3m
-    momentum > 0, theme 3m median > 0, R:R >= floor, not parabolic,
-    optional cap band) and is THEN ranked by what's happening today
+    A gem must FIRST survive every strict hard gate (BUY ZONE, own 6m
+    momentum > 0, theme 6m median > 0, R:R >= floor, not parabolic,
+    optional cap band — horizons per the Signal Lab verdict) and is
+    THEN ranked by what's happening today
     (relative volume, freshness, 5d momentum, news).
 
     gem_score = 0.5 x quality composite + 0.5 x today score.
@@ -381,33 +382,34 @@ def pick_of_the_day(
 
 def gem_gate_failures(
     row: pd.Series,
-    theme_3m: dict[str, float] | None = None,
+    theme_6m: dict[str, float] | None = None,
     *,
     min_rr: float = 3.0,
     blowoff_threshold_pct: float = 100.0,
 ) -> list[str]:
     """Explain which strict gates a candidate fails, in plain English.
 
-    Used by the Gems empty state so 'no gems today' comes with the
-    reason each near-miss didn't qualify — turning a dead end into a
-    diagnostic. An empty return list means the row passes every gate."""
-    themes = theme_3m or {}
+    Gate horizons mirror pick_winners strict mode: 6-MONTH momentum and
+    theme medians (Signal Lab verdict, 2026-08-02). Used by the Gems
+    empty state and ticker lookup so 'not a gem' always comes with the
+    reason. An empty return list means the row passes every gate."""
+    themes = theme_6m or {}
     fails: list[str] = []
 
     if row.get("status") != "BUY ZONE":
         fails.append(f"not in buy zone ({row.get('status', '—')})")
 
-    p3 = row.get("pct_3m")
-    if p3 is None or not np.isfinite(p3) or p3 <= 0:
-        if p3 is not None and np.isfinite(p3):
-            fails.append(f"own 3m momentum negative ({p3:+.0f}%)")
+    p6 = row.get("pct_6m")
+    if p6 is None or not np.isfinite(p6) or p6 <= 0:
+        if p6 is not None and np.isfinite(p6):
+            fails.append(f"own 6m momentum negative ({p6:+.0f}%)")
         else:
-            fails.append("3m momentum unknown")
+            fails.append("6m momentum unknown")
 
-    t3 = themes.get(row.get("theme"))
-    if t3 is None or not np.isfinite(t3) or t3 <= 0:
-        if t3 is not None and np.isfinite(t3):
-            fails.append(f"theme cold ({row.get('theme')}: {t3:+.0f}% 3m median)")
+    t6 = themes.get(row.get("theme"))
+    if t6 is None or not np.isfinite(t6) or t6 <= 0:
+        if t6 is not None and np.isfinite(t6):
+            fails.append(f"theme cold ({row.get('theme')}: {t6:+.0f}% 6m median)")
         else:
             fails.append(f"theme momentum unknown ({row.get('theme')})")
 

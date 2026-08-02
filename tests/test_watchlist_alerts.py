@@ -473,18 +473,16 @@ def test_pick_winners_unknown_caps_pass_through_unless_required():
 
 def test_strict_mode_keeps_only_buy_zone_with_all_gates_passing():
     picks = pick_winners(_picks_view(), top_n=10, strict_mode=True)
-    # A is BUY ZONE, 3m=25>0, theme hot (AI 20+ median), R:R=3, 6m=40 → passes
-    # B is APPROACHING → fails BUY ZONE gate
-    # C is HOLD (Cannabis, 3m -10 cold theme) → fails
-    # D blow-off 250% → fails
-    # E SELL ZONE → fails
+    # A is BUY ZONE, 6m=40>0, theme hot (AI 6m median>0), R:R=3, not
+    # parabolic → passes. B APPROACHING, C HOLD/cold theme, D blow-off,
+    # E SELL ZONE → all fail.
     assert set(picks["ticker"]) == {"A"}
 
 
-def test_strict_mode_blocks_negative_3m_momentum():
+def test_strict_mode_blocks_negative_6m_momentum():
     view = _picks_view().copy()
-    # Force A into negative 3m to see it dropped
-    view.loc[view["ticker"] == "A", "pct_3m"] = -5.0
+    # Force A into negative 6m (the Lab-chosen gate window) → dropped.
+    view.loc[view["ticker"] == "A", "pct_6m"] = -5.0
     picks = pick_winners(view, top_n=10, strict_mode=True)
     assert "A" not in set(picks["ticker"])
 
@@ -494,7 +492,7 @@ def test_strict_mode_respects_rr_floor():
     # ZONE with a weak R:R, the R:R floor should still drop it.
     view = _picks_view().copy()
     view.loc[view["ticker"] == "B", "status"] = "BUY ZONE"
-    view.loc[view["ticker"] == "B", "pct_3m"] = 25.0  # hot theme already
+    view.loc[view["ticker"] == "B", "pct_6m"] = 25.0  # own momentum positive
     # B's R:R is 0.8 — below the default 2.0 floor
     picks = pick_winners(view, top_n=10, strict_mode=True, strict_min_rr=2.0)
     assert "B" not in set(picks["ticker"])

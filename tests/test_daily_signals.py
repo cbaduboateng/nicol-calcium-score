@@ -271,10 +271,10 @@ def test_pick_empty_pools_abstain():
 
 def test_gate_failures_names_each_failed_gate():
     from icarus.daily_signals import gem_gate_failures
-    knife = _gems_view().iloc[1]  # NOISY: buy zone, but -10% 3m, cold theme
+    knife = _gems_view().iloc[1]  # NOISY: buy zone, but -20% 6m, cold theme
     fails = gem_gate_failures(knife, {"Cannabis": -12.0})
     joined = " ".join(fails)
-    assert "own 3m momentum negative" in joined
+    assert "own 6m momentum negative" in joined
     assert "theme cold" in joined
     assert "not in buy zone" not in joined  # it IS in the zone
 

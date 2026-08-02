@@ -724,6 +724,10 @@ def pick_winners(
     theme_3m: dict[str, float] = (
         dict(zip(heat["theme"], heat["median_3m"])) if not heat.empty else {}
     )
+    # 6m medians drive the STRICT gates; 3m stays for the soft scoring.
+    theme_6m: dict[str, float] = (
+        dict(zip(heat["theme"], heat["median_6m"])) if not heat.empty else {}
+    )
 
     rows: list[dict] = []
     cap_filter_active = (
@@ -735,19 +739,21 @@ def pick_winners(
             continue
 
         # Hard gates: when strict mode is on, only tickers that pass EVERY
-        # threshold survive. Each gate corresponds to one of the five most
-        # common failure modes ("falling knife", "cold theme", "no real R:R",
-        # "blow-off chase", "not actually triggered yet").
+        # threshold survive. Momentum/theme gates run on the 6-MONTH window
+        # — chosen by Signal Lab evidence (2026-08-02 run: 6m variant n=60
+        # closed, +20.0% avg, +18.0%/+20.2% across walk-forward halves vs
+        # control +7.8%/+5.2%; 3m and 1m both inferior; the no-momentum
+        # variant regressed at scale). Change only with new Lab evidence.
         if strict_mode:
             if status != "BUY ZONE":
                 continue
-            pct_3m_val = r.get("pct_3m")
-            if pct_3m_val is None or not np.isfinite(pct_3m_val) or pct_3m_val <= 0:
-                continue  # negative or unknown 3m → falling knife or no data
-            theme_3m_val = theme_3m.get(r.get("theme"))
-            if (theme_3m_val is None or not np.isfinite(theme_3m_val)
-                    or theme_3m_val <= 0):
-                continue  # cold theme
+            pct_6m_mom = r.get("pct_6m")
+            if pct_6m_mom is None or not np.isfinite(pct_6m_mom) or pct_6m_mom <= 0:
+                continue  # negative or unknown 6m → falling knife or no data
+            theme_6m_val = theme_6m.get(r.get("theme"))
+            if (theme_6m_val is None or not np.isfinite(theme_6m_val)
+                    or theme_6m_val <= 0):
+                continue  # cold theme (6m median)
             rr_val = r.get("reward_risk")
             # +inf means live <= entry (zero downside to the entry level)
             # with an exit target above — the BEST case, so it passes.

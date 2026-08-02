@@ -377,6 +377,10 @@ def _render_watchlist_tab(st) -> None:
         dict(zip(heat_for_today["theme"], heat_for_today["median_3m"]))
         if not heat_for_today.empty else {}
     )
+    theme_6m_map = (
+        dict(zip(heat_for_today["theme"], heat_for_today["median_6m"]))
+        if not heat_for_today.empty else {}
+    )
     today = (
         compute_daily_signals(
             view, history, volumes,
@@ -405,7 +409,7 @@ def _render_watchlist_tab(st) -> None:
                     f"{'…' if len(matches) > 8 else ''}) — showing **{found['ticker']}**."
                 )
             # Gem-gate diagnosis, right where the investigation happens
-            fails = gem_gate_failures(found, theme_3m_map)
+            fails = gem_gate_failures(found, theme_6m_map)
             if fails:
                 st.warning(f"**{found['ticker']} is not a gem right now:** {'; '.join(fails)}")
             else:
@@ -537,8 +541,8 @@ def _render_watchlist_tab(st) -> None:
     # ---- 💎 Gems (quality gates AND day-scale agreement) -------------------
     st.markdown("### 💎 Gems — every filter agrees")
     st.caption(
-        "A gem passes EVERY strict quality gate (buy zone, own 3m momentum "
-        "> 0, hot theme, R:R ≥ 3, not parabolic) AND shows day-scale action "
+        "A gem passes EVERY strict quality gate (buy zone, own 6m momentum "
+        "> 0, hot theme on the 6m median, R:R ≥ 3, not parabolic) AND shows day-scale action "
         "(volume, freshness, news). Insider buying (SEC Form 4, 2-day lag) "
         "and catalysts add soft weight only — never a gate. "
         "**Empty most days by design** — six signal families rarely agree."
@@ -563,7 +567,7 @@ def _render_watchlist_tab(st) -> None:
                 sig_row = view[view["ticker"] == sig["ticker"]]
                 if sig_row.empty:
                     continue
-                fails = gem_gate_failures(sig_row.iloc[0], theme_3m_map)
+                fails = gem_gate_failures(sig_row.iloc[0], theme_6m_map)
                 if fails:
                     st.caption(f"• **{sig['ticker']}** — {'; '.join(fails)}")
                 else:
@@ -795,8 +799,9 @@ def _render_watchlist_tab(st) -> None:
                 key="picker_strict",
                 help=(
                     "Only ticks that pass ALL of these survive: BUY ZONE, "
-                    "3m momentum > 0, theme 3m median > 0, R:R ≥ threshold, "
-                    "6m < blow-off threshold. Composite then ranks the survivors."
+                    "6m momentum > 0, theme 6m median > 0, R:R ≥ threshold, "
+                    "6m < blow-off threshold. Horizons chosen by Signal Lab "
+                    "evidence. Composite then ranks the survivors."
                 ),
             )
         with strict_row[1]:
@@ -843,7 +848,7 @@ def _render_watchlist_tab(st) -> None:
     if strict_mode:
         st.caption(
             f"🎯 Strict mode active: **{len(picks)} tickers** passed every hard gate "
-            f"(BUY ZONE, 3m>0, hot theme, R:R≥{strict_min_rr:.1f}, 6m<{blowoff:.0f}%)."
+            f"(BUY ZONE, 6m>0, hot theme 6m, R:R≥{strict_min_rr:.1f}, 6m<{blowoff:.0f}%)."
         )
     if picks.empty:
         st.info("No picks meet the criteria. Loosen the filters or check that prices loaded.")
@@ -1739,8 +1744,8 @@ clears the conviction bar, the verdict is "no trade today".
 
 **💎 Gems** — every stock that passed ALL of these at once:
 - price in the **buy zone**
-- its own momentum is positive over 3 months (not a falling knife)
-- its **theme** (AI, nuclear, biotech…) is rising as a group
+- its own momentum is positive over 6 months (not a falling knife) —\n  the window the 🧪 Signal Lab chose empirically
+- its **theme** (AI, nuclear, biotech…) is rising as a group over 6 months
 - the potential reward is at least **3× the risk** to the stop
 - it hasn't already gone parabolic (no chasing tops)
 - plus something is *happening* today — unusual volume, a fresh entry into
