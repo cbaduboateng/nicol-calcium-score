@@ -6,6 +6,9 @@ name: Probe graveyard tickers
 
 on:
   workflow_dispatch: {}
+  push:
+    branches: [congress-signal-extract]
+    paths: [".graveyard-probe-request"]   # touch this file to trigger a probe
 
 permissions:
   contents: write
