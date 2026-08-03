@@ -53,7 +53,7 @@ log = logging.getLogger(__name__)
 class RunbookParams:
     start_capital: float = 5_000.0
     max_positions: int = 2
-    stop_pct: float = 0.12
+    stop_pct: float = 0.20   # Exit-Lab verdict 2026-08-03
     min_rr: float = 3.0
     pyramid_trigger_pct: float = 0.25
     pyramid_add_frac: float = 0.5      # add = this fraction of initial cost

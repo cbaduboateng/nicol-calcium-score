@@ -1320,9 +1320,11 @@ def _render_watchlist_tab(st) -> None:
             "target_exit": st.column_config.NumberColumn("Sell ≥", format="%.2f"),
             "stop_price": st.column_config.NumberColumn(
                 "Stop", format="%.2f",
-                help="Suggested stop: 12% below your fill — the live price "
+                help="Suggested stop: 20% below your fill (Exit-Lab verdict: "
+                     "tighter stops shook out winners) — the live price "
                      "when in the buy zone, otherwise the entry target. "
-                     "Pre-commit it before you buy.",
+                     "Pre-commit it before you buy, and size ~0.6x vs a "
+                     "12% stop so per-trade risk stays constant.",
             ),
             "tgt_src": st.column_config.TextColumn(
                 "Tgt",
@@ -1792,7 +1794,7 @@ def _render_track_record_tab(st) -> None:
                 value=5_000.0, step=500.0, key="runbook_capital",
             )
         with rb[1]:
-            rb_stop = st.slider("Stop %", 5, 25, 12, step=1, key="runbook_stop")
+            rb_stop = st.slider("Stop %", 5, 25, 20, step=1, key="runbook_stop")
         with rb[2]:
             rb_rr = st.slider("Min R:R", 1.0, 5.0, 3.0, step=0.5, key="runbook_rr")
         with rb[3]:
@@ -2463,7 +2465,7 @@ default. The current 6-month gates were chosen exactly this way.
 | Term | Meaning |
 |---|---|
 | **Buy zone** | Live price at or below the analyst's buy target |
-| **Stop** | Pre-commit exit ~12% below your fill — the app alerts when it's hit |
+| **Stop** | Pre-commit exit 20% below your fill (chosen by Exit-Lab evidence). Size ~0.6× what you would at a tighter stop so per-trade risk stays constant |
 | **R:R** | Reward-to-risk: upside to the sell target vs downside to the stop |
 | **⏳ Stale target** | Price has ignored the level for 6+ months — treat as historical |
 | **Tgt A/D** | Target provenance: Analyst-set vs Derived by the app (counts less) |

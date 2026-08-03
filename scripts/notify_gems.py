@@ -108,7 +108,7 @@ def main() -> int:
                     _rq.post(
                         f"{NTFY_SERVER}/{topic}",
                         data=("\n".join(blines)
-                              + "\n\nStops = avg cost −12%. Not financial advice."
+                              + "\n\nStops = avg cost −20% (Exit-Lab verdict). Not financial advice."
                               ).encode("utf-8"),
                         headers={"Title": b_title.encode("utf-8"),
                                  "Priority": prio, "Tags": "rotating_light"},

@@ -213,7 +213,12 @@ def map_theme(description: str | None, sector: str | None = None) -> str:
 
 
 APPROACHING_PCT_ABOVE_ENTRY = 0.15  # within 15% above entry counts as approaching
-DEFAULT_STOP_PCT = 0.12             # suggested stop: 12% below the fill
+# 20% per the Exit-policy Lab verdict (2026-08-03): vs tighter stops it
+# won both walk-forward halves, lifted win rate to 51% and flipped the
+# median trade positive — tight stops were shaking out eventual winners.
+# SIZING COROLLARY: keep per-trade risk constant by sizing ~0.6x what
+# you would at a 12% stop. Change only with new Lab evidence.
+DEFAULT_STOP_PCT = 0.20             # suggested stop: 20% below the fill
 
 
 def compute_status(

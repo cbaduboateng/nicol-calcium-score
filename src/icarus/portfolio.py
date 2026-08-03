@@ -216,7 +216,7 @@ def fetch_live_quotes(tickers: list[str]) -> dict[str, dict]:
     return out
 
 
-DEFAULT_PORTFOLIO_STOP_PCT = 0.12
+DEFAULT_PORTFOLIO_STOP_PCT = 0.20  # Exit-Lab verdict 2026-08-03
 PICKS_PATH = "portfolio/picks.csv"
 PICK_COLUMNS = ["date", "ticker", "adjusted_score", "pool"]
 
@@ -397,8 +397,8 @@ def stop_breaches(
 ) -> pd.DataFrame:
     """The most valuable alert the app can send: 'your rule says sell'.
 
-    Stop convention: avg_cost × (1 − stop_pct) — the runbook's 12% below
-    the fill. Returns one row per holding that has BREACHED its stop
+    Stop convention: avg_cost × (1 − stop_pct) — 20% below the fill per
+    the Exit-policy Lab verdict (2026-08-03). Returns one row per holding that has BREACHED its stop
     (close ≤ stop) or is WITHIN ``warn_within_pct`` above it, columns:
     ticker, qty, avg_cost, stop, close, distance_pct, state
     ('breached' | 'near'). Holdings without a close are skipped —

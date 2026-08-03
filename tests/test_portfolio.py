@@ -117,20 +117,20 @@ def test_totals_with_quotes_and_fallback():
 def test_stop_breaches_flags_breached_and_near():
     from icarus.portfolio import stop_breaches
     trades = pd.DataFrame([
-        _t("GONE", "buy", 10, 10.00, "2026-01-05"),   # stop 8.80
-        _t("NEAR", "buy", 10, 10.00, "2026-01-05"),   # stop 8.80
+        _t("GONE", "buy", 10, 10.00, "2026-01-05"),   # stop 8.00 (20%)
+        _t("NEAR", "buy", 10, 10.00, "2026-01-05"),   # stop 8.00
         _t("SAFE", "buy", 10, 10.00, "2026-01-05"),
         _t("NOPX", "buy", 10, 10.00, "2026-01-05"),
     ])
     pos, _ = positions_from_trades(trades)
-    closes = {"GONE": 8.50, "NEAR": 8.95, "SAFE": 11.00}
+    closes = {"GONE": 7.90, "NEAR": 8.15, "SAFE": 11.00}
     out = stop_breaches(pos, closes)
     by = out.set_index("ticker")
     assert by.loc["GONE", "state"] == "breached"
     assert by.loc["NEAR", "state"] == "near"
     assert "SAFE" not in by.index
     assert "NOPX" not in by.index          # unpriced skipped, reported by caller
-    assert by.loc["GONE", "stop"] == pytest.approx(8.80)
+    assert by.loc["GONE", "stop"] == pytest.approx(8.00)
 
 
 def test_stop_breaches_respects_custom_stop_pct():
@@ -158,16 +158,16 @@ def test_new_trade_and_empty_frames():
 def test_portfolio_risk_sums_distance_to_stops():
     from icarus.portfolio import portfolio_risk
     trades = pd.DataFrame([
-        _t("AAA", "buy", 10, 10.00, "2026-01-05"),   # stop 8.80
+        _t("AAA", "buy", 10, 10.00, "2026-01-05"),   # stop 8.00 (20%)
         _t("BBB", "buy", 10, 10.00, "2026-01-05"),   # below stop already
     ])
     pos, _ = positions_from_trades(trades)
-    quotes = {"AAA": {"price": 11.0}, "BBB": {"price": 8.0}}
+    quotes = {"AAA": {"price": 11.0}, "BBB": {"price": 7.5}}
     r = portfolio_risk(pos, quotes)
-    # AAA: 10 x (11.00 - 8.80) = 22; BBB contributes zero remaining risk
-    assert r["risk_at_stops"] == pytest.approx(22.0)
+    # AAA: 10 x (11.00 - 8.00) = 30; BBB contributes zero remaining risk
+    assert r["risk_at_stops"] == pytest.approx(30.0)
     assert r["n_below_stop"] == 1
-    assert r["risk_pct_of_value"] == pytest.approx(22.0 / 190.0 * 100.0)
+    assert r["risk_pct_of_value"] == pytest.approx(30.0 / 185.0 * 100.0)
 
 
 def test_theme_concentration_finds_the_hidden_single_bet():

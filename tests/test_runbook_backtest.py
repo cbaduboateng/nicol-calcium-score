@@ -53,7 +53,9 @@ def test_losing_trade_stops_out_near_stop_pct():
     tail = list(np.linspace(9.5, 8.2, 15))  # slide through the -12% stop
     hist = {"LOSE": _rise_dip(9.9, tail)}
     row = dict(WIN_ROW, ticker="LOSE")
-    res = simulate_runbook(_watchlist([row]), hist)
+    # Pin the stop being tested: this exercises stop MECHANICS, not the
+    # (now 20%) default width.
+    res = simulate_runbook(_watchlist([row]), hist, RunbookParams(stop_pct=0.12))
     t = res["trades"].iloc[0]
     assert t["reason"] == "stop"
     # Close-based stop: loss should be near -12%, never catastrophic
