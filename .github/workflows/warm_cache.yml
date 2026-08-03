@@ -9,6 +9,9 @@ on:
   schedule:
     - cron: "30 5 * * 1-5"   # 05:30 UTC weekdays, before London open
   workflow_dispatch: {}
+  push:
+    branches: [congress-signal-extract]
+    paths: ["data/watchlist.csv"]   # watchlist edits warm their own prices
 
 permissions:
   contents: write
