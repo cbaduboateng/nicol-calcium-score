@@ -2230,48 +2230,51 @@ def _render_portfolio_tab(st) -> None:
 
     # ---- Risk view ---------------------------------------------------------
     if totals["n_positions"]:
-        from .portfolio import portfolio_risk, theme_concentration
-        from .ticker_facts import lookup as _facts
-        from .watchlist_alerts import load_watchlist as _lw, map_theme as _mt
-
-        wl_desc = {}
         try:
-            _wl = _lw()
-            wl_desc = dict(zip(_wl["ticker"], _wl["description"]))
-        except Exception:  # noqa: BLE001
-            pass
-        themes = {}
-        for t in positions["ticker"]:
-            fact = _facts(t, cache_only=True)
-            themes[t] = _mt(wl_desc.get(t, ""), sector=(fact.sector if fact else None))
+            from .portfolio import portfolio_risk, theme_concentration
+            from .ticker_facts import lookup as _facts
+            from .watchlist_alerts import load_watchlist as _lw, map_theme as _mt
 
-        risk = portfolio_risk(positions, quotes)
-        conc = theme_concentration(positions, quotes, themes)
-        r = st.columns(2)
-        r[0].metric(
-            "Risk at stops",
-            f"{_fmt_dollar(risk['risk_at_stops'])} · {risk['risk_pct_of_value']:.1f}%",
-            help="Total loss if EVERY holding fell to its stop (avg cost −20%) "
-                 "tomorrow. The number that prevents ruin — keep it a size "
-                 "you can shrug off.",
-        )
-        if conc["top_theme"]:
-            r[1].metric(
-                "Top theme", f"{conc['top_theme']} · {conc['top_share_pct']:.0f}%",
-                help="Share of portfolio value in the largest theme.",
+            wl_desc = {}
+            try:
+                _wl = _lw()
+                wl_desc = dict(zip(_wl["ticker"], _wl["description"]))
+            except Exception:  # noqa: BLE001
+                pass
+            themes = {}
+            for t in positions["ticker"]:
+                fact = _facts(t, cache_only=True)
+                themes[t] = _mt(wl_desc.get(t, ""), sector=(fact.sector if fact else None))
+
+            risk = portfolio_risk(positions, quotes)
+            conc = theme_concentration(positions, quotes, themes)
+            r = st.columns(2)
+            r[0].metric(
+                "Risk at stops",
+                f"{_fmt_dollar(risk['risk_at_stops'])} · {risk['risk_pct_of_value']:.1f}%",
+                help="Total loss if EVERY holding fell to its stop (avg cost −20%) "
+                     "tomorrow. The number that prevents ruin — keep it a size "
+                     "you can shrug off.",
             )
-        if conc["top_share_pct"] > 50:
-            st.warning(
-                f"⚠️ **{conc['top_share_pct']:.0f}% of the portfolio is one "
-                f"theme ({conc['top_theme']})** — several tickers, one bet. "
-                "Fine if intentional; dangerous if accidental."
-            )
-        if risk["n_below_stop"]:
-            st.error(
-                f"🛑 {risk['n_below_stop']} holding(s) already below their "
-                "stop — the rule says these should have been sold. See the "
-                "push alerts."
-            )
+            if conc["top_theme"]:
+                r[1].metric(
+                    "Top theme", f"{conc['top_theme']} · {conc['top_share_pct']:.0f}%",
+                    help="Share of portfolio value in the largest theme.",
+                )
+            if conc["top_share_pct"] > 50:
+                st.warning(
+                    f"⚠️ **{conc['top_share_pct']:.0f}% of the portfolio is one "
+                    f"theme ({conc['top_theme']})** — several tickers, one bet. "
+                    "Fine if intentional; dangerous if accidental."
+                )
+            if risk["n_below_stop"]:
+                st.error(
+                    f"🛑 {risk['n_below_stop']} holding(s) already below their "
+                    "stop — the rule says these should have been sold. See the "
+                    "push alerts."
+                )
+        except Exception as exc:  # noqa: BLE001
+            st.warning(f"Risk view unavailable this refresh ({exc})")
 
     # ---- Holdings as T212-style rows --------------------------------------
     if totals["n_positions"]:
@@ -2368,54 +2371,56 @@ def _render_portfolio_tab(st) -> None:
                     ),
                 },
             )
+    # ---- Delete trades (own section — NOT hidden in an expander) ----------
     if not trades.empty:
-        with st.expander(f"📜 Trade history ({len(trades)}) — view & 🗑 delete"):
+        st.markdown("### 🗑 Delete trades")
+        st.caption(
+            "Fix typos or remove test entries. Every change is a commit on "
+            "the data branch, so nothing is ever truly lost."
+        )
+
+        def _label(row: pd.Series) -> str:
+            note = f" · {row['note']}" if str(row.get("note") or "").strip() else ""
+            # Short id suffix keeps labels unique even for identical
+            # duplicate trades (the realistic delete target).
+            return (f"{row['date']}  {row['side']} {float(row['qty']):g} "
+                    f"{row['ticker']} @ {float(row['price']):g}{note} "
+                    f"· #{str(row['id'])[:6]}")
+
+        options = {
+            _label(row): str(row["id"])
+            for _, row in trades.iterrows()
+        }
+        chosen = st.multiselect(
+            "Trades to delete", list(options),
+            key="portfolio_delete_sel",
+        )
+        if st.button(
+            f"Delete {len(chosen)} selected trade(s)",
+            key="portfolio_delete_btn",
+            disabled=not chosen,
+            type="secondary",
+        ):
+            doomed_ids = {options[c] for c in chosen}
+            updated = trades[~trades["id"].astype(str).isin(doomed_ids)]
+            updated = updated.reset_index(drop=True)
+            if remote:
+                try:
+                    sha = save_remote_trades(
+                        token, repo, updated,
+                        st.session_state.get("portfolio_sha"),
+                        message=f"Delete {len(doomed_ids)} trade(s)",
+                    )
+                    st.session_state["portfolio_sha"] = sha
+                except Exception as exc:  # noqa: BLE001
+                    st.error(f"Saving to GitHub failed: {exc}")
+                    st.stop()
+            st.session_state["portfolio_trades"] = updated
+            st.rerun()
+
+    if not trades.empty:
+        with st.expander(f"📜 Trade history ({len(trades)})"):
             st.dataframe(trades, use_container_width=True, hide_index=True)
-
-            # ---- Delete trades --------------------------------------------
-            st.markdown("**🗑 Delete trades** — fix typos or remove test "
-                        "entries. Every change is a commit on the data "
-                        "branch, so nothing is ever truly lost.")
-
-            def _label(row: pd.Series) -> str:
-                note = f" · {row['note']}" if str(row.get("note") or "").strip() else ""
-                # Short id suffix keeps labels unique even for identical
-                # duplicate trades (the realistic delete target).
-                return (f"{row['date']}  {row['side']} {float(row['qty']):g} "
-                        f"{row['ticker']} @ {float(row['price']):g}{note} "
-                        f"· #{str(row['id'])[:6]}")
-
-            options = {
-                _label(row): str(row["id"])
-                for _, row in trades.iterrows()
-            }
-            chosen = st.multiselect(
-                "Trades to delete", list(options),
-                key="portfolio_delete_sel",
-                placeholder="Pick one or more trades…",
-            )
-            if st.button(
-                f"Delete {len(chosen)} selected trade(s)",
-                key="portfolio_delete_btn",
-                disabled=not chosen,
-                type="secondary",
-            ):
-                doomed_ids = {options[c] for c in chosen}
-                updated = trades[~trades["id"].astype(str).isin(doomed_ids)]
-                updated = updated.reset_index(drop=True)
-                if remote:
-                    try:
-                        sha = save_remote_trades(
-                            token, repo, updated,
-                            st.session_state.get("portfolio_sha"),
-                            message=f"Delete {len(doomed_ids)} trade(s)",
-                        )
-                        st.session_state["portfolio_sha"] = sha
-                    except Exception as exc:  # noqa: BLE001
-                        st.error(f"Saving to GitHub failed: {exc}")
-                        st.stop()
-                st.session_state["portfolio_trades"] = updated
-                st.rerun()
             st.download_button(
                 "⬇️ Download trades.csv",
                 trades.to_csv(index=False).encode(),
