@@ -1,0 +1,1099 @@
+{
+ "AIKI": {
+  "last_close": 0.3564999997615814,
+  "last_date": "2026-08-03",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "DVLT"
+ },
+ "ALYI": {
+  "status": "dead",
+  "symbol": "ALYI",
+  "tried": [
+   "ALYI"
+  ]
+ },
+ "AMGO": {
+  "status": "dead",
+  "symbol": "AMGO",
+  "tried": [
+   "AMGO"
+  ]
+ },
+ "ANIC": {
+  "last_close": 5.610000133514404,
+  "last_date": "2026-07-31",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "ANIC.L"
+ },
+ "ANTE": {
+  "status": "dead",
+  "symbol": "ANTE",
+  "tried": [
+   "ANTE"
+  ]
+ },
+ "ASP": {
+  "last_close": 1.25,
+  "last_date": "2026-08-03",
+  "n_sessions": 65,
+  "status": "rescued",
+  "symbol": "ASP.AX"
+ },
+ "ATHA": {
+  "last_close": 0.3149999976158142,
+  "last_date": "2026-07-30",
+  "n_sessions": 64,
+  "status": "rescued",
+  "symbol": "ATHA.CN"
+ },
+ "ATIF": {
+  "status": "dead",
+  "symbol": "ATIF",
+  "tried": [
+   "ATIF"
+  ]
+ },
+ "AVGR": {
+  "status": "dead",
+  "symbol": "AVGR",
+  "tried": [
+   "AVGR"
+  ]
+ },
+ "AVON": {
+  "last_close": 1706.0,
+  "last_date": "2026-07-31",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "AVON.L"
+ },
+ "AY": {
+  "status": "dead",
+  "symbol": "AY",
+  "tried": [
+   "AY"
+  ]
+ },
+ "AZRE": {
+  "status": "dead",
+  "symbol": "AZRE",
+  "tried": [
+   "AZRE"
+  ]
+ },
+ "BBI": {
+  "status": "dead",
+  "symbol": "BBI",
+  "tried": [
+   "BBI"
+  ]
+ },
+ "BBOX": {
+  "last_close": 170.10000610351562,
+  "last_date": "2026-07-31",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "BBOX.L"
+ },
+ "BFIT": {
+  "last_close": 35.70000076293945,
+  "last_date": "2026-07-30",
+  "n_sessions": 64,
+  "status": "rescued",
+  "symbol": "BFIT.AS"
+ },
+ "BFT": {
+  "last_close": 7.840000152587891,
+  "last_date": "2026-08-03",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "PSFE"
+ },
+ "BIFF": {
+  "status": "dead",
+  "symbol": "BIFF",
+  "tried": [
+   "BIFF"
+  ]
+ },
+ "BIOL": {
+  "status": "dead",
+  "symbol": "BIOL",
+  "tried": [
+   "BIOL"
+  ]
+ },
+ "BIT:EMC": {
+  "status": "dead",
+  "symbol": "EMC.MI",
+  "tried": [
+   "EMC.MI"
+  ]
+ },
+ "BMIX": {
+  "status": "dead",
+  "symbol": "BMIX",
+  "tried": [
+   "BMIX"
+  ]
+ },
+ "BOWL": {
+  "last_close": 285.5,
+  "last_date": "2026-07-31",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "BOWL.L"
+ },
+ "BRNT": {
+  "last_close": 78.41000366210938,
+  "last_date": "2026-07-17",
+  "n_sessions": 1,
+  "status": "rescued",
+  "symbol": "BRNT.L"
+ },
+ "CHRG": {
+  "last_close": 3505.0,
+  "last_date": "2026-07-31",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "CHRG.L"
+ },
+ "CINE": {
+  "status": "dead",
+  "symbol": "CINE",
+  "tried": [
+   "CINE"
+  ]
+ },
+ "CLIS": {
+  "last_close": 23180.0,
+  "last_date": "2026-07-31",
+  "n_sessions": 64,
+  "status": "rescued",
+  "symbol": "CLIS.TA"
+ },
+ "COOL": {
+  "status": "dead",
+  "symbol": "COOL",
+  "tried": [
+   "COOL"
+  ]
+ },
+ "CPG": {
+  "last_close": 31.940000534057617,
+  "last_date": "2026-07-30",
+  "n_sessions": 62,
+  "status": "rescued",
+  "symbol": "CPG.L"
+ },
+ "CSCW": {
+  "status": "dead",
+  "symbol": "CSCW",
+  "tried": [
+   "CSCW"
+  ]
+ },
+ "CSPX": {
+  "last_close": 800.530029296875,
+  "last_date": "2026-07-31",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "CSPX.L"
+ },
+ "CVAC": {
+  "status": "dead",
+  "symbol": "CVAC",
+  "tried": [
+   "CVAC"
+  ]
+ },
+ "CWBR": {
+  "status": "dead",
+  "symbol": "CWBR",
+  "tried": [
+   "CWBR"
+  ]
+ },
+ "CWRK": {
+  "status": "dead",
+  "symbol": "CWRK",
+  "tried": [
+   "CWRK"
+  ]
+ },
+ "CYB": {
+  "last_close": 89.61000061035156,
+  "last_date": "2026-07-31",
+  "n_sessions": 65,
+  "status": "rescued",
+  "symbol": "CYB.TO"
+ },
+ "CYRN": {
+  "status": "dead",
+  "symbol": "CYRN",
+  "tried": [
+   "CYRN"
+  ]
+ },
+ "CYTO": {
+  "status": "dead",
+  "symbol": "CYTO",
+  "tried": [
+   "CYTO",
+   "CYTO.V"
+  ]
+ },
+ "DATA": {
+  "last_close": 79.30000305175781,
+  "last_date": "2026-07-31",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "DATA.L"
+ },
+ "DEBS": {
+  "last_close": 9.289999961853027,
+  "last_date": "2026-08-03",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "LABD"
+ },
+ "DOCRF": {
+  "status": "dead",
+  "symbol": "DOCRF",
+  "tried": [
+   "DOCRF"
+  ]
+ },
+ "DVRG": {
+  "status": "dead",
+  "symbol": "DVRG",
+  "tried": [
+   "DVRG"
+  ]
+ },
+ "EB": {
+  "status": "dead",
+  "symbol": "EB",
+  "tried": [
+   "EB"
+  ]
+ },
+ "EBNB": {
+  "last_close": 3.0899999141693115,
+  "last_date": "2026-08-03",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "BMBL"
+ },
+ "ECAR": {
+  "last_close": 12.218000411987305,
+  "last_date": "2026-07-31",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "ECAR.L"
+ },
+ "EGEC": {
+  "status": "dead",
+  "symbol": "EGEC",
+  "tried": [
+   "EGEC"
+  ]
+ },
+ "ESGC": {
+  "status": "dead",
+  "symbol": "ESGC",
+  "tried": [
+   "ESGC"
+  ]
+ },
+ "ESYS": {
+  "last_close": 17.75,
+  "last_date": "2026-06-09",
+  "n_sessions": 1,
+  "status": "rescued",
+  "symbol": "ESYS.L"
+ },
+ "ETR:DPW": {
+  "last_close": 57.81999969482422,
+  "last_date": "2026-07-30",
+  "n_sessions": 64,
+  "status": "rescued",
+  "symbol": "DHL.DE"
+ },
+ "ETWO": {
+  "status": "dead",
+  "symbol": "ETWO",
+  "tried": [
+   "ETWO"
+  ]
+ },
+ "EXPI": {
+  "status": "dead",
+  "symbol": "EXPI",
+  "tried": [
+   "EXPI"
+  ]
+ },
+ "FFWD": {
+  "status": "dead",
+  "symbol": "FFWD",
+  "tried": [
+   "FFWD",
+   "FFWD.L"
+  ]
+ },
+ "FLTA": {
+  "status": "dead",
+  "symbol": "FLTA",
+  "tried": [
+   "FLTA"
+  ]
+ },
+ "FRA:SEN": {
+  "status": "dead",
+  "symbol": "SEN.F",
+  "tried": [
+   "SEN.F"
+  ]
+ },
+ "FUV": {
+  "status": "dead",
+  "symbol": "FUV",
+  "tried": [
+   "FUV"
+  ]
+ },
+ "FVE": {
+  "status": "dead",
+  "symbol": "FVE",
+  "tried": [
+   "FVE"
+  ]
+ },
+ "GHSI": {
+  "status": "dead",
+  "symbol": "GHSI",
+  "tried": [
+   "GHSI"
+  ]
+ },
+ "GPS": {
+  "status": "dead",
+  "symbol": "GPS",
+  "tried": [
+   "GPS",
+   "GPS.CN"
+  ]
+ },
+ "GTHX": {
+  "status": "dead",
+  "symbol": "GTHX",
+  "tried": [
+   "GTHX"
+  ]
+ },
+ "GVP": {
+  "status": "dead",
+  "symbol": "GVP",
+  "tried": [
+   "GVP"
+  ]
+ },
+ "GWS": {
+  "last_close": 92.94000244140625,
+  "last_date": "2026-07-31",
+  "n_sessions": 65,
+  "status": "rescued",
+  "symbol": "GWO.TO"
+ },
+ "HEC": {
+  "last_close": 5.210000038146973,
+  "last_date": "2026-08-03",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "TALK"
+ },
+ "HEMO": {
+  "last_close": 614.5,
+  "last_date": "2026-07-31",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "HEMO.L"
+ },
+ "HTRY": {
+  "status": "dead",
+  "symbol": "HTRY",
+  "tried": [
+   "HTRY"
+  ]
+ },
+ "HYVE": {
+  "status": "dead",
+  "symbol": "HYVE",
+  "tried": [
+   "HYVE"
+  ]
+ },
+ "IDEX": {
+  "status": "dead",
+  "symbol": "IDEX",
+  "tried": [
+   "IDEX"
+  ]
+ },
+ "INRG": {
+  "last_close": 751.0,
+  "last_date": "2026-07-31",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "INRG.L"
+ },
+ "IPG": {
+  "status": "dead",
+  "symbol": "IPG",
+  "tried": [
+   "IPG"
+  ]
+ },
+ "ISR": {
+  "last_close": 3.009999990463257,
+  "last_date": "2026-08-03",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "CATX"
+ },
+ "ISUN": {
+  "last_close": 25.74250030517578,
+  "last_date": "2026-07-31",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "ISUN.L"
+ },
+ "IUKD": {
+  "last_close": 1039.800048828125,
+  "last_date": "2026-07-31",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "IUKD.L"
+ },
+ "IWMD": {
+  "status": "dead",
+  "symbol": "IWMD",
+  "tried": [
+   "IWMD",
+   "IWMD.L"
+  ]
+ },
+ "IWMO": {
+  "last_close": 112.83000183105469,
+  "last_date": "2026-07-31",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "IWMO.L"
+ },
+ "JP": {
+  "status": "dead",
+  "symbol": "JP",
+  "tried": [
+   "JP"
+  ]
+ },
+ "KMPH": {
+  "last_close": 10.055000305175781,
+  "last_date": "2026-08-03",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "ZVRA"
+ },
+ "LNGA": {
+  "status": "dead",
+  "symbol": "LNGA",
+  "tried": [
+   "LNGA"
+  ]
+ },
+ "LOCK": {
+  "last_close": 11.883999824523926,
+  "last_date": "2026-07-31",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "LOCK.L"
+ },
+ "LOIL": {
+  "last_close": 19.290000915527344,
+  "last_date": "2026-07-17",
+  "n_sessions": 1,
+  "status": "rescued",
+  "symbol": "LOIL.L"
+ },
+ "LON:AFC": {
+  "status": "dead",
+  "symbol": "AFC.L",
+  "tried": [
+   "AFC.L"
+  ]
+ },
+ "LON:CBX": {
+  "status": "dead",
+  "symbol": "CBX.L",
+  "tried": [
+   "CBX.L"
+  ]
+ },
+ "LON:CCL": {
+  "status": "dead",
+  "symbol": "CCL.L",
+  "tried": [
+   "CCL.L"
+  ]
+ },
+ "LON:HUM": {
+  "status": "dead",
+  "symbol": "HUM.L",
+  "tried": [
+   "HUM.L"
+  ]
+ },
+ "LON:SIS": {
+  "status": "dead",
+  "symbol": "SIS.L",
+  "tried": [
+   "SIS.L"
+  ]
+ },
+ "LON:SMRT": {
+  "status": "dead",
+  "symbol": "SMRT.L",
+  "tried": [
+   "SMRT.L"
+  ]
+ },
+ "LON:augm": {
+  "status": "dead",
+  "symbol": "AUGM.L",
+  "tried": [
+   "AUGM.L"
+  ]
+ },
+ "LSYN": {
+  "status": "dead",
+  "symbol": "LSYN",
+  "tried": [
+   "LSYN"
+  ]
+ },
+ "MANO": {
+  "last_close": 43.0,
+  "last_date": "2026-07-31",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "MANO.L"
+ },
+ "MDGS": {
+  "status": "dead",
+  "symbol": "MDGS",
+  "tried": [
+   "MDGS"
+  ]
+ },
+ "METX": {
+  "last_close": 2.5,
+  "last_date": "2026-07-30",
+  "n_sessions": 64,
+  "status": "rescued",
+  "symbol": "METX.CN"
+ },
+ "MKGI": {
+  "last_close": 1.7100000381469727,
+  "last_date": "2026-08-03",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "NTRP"
+ },
+ "MOGO": {
+  "status": "dead",
+  "symbol": "MOGO",
+  "tried": [
+   "MOGO"
+  ]
+ },
+ "MOON": {
+  "last_close": 275.6000061035156,
+  "last_date": "2026-07-31",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "MOON.L"
+ },
+ "MPW": {
+  "status": "dead",
+  "symbol": "MPW",
+  "tried": [
+   "MPW"
+  ]
+ },
+ "NANO": {
+  "last_close": 2.5,
+  "last_date": "2026-07-21",
+  "n_sessions": 55,
+  "status": "rescued",
+  "symbol": "NANO.L"
+ },
+ "ND": {
+  "status": "dead",
+  "symbol": "ND",
+  "tried": [
+   "ND",
+   "JWN"
+  ]
+ },
+ "NPF": {
+  "last_close": 1.0709999799728394,
+  "last_date": "2026-08-04",
+  "n_sessions": 65,
+  "status": "rescued",
+  "symbol": "NPF.NZ"
+ },
+ "NUCG": {
+  "last_close": 36.560001373291016,
+  "last_date": "2026-07-31",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "NUCG.L"
+ },
+ "NVIGF": {
+  "last_close": 206.63999938964844,
+  "last_date": "2026-08-03",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "NVDA"
+ },
+ "NYSE:BODY": {
+  "last_close": 10.020000457763672,
+  "last_date": "2026-08-03",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "BODI"
+ },
+ "NYSE:EMBI": {
+  "status": "dead",
+  "symbol": "EMBI",
+  "tried": [
+   "EMBI",
+   "ERJ"
+  ]
+ },
+ "OBSV": {
+  "status": "dead",
+  "symbol": "OBSV",
+  "tried": [
+   "OBSV"
+  ]
+ },
+ "OCN": {
+  "status": "dead",
+  "symbol": "OCN",
+  "tried": [
+   "OCN"
+  ]
+ },
+ "ODX": {
+  "status": "dead",
+  "symbol": "ODX",
+  "tried": [
+   "ODX",
+   "ODX.L"
+  ]
+ },
+ "ONVO": {
+  "status": "dead",
+  "symbol": "ONVO",
+  "tried": [
+   "ONVO"
+  ]
+ },
+ "ORPH": {
+  "status": "dead",
+  "symbol": "ORPH",
+  "tried": [
+   "ORPH"
+  ]
+ },
+ "ORTX": {
+  "status": "dead",
+  "symbol": "ORTX",
+  "tried": [
+   "ORTX"
+  ]
+ },
+ "OSMT": {
+  "status": "dead",
+  "symbol": "OSMT",
+  "tried": [
+   "OSMT"
+  ]
+ },
+ "OSTK": {
+  "status": "dead",
+  "symbol": "BYON",
+  "tried": [
+   "BYON",
+   "BYON"
+  ]
+ },
+ "OTCMKTS:KHOTF": {
+  "status": "dead",
+  "symbol": "KHOTF",
+  "tried": [
+   "KHOTF"
+  ]
+ },
+ "PCPL": {
+  "status": "dead",
+  "symbol": "PCPL",
+  "tried": [
+   "PCPL"
+  ]
+ },
+ "PCTI": {
+  "status": "dead",
+  "symbol": "PCTI",
+  "tried": [
+   "PCTI"
+  ]
+ },
+ "PEI": {
+  "status": "dead",
+  "symbol": "PEI",
+  "tried": [
+   "PEI"
+  ]
+ },
+ "PHSP": {
+  "last_close": 3876.0,
+  "last_date": "2026-07-31",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "PHSP.L"
+ },
+ "PLL": {
+  "last_close": 50.84000015258789,
+  "last_date": "2026-08-03",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "ELVR"
+ },
+ "POAI": {
+  "status": "dead",
+  "symbol": "POAI",
+  "tried": [
+   "POAI"
+  ]
+ },
+ "PSTG": {
+  "status": "dead",
+  "symbol": "PSTG",
+  "tried": [
+   "PSTG"
+  ]
+ },
+ "PSTI": {
+  "last_close": 1.5750000476837158,
+  "last_date": "2026-08-03",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "PLUR"
+ },
+ "PTVE": {
+  "status": "dead",
+  "symbol": "PTVE",
+  "tried": [
+   "PTVE"
+  ]
+ },
+ "PURP": {
+  "last_close": 9.0,
+  "last_date": "2026-08-03",
+  "n_sessions": 62,
+  "status": "rescued",
+  "symbol": "PRPL"
+ },
+ "QRTEA": {
+  "status": "dead",
+  "symbol": "QRTEA",
+  "tried": [
+   "QRTEA",
+   "QVCGA"
+  ]
+ },
+ "RAPT": {
+  "status": "dead",
+  "symbol": "RAPT",
+  "tried": [
+   "RAPT"
+  ]
+ },
+ "RBTX": {
+  "last_close": 1501.0,
+  "last_date": "2026-07-31",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "RBTX.L"
+ },
+ "RLGY": {
+  "status": "dead",
+  "symbol": "HOUS",
+  "tried": [
+   "HOUS",
+   "HOUS"
+  ]
+ },
+ "RMGR": {
+  "status": "dead",
+  "symbol": "RMGR",
+  "tried": [
+   "RMGR"
+  ]
+ },
+ "RMO": {
+  "status": "dead",
+  "symbol": "RMO",
+  "tried": [
+   "RMO"
+  ]
+ },
+ "RNDR-USD": {
+  "last_close": 1.3609999418258667,
+  "last_date": "2026-08-04",
+  "n_sessions": 92,
+  "status": "rescued",
+  "symbol": "RENDER-USD"
+ },
+ "RWLK": {
+  "last_close": 7.21999979019165,
+  "last_date": "2026-08-03",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "LFWD"
+ },
+ "SALT": {
+  "status": "dead",
+  "symbol": "SALT",
+  "tried": [
+   "SALT"
+  ]
+ },
+ "SAVA": {
+  "status": "dead",
+  "symbol": "SAVA",
+  "tried": [
+   "SAVA"
+  ]
+ },
+ "SCR": {
+  "status": "dead",
+  "symbol": "SCR",
+  "tried": [
+   "SCR"
+  ]
+ },
+ "SCWX": {
+  "status": "dead",
+  "symbol": "SCWX",
+  "tried": [
+   "SCWX"
+  ]
+ },
+ "SECO": {
+  "status": "dead",
+  "symbol": "SECO",
+  "tried": [
+   "SECO"
+  ]
+ },
+ "SEEL": {
+  "status": "dead",
+  "symbol": "SEEL",
+  "tried": [
+   "SEEL"
+  ]
+ },
+ "SFR": {
+  "status": "dead",
+  "symbol": "SFR",
+  "tried": [
+   "SFR"
+  ]
+ },
+ "SHCO": {
+  "status": "dead",
+  "symbol": "SHCO",
+  "tried": [
+   "SHCO"
+  ]
+ },
+ "SINO": {
+  "last_close": 5.440000057220459,
+  "last_date": "2026-08-03",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "SGLY"
+ },
+ "SLGG": {
+  "status": "dead",
+  "symbol": "SLGG",
+  "tried": [
+   "SLGG"
+  ]
+ },
+ "SMDS": {
+  "status": "dead",
+  "symbol": "SMDS.L",
+  "tried": [
+   "SMDS.L",
+   "SMDS.L"
+  ]
+ },
+ "SOL": {
+  "status": "dead",
+  "symbol": "SOL",
+  "tried": [
+   "SOL"
+  ]
+ },
+ "STIC": {
+  "status": "dead",
+  "symbol": "STIC",
+  "tried": [
+   "STIC"
+  ]
+ },
+ "STSA": {
+  "status": "dead",
+  "symbol": "STSA",
+  "tried": [
+   "STSA"
+  ]
+ },
+ "SVA": {
+  "status": "dead",
+  "symbol": "SVA",
+  "tried": [
+   "SVA"
+  ]
+ },
+ "SWI": {
+  "last_close": 97.94999694824219,
+  "last_date": "2026-08-03",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "0019.HK"
+ },
+ "SYN": {
+  "status": "dead",
+  "symbol": "SYN",
+  "tried": [
+   "SYN"
+  ]
+ },
+ "TKAT": {
+  "status": "dead",
+  "symbol": "TKAT",
+  "tried": [
+   "TKAT"
+  ]
+ },
+ "TRMR": {
+  "last_close": 10.289999961853027,
+  "last_date": "2026-08-03",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "NEXN"
+ },
+ "UROV": {
+  "status": "dead",
+  "symbol": "UROV",
+  "tried": [
+   "UROV"
+  ]
+ },
+ "USAT": {
+  "status": "dead",
+  "symbol": "CTLP",
+  "tried": [
+   "CTLP",
+   "CTLP"
+  ]
+ },
+ "VERO": {
+  "status": "dead",
+  "symbol": "VERO",
+  "tried": [
+   "VERO"
+  ]
+ },
+ "VJET": {
+  "status": "dead",
+  "symbol": "VJET",
+  "tried": [
+   "VJET"
+  ]
+ },
+ "VMEO": {
+  "status": "dead",
+  "symbol": "VMEO",
+  "tried": [
+   "VMEO"
+  ]
+ },
+ "VMOM": {
+  "last_close": 226.69000244140625,
+  "last_date": "2026-08-03",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "VFMO"
+ },
+ "VVI": {
+  "last_close": 51.29999923706055,
+  "last_date": "2026-08-03",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "PRSU"
+ },
+ "XAN": {
+  "last_close": 15.850000381469727,
+  "last_date": "2026-08-03",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "ACR"
+ },
+ "XSPX": {
+  "last_close": 11140.5,
+  "last_date": "2026-07-31",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "XSPX.L"
+ },
+ "ZOM": {
+  "last_close": 3.569999933242798,
+  "last_date": "2026-08-03",
+  "n_sessions": 63,
+  "status": "rescued",
+  "symbol": "GTM"
+ },
+ "ZUO": {
+  "status": "dead",
+  "symbol": "ZUO",
+  "tried": [
+   "ZUO"
+  ]
+ },
+ "ZYXI": {
+  "status": "dead",
+  "symbol": "ZYXI",
+  "tried": [
+   "ZYXI"
+  ]
+ }
+}
