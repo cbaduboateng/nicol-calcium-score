@@ -2765,12 +2765,16 @@ closed signals before believing any percentage.
 ### ⚡ Swing
 
 A separate, short-horizon game: **+5% targets in ≤10 sessions** with a 3%
-stop. Ruthlessly evidence-gated — the strategy comparison (dip-buys,
-oversold RSI, breakouts vs a no-strategy control) runs net of a 0.5% cost
-haircut with conservative fills, and **live candidates only unlock when a
-strategy beats the control in both walk-forward halves**. First verdict
-(Aug 2026): nothing qualified — this universe chops and bleeds at that
-horizon, so the tab shows the evidence instead of trades.
+stop, across four instrument pools (curated microcaps, S&P/Nasdaq large
+caps, index & sector ETFs, liquid OTC ADRs) — each tested net of its own
+real-world cost with conservative fills. **Live candidates only unlock
+where a strategy beats that pool's control in both walk-forward halves.**
+Verdict so far (Aug 2026): the curated microcaps, large caps and OTC all
+FAIL — costs and chop eat the edge. The one qualifier: **oversold RSI<30
+on index/sector ETFs** (71% win rate, ≈+1.5% net per ~9-session trade,
+positive in both halves) — buying index panic works; buying stock stories
+for a quick flip doesn't. Note it fires mostly in corrections, so signals
+cluster — size accordingly.
 
 ### 🧪 Lab
 
