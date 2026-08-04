@@ -219,6 +219,9 @@ def fetch_live_quotes(tickers: list[str]) -> dict[str, dict]:
 DEFAULT_PORTFOLIO_STOP_PCT = 0.20  # Exit-Lab verdict 2026-08-03
 PICKS_PATH = "portfolio/picks.csv"
 PICK_COLUMNS = ["date", "ticker", "adjusted_score", "pool"]
+SCANS_PATH = "portfolio/scans.csv"
+SCAN_COLUMNS = ["scanned_at_utc", "n_curated_gems", "n_explorer_gems",
+                "pick", "best_score", "verdict"]
 
 
 def portfolio_risk(
@@ -386,6 +389,89 @@ def append_pick(token: str, repo: str, pick: dict) -> None:
         headers=_gh_headers(token), json=body, timeout=20,
     )
     put.raise_for_status()
+
+
+def append_scan(token: str, repo: str, scan: dict, *, keep_last: int = 200) -> None:
+    """Append one scan verdict to scans.csv on the data branch.
+
+    EVERY notifier run logs here, gems or not — a broken scheduler and
+    strict-but-working gates both look like phone silence, and this file
+    is the only way to tell them apart. Trimmed to the newest
+    ``keep_last`` rows so it never grows unboundedly."""
+    import requests
+    _ensure_branch(token, repo, PORTFOLIO_BRANCH)
+    resp = requests.get(
+        f"{GITHUB_API}/repos/{repo}/contents/{SCANS_PATH}",
+        params={"ref": PORTFOLIO_BRANCH}, headers=_gh_headers(token), timeout=20,
+    )
+    sha = None
+    existing = pd.DataFrame(columns=SCAN_COLUMNS)
+    if resp.status_code == 200:
+        payload = resp.json()
+        sha = payload.get("sha")
+        raw = base64.b64decode(payload["content"]).decode("utf-8")
+        if raw.strip():
+            existing = pd.read_csv(io.StringIO(raw), dtype=str)
+    elif resp.status_code != 404:
+        resp.raise_for_status()
+    for c in SCAN_COLUMNS:
+        if c not in existing.columns:
+            existing[c] = ""
+    updated = pd.concat(
+        [existing[SCAN_COLUMNS], pd.DataFrame([scan])], ignore_index=True,
+    ).tail(keep_last)
+    body = {
+        "message": f"Log scan {scan.get('scanned_at_utc')}",
+        "content": base64.b64encode(
+            updated[SCAN_COLUMNS].to_csv(index=False).encode()
+        ).decode("ascii"),
+        "branch": PORTFOLIO_BRANCH,
+    }
+    if sha:
+        body["sha"] = sha
+    put = requests.put(
+        f"{GITHUB_API}/repos/{repo}/contents/{SCANS_PATH}",
+        headers=_gh_headers(token), json=body, timeout=20,
+    )
+    put.raise_for_status()
+
+
+def load_public_scans(
+    repo: str,
+    *, branch: str = PORTFOLIO_BRANCH, path: str = SCANS_PATH,
+    token: str = "",
+) -> pd.DataFrame:
+    """Read the scan log; same access pattern as the pick log."""
+    import requests
+    try:
+        if token:
+            resp = requests.get(
+                f"{GITHUB_API}/repos/{repo}/contents/{path}",
+                params={"ref": branch}, headers=_gh_headers(token), timeout=20,
+            )
+            if resp.status_code == 404:
+                return pd.DataFrame(columns=SCAN_COLUMNS)
+            resp.raise_for_status()
+            text = base64.b64decode(resp.json()["content"]).decode("utf-8")
+        else:
+            resp = requests.get(
+                f"https://raw.githubusercontent.com/{repo}/{branch}/{path}",
+                timeout=20,
+            )
+            if resp.status_code == 404 or not resp.text.strip():
+                return pd.DataFrame(columns=SCAN_COLUMNS)
+            resp.raise_for_status()
+            text = resp.text
+        if not text.strip():
+            return pd.DataFrame(columns=SCAN_COLUMNS)
+        df = pd.read_csv(io.StringIO(text), dtype=str)
+        for c in SCAN_COLUMNS:
+            if c not in df.columns:
+                df[c] = ""
+        return df[SCAN_COLUMNS]
+    except Exception as exc:  # noqa: BLE001
+        log.warning("Scan-log read failed (%s)", exc)
+        return pd.DataFrame(columns=SCAN_COLUMNS)
 
 
 def stop_breaches(

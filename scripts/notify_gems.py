@@ -152,15 +152,46 @@ def main() -> int:
     except Exception as exc:  # noqa: BLE001
         log.warning("Explorer pool skipped (%s)", exc)
 
-    if gems.empty and explorer_gems.empty:
-        log.info("No gems this scan — staying silent")
-        return 0
-
     from icarus.daily_signals import pick_of_the_day
     verdict = pick_of_the_day([
         (gems, "curated", 1.0),
         (explorer_gems, "explorer", 0.85),
     ])
+
+    # ---- Scan-verdict log: EVERY run writes a line ------------------------
+    # A dead scheduler and strict-but-working gates are indistinguishable
+    # from phone silence; this log is the difference. (The scheduler WAS
+    # dead for weeks before 2026-08-04 and nothing showed it.)
+    scan_tok = os.environ.get("PICKLOG_TOKEN", "").strip()
+    if scan_tok:
+        try:
+            from datetime import datetime, timezone
+
+            from icarus.portfolio import append_scan
+            pk = verdict["pick"]
+            best = pk
+            if best is None and not verdict["runners"].empty:
+                best = verdict["runners"].iloc[0]
+            append_scan(scan_tok, "cbaduboateng/nicol-calcium-score", {
+                "scanned_at_utc": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M"),
+                "n_curated_gems": str(len(gems)),
+                "n_explorer_gems": str(len(explorer_gems)),
+                "pick": str(pk["ticker"]) if pk is not None else "",
+                "best_score": (
+                    f"{best['adjusted_score']:.3f}" if best is not None else ""
+                ),
+                "verdict": (
+                    f"pick: {pk['ticker']}" if pk is not None
+                    else (verdict.get("reason") or "no gems")
+                ),
+            })
+            log.info("Scan verdict logged")
+        except Exception as exc:  # noqa: BLE001
+            log.warning("Scan logging failed (%s)", exc)
+
+    if gems.empty and explorer_gems.empty:
+        log.info("No gems this scan — staying silent")
+        return 0
 
     # ---- Log the pick for the adherence mirror -----------------------------
     if verdict["pick"] is not None:

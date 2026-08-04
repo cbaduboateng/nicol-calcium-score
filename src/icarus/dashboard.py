@@ -534,6 +534,7 @@ def _render_watchlist_tab(st) -> None:
             learn_target_pattern,
         )
         pattern = learn_target_pattern(watchlist, history)
+        st.session_state["_target_pattern"] = pattern
         if pattern is None:
             st.caption(
                 "🧮 Not enough analyst targets with price history to learn a "
@@ -814,6 +815,34 @@ def _render_watchlist_tab(st) -> None:
 
     # ---- 💎 Gems (quality gates AND day-scale agreement) -------------------
     st.markdown("### 💎 Gems — every filter agrees")
+    try:
+        import os as _os
+
+        from .portfolio import load_public_scans
+        _tok = ""
+        try:
+            _tok = str(st.secrets.get("PORTFOLIO_GH_TOKEN", "")).strip()
+        except Exception:  # noqa: BLE001
+            pass
+        _tok = _tok or _os.environ.get("PORTFOLIO_GH_TOKEN", "").strip()
+        scans = load_public_scans("cbaduboateng/nicol-calcium-score", token=_tok)
+        if scans.empty:
+            st.caption(
+                "📡 **No scheduled scan has ever reported in.** If this "
+                "persists past the next weekday scan (10:45 / 14:30 ET), "
+                "the notifier scheduler is broken — silence should mean "
+                "'gates working', never 'nobody looked'."
+            )
+        else:
+            last = scans.iloc[-1]
+            st.caption(
+                f"📡 Last scheduled scan **{last['scanned_at_utc']} UTC** — "
+                f"{last['verdict']} "
+                f"(curated gems: {last['n_curated_gems']}, explorer: "
+                f"{last['n_explorer_gems']})."
+            )
+    except Exception:  # noqa: BLE001
+        pass
     st.caption(
         "A gem passes EVERY strict quality gate (buy zone, own 6m momentum "
         "> 0, hot theme on the 6m median, R:R ≥ 3, not parabolic) AND shows day-scale action "
@@ -1520,11 +1549,28 @@ def _render_watchlist_ticker_card(
             st.markdown(f'<span class="px-big">{live:,.2f}</span>', unsafe_allow_html=True)
 
         if bool(row.get("target_stale")):
+            refreshed_txt = ""
+            pattern = st.session_state.get("_target_pattern")
+            if pattern and price_series is not None:
+                from .dynamic_targets import current_dynamic_entry
+                ratio = pattern.get("theme_entry_ratios", {}).get(
+                    row.get("theme"), pattern.get("entry_ratio"),
+                )
+                lvl = current_dynamic_entry(price_series, ratio)
+                if lvl is not None:
+                    refreshed_txt = (
+                        f" Under the learned rule (entry ≈ {ratio:.0%} of the "
+                        f"52-week low, tracked live) the refreshed level would "
+                        f"be **{lvl:,.2f}** — surfaced for context, not yet a "
+                        "signal (Entry-mode Lab evidence is promising but "
+                        "under-sampled)."
+                    )
             st.warning(
                 "⏳ **Stale buy target.** Price has spent ~6 months more than "
                 "50% above this level — the alert can never fire, and if price "
                 "ever fell this far the original thesis likely broke on the "
                 "way down. Treat the level as historical until refreshed."
+                + refreshed_txt
             )
 
         # What they do
@@ -2362,6 +2408,78 @@ def _render_lab_tab(st) -> None:
                 "worse intraday than daily closes suggest. **Adopted "
                 "2026-08-03: the 20% stop won in both halves and is now "
                 "the track-record default.**"
+            )
+
+    # ---- Entry-mode panel --------------------------------------------------
+    st.divider()
+    st.markdown("### 🎯 Entry modes — static analyst levels vs the learned rule, live")
+    st.caption(
+        "The analyst sets a buy target once and never updates it "
+        "(reverse-engineered rule: entry ≈ 90% of the 52-week low, sell "
+        "≈ 2.8× entry). This panel replays that SAME rule point-in-time — "
+        "each session's level is the ratio × the trailing 52-week low as "
+        "of the prior close, so the level tracks the market instead of "
+        "fossilising. Three arms: static analyst entries (control), the "
+        "dynamic rule on the same tickers, and the dynamic rule on the "
+        "full watchlist (no analyst needed). Same gates, same walk-forward "
+        "honesty rules. The R:R gate is omitted on dynamic arms — with "
+        "exit = entry × multiple it's a constant, not a filter."
+    )
+    if st.button("▶ Run the entry-mode comparison", key="entry_mode_run"):
+        from .dynamic_targets import compare_entry_modes
+        from .target_inference import learn_target_pattern
+        em_tickers = sorted(set(watchlist["ticker"].tolist()))
+        with st.spinner(f"Loading 2y history for {len(em_tickers)} tickers..."):
+            try:
+                em_history = fetch_price_history(em_tickers, period="2y")
+            except Exception as exc:
+                st.error(f"Price fetch failed: {exc}")
+                em_history = {}
+        if not em_history:
+            st.warning(
+                "No 2-year price history available yet — run the warm-cache "
+                "workflow or retry after the next scheduled warm."
+            )
+        else:
+            em_pattern = learn_target_pattern(watchlist, em_history)
+            if em_pattern is None:
+                st.warning("Not enough analyst targets to learn the rule from.")
+            else:
+                with st.spinner("Replaying static vs dynamic entries..."):
+                    st.session_state["entry_mode_result"] = compare_entry_modes(
+                        expanded, em_history, em_pattern,
+                    )
+    entry_mode = st.session_state.get("entry_mode_result")
+    if entry_mode is not None:
+        if entry_mode.empty:
+            st.info("No entries fired — run after the caches warm.")
+        else:
+            ed = entry_mode.copy()
+            ed["win_rate"] = ed["win_rate"] * 100.0
+            st.dataframe(
+                ed, use_container_width=True, hide_index=True,
+                column_config={
+                    "variant": "Entry mode",
+                    "n_signals": st.column_config.NumberColumn("Signals", format="%d"),
+                    "n_closed": st.column_config.NumberColumn("Closed", format="%d"),
+                    "win_rate": st.column_config.NumberColumn("Win rate", format="%.0f%%"),
+                    "avg_return_pct": st.column_config.NumberColumn("Avg ret", format="%+.1f%%"),
+                    "median_return_pct": st.column_config.NumberColumn("Median", format="%+.1f%%"),
+                    "avg_days_held": st.column_config.NumberColumn("Avg days", format="%.0f"),
+                    "n_train": st.column_config.NumberColumn("n 1st half", format="%d"),
+                    "avg_train_pct": st.column_config.NumberColumn("1st half", format="%+.1f%%"),
+                    "n_test": st.column_config.NumberColumn("n 2nd half", format="%d"),
+                    "avg_test_pct": st.column_config.NumberColumn("2nd half", format="%+.1f%%"),
+                },
+            )
+            st.caption(
+                "First run (2026-08-04, 2y cache): dynamic-same-tickers beat "
+                "the control in BOTH halves with a higher win rate and a "
+                "positive median — but at n = 11/7 per half it is UNDER the "
+                "n ≥ 15 pre-registered bar, so static analyst entries stay "
+                "live and the refreshed levels are surfaced on stale rows "
+                "only. Re-run as history accumulates; adopt only when the "
+                "bar is met. Not financial advice."
             )
 
 
