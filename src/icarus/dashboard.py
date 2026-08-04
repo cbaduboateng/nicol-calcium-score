@@ -2251,7 +2251,7 @@ def _render_portfolio_tab(st) -> None:
         r[0].metric(
             "Risk at stops",
             f"{_fmt_dollar(risk['risk_at_stops'])} · {risk['risk_pct_of_value']:.1f}%",
-            help="Total loss if EVERY holding fell to its stop (avg cost −12%) "
+            help="Total loss if EVERY holding fell to its stop (avg cost −20%) "
                  "tomorrow. The number that prevents ruin — keep it a size "
                  "you can shrug off.",
         )
@@ -2371,6 +2371,51 @@ def _render_portfolio_tab(st) -> None:
     if not trades.empty:
         with st.expander(f"Trade history ({len(trades)})"):
             st.dataframe(trades, use_container_width=True, hide_index=True)
+
+            # ---- Delete trades --------------------------------------------
+            st.markdown("**🗑 Delete trades** — fix typos or remove test "
+                        "entries. Every change is a commit on the data "
+                        "branch, so nothing is ever truly lost.")
+
+            def _label(row: pd.Series) -> str:
+                note = f" · {row['note']}" if str(row.get("note") or "").strip() else ""
+                # Short id suffix keeps labels unique even for identical
+                # duplicate trades (the realistic delete target).
+                return (f"{row['date']}  {row['side']} {float(row['qty']):g} "
+                        f"{row['ticker']} @ {float(row['price']):g}{note} "
+                        f"· #{str(row['id'])[:6]}")
+
+            options = {
+                _label(row): str(row["id"])
+                for _, row in trades.iterrows()
+            }
+            chosen = st.multiselect(
+                "Trades to delete", list(options),
+                key="portfolio_delete_sel",
+                placeholder="Pick one or more trades…",
+            )
+            if st.button(
+                f"Delete {len(chosen)} selected trade(s)",
+                key="portfolio_delete_btn",
+                disabled=not chosen,
+                type="secondary",
+            ):
+                doomed_ids = {options[c] for c in chosen}
+                updated = trades[~trades["id"].astype(str).isin(doomed_ids)]
+                updated = updated.reset_index(drop=True)
+                if remote:
+                    try:
+                        sha = save_remote_trades(
+                            token, repo, updated,
+                            st.session_state.get("portfolio_sha"),
+                            message=f"Delete {len(doomed_ids)} trade(s)",
+                        )
+                        st.session_state["portfolio_sha"] = sha
+                    except Exception as exc:  # noqa: BLE001
+                        st.error(f"Saving to GitHub failed: {exc}")
+                        st.stop()
+                st.session_state["portfolio_trades"] = updated
+                st.rerun()
             st.download_button(
                 "⬇️ Download trades.csv",
                 trades.to_csv(index=False).encode(),
