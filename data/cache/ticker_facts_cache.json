@@ -1,15 +1,100 @@
 {
+  "0019.HK": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 355354801903.4653,
+    "name": "0019.HK",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "0019.HK",
+    "why_it_matters": ""
+  },
   "AA": null,
-  "AAF.L": null,
+  "AAF.L": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 1192096360672.0,
+    "name": "AAF.L",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "AAF.L",
+    "why_it_matters": ""
+  },
+  "AAPL": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 4456437754737.915,
+    "name": "AAPL",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "AAPL",
+    "why_it_matters": ""
+  },
   "AARD": null,
   "AAT": null,
   "AAUC": null,
-  "AAXN": null,
+  "AAXN": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 46417124496.32483,
+    "name": "AAXN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "AAXN",
+    "why_it_matters": ""
+  },
   "ABAT": null,
+  "ABBV": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 433040931210.74756,
+    "name": "ABBV",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ABBV",
+    "why_it_matters": ""
+  },
   "ABCL": null,
-  "ABDP": null,
-  "ABEO": null,
-  "ABM": null,
+  "ABDP": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 17282056455.0,
+    "name": "ABDP",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ABDP",
+    "why_it_matters": ""
+  },
+  "ABEO": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 364198962.5503273,
+    "name": "ABEO",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ABEO",
+    "why_it_matters": ""
+  },
+  "ABM": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 2855234285.346134,
+    "name": "ABM",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ABM",
+    "why_it_matters": ""
+  },
+  "ABNB": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 89405581238.47334,
+    "name": "ABNB",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ABNB",
+    "why_it_matters": ""
+  },
   "ABOS": null,
   "ABR": null,
   "ABSI": null,
@@ -17,7 +102,16 @@
   "ABTS": null,
   "ABUS": null,
   "ABX": null,
-  "ACA": null,
+  "ACA": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 7136201843.549011,
+    "name": "ACA",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ACA",
+    "why_it_matters": ""
+  },
   "ACAD": null,
   "ACB": null,
   "ACCL": null,
@@ -33,6 +127,16 @@
   "ACIC": null,
   "ACIU": null,
   "ACP": null,
+  "ACR": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 112147343.39910507,
+    "name": "ACR",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ACR",
+    "why_it_matters": ""
+  },
   "ACRE": null,
   "ACRS": null,
   "ACRV": null,
@@ -46,12 +150,30 @@
   "ADAM": null,
   "ADCT": null,
   "ADEA": null,
-  "ADI": null,
+  "ADI": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 176267060413.5547,
+    "name": "ADI",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ADI",
+    "why_it_matters": ""
+  },
   "ADIL": null,
   "ADMA": null,
   "ADNT": null,
   "ADPT": null,
-  "ADSK": null,
+  "ADSK": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 49557903279.81117,
+    "name": "ADSK",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ADSK",
+    "why_it_matters": ""
+  },
   "ADT": null,
   "ADTN": null,
   "ADUR": null,
@@ -61,7 +183,16 @@
   "AEG": null,
   "AEMD": null,
   "AEO": null,
-  "AES": null,
+  "AES": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 10490549985.434807,
+    "name": "AES",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "AES",
+    "why_it_matters": ""
+  },
   "AESI": null,
   "AEVA": null,
   "AG": null,
@@ -77,13 +208,40 @@
   "AHCO": null,
   "AHMA": null,
   "AHRT": null,
-  "AHT": null,
-  "AI": null,
+  "AHT": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 21048595.75,
+    "name": "AHT",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "AHT",
+    "why_it_matters": ""
+  },
+  "AI": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1512521394.0509682,
+    "name": "AI",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "AI",
+    "why_it_matters": ""
+  },
   "AIB": null,
   "AIFF": null,
   "AIIO": null,
   "AIKI": null,
-  "AIM": null,
+  "AIM": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 7319200.640340149,
+    "name": "AIM",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "AIM",
+    "why_it_matters": ""
+  },
   "AIMD": null,
   "AIOS": null,
   "AIOT": null,
@@ -92,7 +250,16 @@
   "AIRO": null,
   "AIRS": null,
   "AISP": null,
-  "AIT": null,
+  "AIT": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 13006062252.316864,
+    "name": "AIT",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "AIT",
+    "why_it_matters": ""
+  },
   "AIV": null,
   "AKAN": null,
   "AKBA": null,
@@ -115,27 +282,82 @@
   "ALMS": null,
   "ALMU": null,
   "ALOY": null,
-  "ALPP": null,
+  "ALPP": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 2705.5508,
+    "name": "ALPP",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ALPP",
+    "why_it_matters": ""
+  },
   "ALRS": null,
   "ALT": null,
   "ALTG": null,
-  "ALTO": null,
+  "ALTO": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 376582208.4855037,
+    "name": "ALTO",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ALTO",
+    "why_it_matters": ""
+  },
   "ALVO": null,
   "ALXO": null,
   "ALYI": null,
   "AM": null,
-  "AMBA": null,
+  "AMBA": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 3627021549.1875076,
+    "name": "AMBA",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "AMBA",
+    "why_it_matters": ""
+  },
   "AMBO": null,
   "AMBP": null,
   "AMC": null,
-  "AMCI": null,
+  "AMCI": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 107102114.98832703,
+    "name": "AMCI",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "AMCI",
+    "why_it_matters": ""
+  },
   "AMCR": null,
   "AMCX": null,
+  "AMGN": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 204479271135.0857,
+    "name": "AMGN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "AMGN",
+    "why_it_matters": ""
+  },
   "AMGO": null,
   "AMH": null,
   "AMIX": null,
   "AMKR": null,
-  "AMLM": null,
+  "AMLM": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 7993982.544000001,
+    "name": "AMLM",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "AMLM",
+    "why_it_matters": ""
+  },
   "AMLX": null,
   "AMN": null,
   "AMPG": null,
@@ -144,24 +366,99 @@
   "AMPX": null,
   "AMPY": null,
   "AMRC": null,
-  "AMRN": null,
+  "AMRN": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 296503208.45917225,
+    "name": "AMRN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "AMRN",
+    "why_it_matters": ""
+  },
   "AMRX": null,
   "AMRZ": null,
   "AMS": null,
-  "AMS:AVTX": null,
+  "AMS:AVTX": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 166364345.39999998,
+    "name": "AMS:AVTX",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "AMS:AVTX",
+    "why_it_matters": ""
+  },
   "AMSC": null,
   "AMSF": null,
   "AMST": null,
+  "AMT": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 80611088304.0,
+    "name": "AMT",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "AMT",
+    "why_it_matters": ""
+  },
   "AMTB": null,
   "AMTM": null,
-  "AMTX": null,
-  "AMWL": null,
-  "ANAB": null,
+  "AMTX": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 106957043.69786596,
+    "name": "AMTX",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "AMTX",
+    "why_it_matters": ""
+  },
+  "AMWL": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 179783280.90426826,
+    "name": "AMWL",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "AMWL",
+    "why_it_matters": ""
+  },
+  "ANAB": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1588791085.9421043,
+    "name": "ANAB",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ANAB",
+    "why_it_matters": ""
+  },
   "ANDG": null,
+  "ANET": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 232807836623.28397,
+    "name": "ANET",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ANET",
+    "why_it_matters": ""
+  },
   "ANGI": null,
   "ANGO": null,
   "ANGX": null,
   "ANIC": null,
+  "ANIC.L": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 6175272332.7,
+    "name": "ANIC.L",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ANIC.L",
+    "why_it_matters": ""
+  },
   "ANIX": null,
   "ANNA": null,
   "ANNX": null,
@@ -177,23 +474,86 @@
   "APAM": null,
   "APEI": null,
   "APG": null,
-  "API": null,
+  "API": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 344117643.5339327,
+    "name": "API",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "API",
+    "why_it_matters": ""
+  },
   "APLD": null,
   "APLE": null,
-  "APO": null,
+  "APO": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 74612895476.8249,
+    "name": "APO",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "APO",
+    "why_it_matters": ""
+  },
   "APOG": null,
-  "APPN": null,
-  "APPS": null,
-  "APT": null,
+  "APPN": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 2034249777.9891968,
+    "name": "APPN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "APPN",
+    "why_it_matters": ""
+  },
+  "APPS": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1088424342.0,
+    "name": "APPS",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "APPS",
+    "why_it_matters": ""
+  },
+  "APT": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 50369473.006147385,
+    "name": "APT",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "APT",
+    "why_it_matters": ""
+  },
   "APWC": null,
   "APXT": null,
-  "AQB": null,
+  "AQB": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 4733368.849451065,
+    "name": "AQB",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "AQB",
+    "why_it_matters": ""
+  },
   "AQN": null,
   "AQST": null,
   "AR": null,
   "ARBE": null,
   "ARCC": null,
-  "ARCO": null,
+  "ARCO": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1746396734.4938421,
+    "name": "ARCO",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ARCO",
+    "why_it_matters": ""
+  },
   "ARCT": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -281,7 +641,16 @@
     "ticker": "ARRY",
     "why_it_matters": ""
   },
-  "ARTL": null,
+  "ARTL": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 2588710.4908537865,
+    "name": "ARTL",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ARTL",
+    "why_it_matters": ""
+  },
   "ARTV": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -351,6 +720,16 @@
     "why_it_matters": ""
   },
   "ASP": null,
+  "ASP.AX": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 14695857.5,
+    "name": "ASP.AX",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ASP.AX",
+    "why_it_matters": ""
+  },
   "ASPI": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -372,7 +751,16 @@
     "ticker": "ASST",
     "why_it_matters": ""
   },
-  "ASTC": null,
+  "ASTC": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 13621359.421515465,
+    "name": "ASTC",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ASTC",
+    "why_it_matters": ""
+  },
   "ASTH": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -383,7 +771,16 @@
     "ticker": "ASTH",
     "why_it_matters": ""
   },
-  "ASTI": null,
+  "ASTI": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 30038278.298299313,
+    "name": "ASTI",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ASTI",
+    "why_it_matters": ""
+  },
   "ASTL": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -426,6 +823,16 @@
   },
   "ATEN": null,
   "ATHA": null,
+  "ATHA.CN": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 11462419.263794959,
+    "name": "ATHA.CN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ATHA.CN",
+    "why_it_matters": ""
+  },
   "ATIF": null,
   "ATII": {
     "cap": "small",
@@ -457,7 +864,16 @@
     "ticker": "ATOM",
     "why_it_matters": ""
   },
-  "ATOS": null,
+  "ATOS": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 21645744.251031876,
+    "name": "ATOS",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ATOS",
+    "why_it_matters": ""
+  },
   "ATPC": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -488,7 +904,16 @@
     "ticker": "ATRC",
     "why_it_matters": ""
   },
-  "ATVK": null,
+  "ATVK": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 39325974.36,
+    "name": "ATVK",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ATVK",
+    "why_it_matters": ""
+  },
   "AUB": null,
   "AUID": {
     "cap": "micro",
@@ -501,7 +926,16 @@
     "why_it_matters": ""
   },
   "AUNA": null,
-  "AUPH": null,
+  "AUPH": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1873726307.2238846,
+    "name": "AUPH",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "AUPH",
+    "why_it_matters": ""
+  },
   "AUR": {
     "cap": "large",
     "exchange": "NASDAQ",
@@ -543,8 +977,27 @@
     "ticker": "AVAH",
     "why_it_matters": ""
   },
+  "AVAV": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 8055785844.735718,
+    "name": "AVAV",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "AVAV",
+    "why_it_matters": ""
+  },
   "AVAX-USD": null,
-  "AVB": null,
+  "AVB": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 26957399280.82608,
+    "name": "AVB",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "AVB",
+    "why_it_matters": ""
+  },
   "AVBP": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -590,6 +1043,16 @@
     "why_it_matters": ""
   },
   "AVON": null,
+  "AVON.L": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 50656836280.0,
+    "name": "AVON.L",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "AVON.L",
+    "why_it_matters": ""
+  },
   "AVPT": {
     "cap": "mid",
     "exchange": "NASDAQ",
@@ -611,7 +1074,16 @@
     "why_it_matters": ""
   },
   "AVTR": null,
-  "AVTX": null,
+  "AVTX": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 954898911.0882225,
+    "name": "AVTX",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "AVTX",
+    "why_it_matters": ""
+  },
   "AVXL": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -675,7 +1147,16 @@
     "ticker": "AZIO",
     "why_it_matters": ""
   },
-  "AZN": null,
+  "AZN": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 244992039529.55038,
+    "name": "AZN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "AZN",
+    "why_it_matters": ""
+  },
   "AZRE": null,
   "AZTA": {
     "cap": "small",
@@ -688,7 +1169,26 @@
     "why_it_matters": ""
   },
   "B": null,
-  "BABYF": null,
+  "BABA": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 305121842448.27356,
+    "name": "BABA",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "BABA",
+    "why_it_matters": ""
+  },
+  "BABYF": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 702799.5488,
+    "name": "BABYF",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "BABYF",
+    "why_it_matters": ""
+  },
   "BAER": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -723,16 +1223,52 @@
     "why_it_matters": ""
   },
   "BAR": null,
-  "BARC": null,
+  "BARC": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 6945656507475.0,
+    "name": "BARC",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "BARC",
+    "why_it_matters": ""
+  },
   "BATL": null,
   "BATT": null,
   "BAVA": null,
   "BAX": null,
-  "BAYRY": null,
-  "BB": null,
+  "BAYRY": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 53522463537.641945,
+    "name": "BAYRY",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "BAYRY",
+    "why_it_matters": ""
+  },
+  "BB": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 4993575940.415485,
+    "name": "BB",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "BB",
+    "why_it_matters": ""
+  },
   "BBAI": null,
   "BBAR": null,
-  "BBBY": null,
+  "BBBY": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 506805964.6731968,
+    "name": "BBBY",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "BBBY",
+    "why_it_matters": ""
+  },
   "BBCP": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -776,6 +1312,16 @@
     "why_it_matters": ""
   },
   "BBOX": null,
+  "BBOX.L": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 457392828918.5,
+    "name": "BBOX.L",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "BBOX.L",
+    "why_it_matters": ""
+  },
   "BBSI": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -791,7 +1337,16 @@
   "BBVA": null,
   "BBW": null,
   "BBWI": null,
-  "BC": null,
+  "BC": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 5158320593.16275,
+    "name": "BC",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "BC",
+    "why_it_matters": ""
+  },
   "BCAL": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -860,7 +1415,16 @@
     "ticker": "BDTX",
     "why_it_matters": ""
   },
-  "BE": null,
+  "BE": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 64301212335.90271,
+    "name": "BE",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "BE",
+    "why_it_matters": ""
+  },
   "BEAM": {
     "cap": "mid",
     "exchange": "NASDAQ",
@@ -881,10 +1445,37 @@
     "ticker": "BEAT",
     "why_it_matters": ""
   },
-  "BEEM": null,
+  "BEEM": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 24199729.481057882,
+    "name": "BEEM",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "BEEM",
+    "why_it_matters": ""
+  },
   "BEN": null,
-  "BEP": null,
-  "BEPC": null,
+  "BEP": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 10214334593.75248,
+    "name": "BEP",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "BEP",
+    "why_it_matters": ""
+  },
+  "BEPC": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 6230155052.410778,
+    "name": "BEPC",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "BEPC",
+    "why_it_matters": ""
+  },
   "BESS": null,
   "BETA": null,
   "BETR": {
@@ -899,6 +1490,16 @@
   },
   "BETZ": null,
   "BFIT": null,
+  "BFIT.AS": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 2314300488.0,
+    "name": "BFIT.AS",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "BFIT.AS",
+    "why_it_matters": ""
+  },
   "BFLY": null,
   "BFRG": {
     "cap": "micro",
@@ -955,9 +1556,27 @@
   "BGY": null,
   "BHC": null,
   "BHK": null,
-  "BHP": null,
+  "BHP": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 212118815182.0,
+    "name": "BHP",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "BHP",
+    "why_it_matters": ""
+  },
   "BHR": null,
-  "BHVN": null,
+  "BHVN": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 2013000419.069662,
+    "name": "BHVN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "BHVN",
+    "why_it_matters": ""
+  },
   "BIAF": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -968,10 +1587,37 @@
     "ticker": "BIAF",
     "why_it_matters": ""
   },
-  "BIDU": null,
+  "BIDU": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 38348428366.76788,
+    "name": "BIDU",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "BIDU",
+    "why_it_matters": ""
+  },
   "BIFF": null,
-  "BIIB": null,
-  "BILI": null,
+  "BIIB": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 29819712958.542603,
+    "name": "BIIB",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "BIIB",
+    "why_it_matters": ""
+  },
+  "BILI": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 8052050822.811632,
+    "name": "BILI",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "BILI",
+    "why_it_matters": ""
+  },
   "BILL": null,
   "BIOA": {
     "cap": "small",
@@ -985,7 +1631,16 @@
   },
   "BIOL": null,
   "BIPC": null,
-  "BIRD": null,
+  "BIRD": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 19813614.75,
+    "name": "BIRD",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "BIRD",
+    "why_it_matters": ""
+  },
   "BIRK": null,
   "BIT": null,
   "BIT:EMC": null,
@@ -1036,7 +1691,16 @@
     "ticker": "BLDP",
     "why_it_matters": ""
   },
-  "BLFS": null,
+  "BLFS": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1570765966.800499,
+    "name": "BLFS",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "BLFS",
+    "why_it_matters": ""
+  },
   "BLKB": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -1068,7 +1732,16 @@
     "ticker": "BLNE",
     "why_it_matters": ""
   },
-  "BLNK": null,
+  "BLNK": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 77990731.51435298,
+    "name": "BLNK",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "BLNK",
+    "why_it_matters": ""
+  },
   "BLSH": null,
   "BLZE": {
     "cap": "small",
@@ -1080,7 +1753,16 @@
     "ticker": "BLZE",
     "why_it_matters": ""
   },
-  "BMBL": null,
+  "BMBL": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 403032297.92500305,
+    "name": "BMBL",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "BMBL",
+    "why_it_matters": ""
+  },
   "BMEA": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -1092,7 +1774,16 @@
     "why_it_matters": ""
   },
   "BMIX": null,
-  "BMNR": null,
+  "BMNR": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 10508203829.502522,
+    "name": "BMNR",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "BMNR",
+    "why_it_matters": ""
+  },
   "BN": null,
   "BNAI": {
     "cap": "micro",
@@ -1127,7 +1818,16 @@
     "why_it_matters": ""
   },
   "BNL": null,
-  "BNTX": null,
+  "BNTX": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 23328573077.25,
+    "name": "BNTX",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "BNTX",
+    "why_it_matters": ""
+  },
   "BNZI": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -1140,6 +1840,16 @@
   },
   "BOBS": null,
   "BOC": null,
+  "BODI": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 72562478.59501648,
+    "name": "BODI",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "BODI",
+    "why_it_matters": ""
+  },
   "BOLD": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -1161,11 +1871,48 @@
     "why_it_matters": ""
   },
   "BORR": null,
-  "BOSC": null,
+  "BOSC": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 31794644.713573456,
+    "name": "BOSC",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "BOSC",
+    "why_it_matters": ""
+  },
   "BOW": null,
   "BOWL": null,
-  "BOX": null,
-  "BOXL": null,
+  "BOWL.L": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 48018189024.0,
+    "name": "BOWL.L",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "BOWL.L",
+    "why_it_matters": ""
+  },
+  "BOX": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 4391484603.492012,
+    "name": "BOX",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "BOX",
+    "why_it_matters": ""
+  },
+  "BOXL": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 2094559.0499770641,
+    "name": "BOXL",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "BOXL",
+    "why_it_matters": ""
+  },
   "BP": null,
   "BPRE": null,
   "BQ": null,
@@ -1337,8 +2084,26 @@
   "BTU": null,
   "BTX": null,
   "BTZ": null,
-  "BUD": null,
-  "BUI": null,
+  "BUD": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 165531073485.3907,
+    "name": "BUD",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "BUD",
+    "why_it_matters": ""
+  },
+  "BUI": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 725648031.5499306,
+    "name": "BUI",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "BUI",
+    "why_it_matters": ""
+  },
   "BULL": {
     "cap": "mid",
     "exchange": "NASDAQ",
@@ -1372,7 +2137,16 @@
     "ticker": "BVS",
     "why_it_matters": ""
   },
-  "BW": null,
+  "BW": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1416952403.2533302,
+    "name": "BW",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "BW",
+    "why_it_matters": ""
+  },
   "BWEN": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -1394,6 +2168,16 @@
     "why_it_matters": ""
   },
   "BWLP": null,
+  "BX": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 107735183240.82416,
+    "name": "BX",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "BX",
+    "why_it_matters": ""
+  },
   "BXBL": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -1405,12 +2189,48 @@
     "why_it_matters": ""
   },
   "BXMT": null,
-  "BXP": null,
+  "BXP": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 11228803684.333649,
+    "name": "BXP",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "BXP",
+    "why_it_matters": ""
+  },
   "BXSL": null,
   "BY": null,
-  "BYG": null,
-  "BYND": null,
-  "BYRN": null,
+  "BYG": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 176506261187.0,
+    "name": "BYG",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "BYG",
+    "why_it_matters": ""
+  },
+  "BYND": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 315595678.45260286,
+    "name": "BYND",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "BYND",
+    "why_it_matters": ""
+  },
+  "BYRN": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 111197446.56420708,
+    "name": "BYRN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "BYRN",
+    "why_it_matters": ""
+  },
   "BZ": {
     "cap": "mid",
     "exchange": "NASDAQ",
@@ -1454,6 +2274,16 @@
     "why_it_matters": ""
   },
   "CABO": null,
+  "CACI": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 11325327828.027649,
+    "name": "CACI",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CACI",
+    "why_it_matters": ""
+  },
   "CADL": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -1485,7 +2315,16 @@
     "ticker": "CAI",
     "why_it_matters": ""
   },
-  "CAL": null,
+  "CAL": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 470256416.0,
+    "name": "CAL",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CAL",
+    "why_it_matters": ""
+  },
   "CALC": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -1498,7 +2337,16 @@
   },
   "CALX": null,
   "CALY": null,
-  "CAN": null,
+  "CAN": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 132177931.15974605,
+    "name": "CAN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CAN",
+    "why_it_matters": ""
+  },
   "CAPR": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -1550,9 +2398,27 @@
     "ticker": "CAST",
     "why_it_matters": ""
   },
-  "CATX": null,
+  "CATX": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 343279051.8823707,
+    "name": "CATX",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CATX",
+    "why_it_matters": ""
+  },
   "CBAN": null,
-  "CBAT": null,
+  "CBAT": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 43986063.40473068,
+    "name": "CBAT",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CBAT",
+    "why_it_matters": ""
+  },
   "CBC": {
     "cap": "mid",
     "exchange": "NASDAQ",
@@ -1634,7 +2500,26 @@
     "ticker": "CCHH",
     "why_it_matters": ""
   },
-  "CCJ": null,
+  "CCI": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 33535379066.467285,
+    "name": "CCI",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CCI",
+    "why_it_matters": ""
+  },
+  "CCJ": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 39076019317.81647,
+    "name": "CCJ",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CCJ",
+    "why_it_matters": ""
+  },
   "CCL": null,
   "CCLD": {
     "cap": "micro",
@@ -1741,7 +2626,16 @@
     "why_it_matters": ""
   },
   "CE": null,
-  "CELH": null,
+  "CELH": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 7216727245.77713,
+    "name": "CELH",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CELH",
+    "why_it_matters": ""
+  },
   "CELZ": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -1844,7 +2738,16 @@
     "ticker": "CGBD",
     "why_it_matters": ""
   },
-  "CGC": null,
+  "CGC": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 404297746.0268545,
+    "name": "CGC",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CGC",
+    "why_it_matters": ""
+  },
   "CGEM": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -1898,7 +2801,16 @@
   },
   "CHGG": null,
   "CHMI": null,
-  "CHPT": null,
+  "CHPT": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 142954922.6260419,
+    "name": "CHPT",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CHPT",
+    "why_it_matters": ""
+  },
   "CHRG": null,
   "CHRN": {
     "cap": "mid",
@@ -1940,7 +2852,16 @@
     "ticker": "CHW",
     "why_it_matters": ""
   },
-  "CHWY": null,
+  "CHWY": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 9404473753.660707,
+    "name": "CHWY",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CHWY",
+    "why_it_matters": ""
+  },
   "CHY": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -2004,7 +2925,16 @@
     "ticker": "CING",
     "why_it_matters": ""
   },
-  "CINGF": null,
+  "CINGF": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 13545118.961,
+    "name": "CINGF",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CINGF",
+    "why_it_matters": ""
+  },
   "CION": null,
   "CIRC": {
     "cap": "micro",
@@ -2090,7 +3020,26 @@
     "why_it_matters": ""
   },
   "CLIS": null,
-  "CLLS": null,
+  "CLIS.TA": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 1917014927940.0,
+    "name": "CLIS.TA",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CLIS.TA",
+    "why_it_matters": ""
+  },
+  "CLLS": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 276919934.5,
+    "name": "CLLS",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CLLS",
+    "why_it_matters": ""
+  },
   "CLM": null,
   "CLMT": {
     "cap": "mid",
@@ -2102,7 +3051,16 @@
     "ticker": "CLMT",
     "why_it_matters": ""
   },
-  "CLNE": null,
+  "CLNE": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 409617822.39033866,
+    "name": "CLNE",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CLNE",
+    "why_it_matters": ""
+  },
   "CLNN": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -2113,7 +3071,16 @@
     "ticker": "CLNN",
     "why_it_matters": ""
   },
-  "CLOV": null,
+  "CLOV": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 2280543082.737175,
+    "name": "CLOV",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CLOV",
+    "why_it_matters": ""
+  },
   "CLPT": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -2144,8 +3111,26 @@
     "ticker": "CLRO",
     "why_it_matters": ""
   },
-  "CLSK": null,
-  "CLVR": null,
+  "CLSK": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 3759315980.011585,
+    "name": "CLSK",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CLSK",
+    "why_it_matters": ""
+  },
+  "CLVR": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 175.4795,
+    "name": "CLVR",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CLVR",
+    "why_it_matters": ""
+  },
   "CLVT": null,
   "CLW": null,
   "CLWT": {
@@ -2170,7 +3155,16 @@
   },
   "CMBT": null,
   "CMCL": null,
-  "CMCM": null,
+  "CMCM": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 89450221.38911605,
+    "name": "CMCM",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CMCM",
+    "why_it_matters": ""
+  },
   "CMCO": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -2191,8 +3185,26 @@
     "ticker": "CMCSA",
     "why_it_matters": ""
   },
-  "CMCX": null,
-  "CMGR": null,
+  "CMCX": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 182589765064.0,
+    "name": "CMCX",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CMCX",
+    "why_it_matters": ""
+  },
+  "CMGR": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 1637217.9486,
+    "name": "CMGR",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CMGR",
+    "why_it_matters": ""
+  },
   "CMND": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -2204,7 +3216,16 @@
     "why_it_matters": ""
   },
   "CMP": null,
-  "CMPS": null,
+  "CMPS": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1518179850.0,
+    "name": "CMPS",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CMPS",
+    "why_it_matters": ""
+  },
   "CMPX": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -2237,7 +3258,16 @@
     "ticker": "CMTL",
     "why_it_matters": ""
   },
-  "CNC": null,
+  "CNC": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 31497120370.845795,
+    "name": "CNC",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CNC",
+    "why_it_matters": ""
+  },
   "CNCK": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -2376,7 +3406,16 @@
     "ticker": "COCH",
     "why_it_matters": ""
   },
-  "COCP": null,
+  "COCP": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 12960205.78712815,
+    "name": "COCP",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "COCP",
+    "why_it_matters": ""
+  },
   "CODI": null,
   "CODX": {
     "cap": "micro",
@@ -2406,6 +3445,16 @@
     "sector": "Semiconductor Equipment & Materials",
     "summary": "",
     "ticker": "COHU",
+    "why_it_matters": ""
+  },
+  "COIN": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 38652109219.5,
+    "name": "COIN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "COIN",
     "why_it_matters": ""
   },
   "COLB": {
@@ -2442,8 +3491,27 @@
     "ticker": "CORZ",
     "why_it_matters": ""
   },
+  "COST": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 423114264899.30347,
+    "name": "COST",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "COST",
+    "why_it_matters": ""
+  },
   "COTY": null,
-  "COUR": null,
+  "COUR": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1689515956.1092873,
+    "name": "COUR",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "COUR",
+    "why_it_matters": ""
+  },
   "COWI": null,
   "COYA": {
     "cap": "micro",
@@ -2466,9 +3534,37 @@
     "why_it_matters": ""
   },
   "CPG": null,
+  "CPG.L": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 54614060851.24,
+    "name": "CPG.L",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CPG.L",
+    "why_it_matters": ""
+  },
   "CPHI": null,
-  "CPI": null,
-  "CPNG": null,
+  "CPI": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 31861567248.0,
+    "name": "CPI",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CPI",
+    "why_it_matters": ""
+  },
+  "CPNG": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 29474954317.372528,
+    "name": "CPNG",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CPNG",
+    "why_it_matters": ""
+  },
   "CPRI": null,
   "CPRT": {
     "cap": "large",
@@ -2491,7 +3587,16 @@
     "why_it_matters": ""
   },
   "CRBG": null,
-  "CRBP": null,
+  "CRBP": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 165267932.81355858,
+    "name": "CRBP",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CRBP",
+    "why_it_matters": ""
+  },
   "CRBU": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -2542,11 +3647,30 @@
     "ticker": "CRE",
     "why_it_matters": ""
   },
-  "CREE": null,
+  "CREE": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1265520679.1757832,
+    "name": "CREE",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CREE",
+    "why_it_matters": ""
+  },
   "CRF": null,
   "CRGY": null,
   "CRI": null,
   "CRK": null,
+  "CRM": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 152293047500.61035,
+    "name": "CRM",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CRM",
+    "why_it_matters": ""
+  },
   "CRMD": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -2587,7 +3711,16 @@
     "ticker": "CRNC",
     "why_it_matters": ""
   },
-  "CRNT": null,
+  "CRNT": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 199966133.33414912,
+    "name": "CRNT",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CRNT",
+    "why_it_matters": ""
+  },
   "CRON": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -2598,7 +3731,16 @@
     "ticker": "CRON",
     "why_it_matters": ""
   },
-  "CRSP": null,
+  "CRSP": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 4881858194.905029,
+    "name": "CRSP",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CRSP",
+    "why_it_matters": ""
+  },
   "CRSR": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -2609,7 +3751,16 @@
     "ticker": "CRSR",
     "why_it_matters": ""
   },
-  "CRTO": null,
+  "CRTO": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1073725584.1568851,
+    "name": "CRTO",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CRTO",
+    "why_it_matters": ""
+  },
   "CRVO": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -2630,7 +3781,27 @@
     "ticker": "CRVS",
     "why_it_matters": ""
   },
+  "CRWD": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 206238227734.74243,
+    "name": "CRWD",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CRWD",
+    "why_it_matters": ""
+  },
   "CSAN": null,
+  "CSCO": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 456654622692.5608,
+    "name": "CSCO",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CSCO",
+    "why_it_matters": ""
+  },
   "CSCW": null,
   "CSGP": {
     "cap": "large",
@@ -2819,7 +3990,16 @@
   "CVI": null,
   "CVLG": null,
   "CVM": null,
-  "CVNA": null,
+  "CVNA": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 72711585230.06439,
+    "name": "CVNA",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CVNA",
+    "why_it_matters": ""
+  },
   "CVRX": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -2828,6 +4008,16 @@
     "sector": "Medical Devices",
     "summary": "",
     "ticker": "CVRX",
+    "why_it_matters": ""
+  },
+  "CVS": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 134444463843.02902,
+    "name": "CVS",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CVS",
     "why_it_matters": ""
   },
   "CWB": null,
@@ -2860,6 +4050,16 @@
   "CXM": null,
   "CXW": null,
   "CYB": null,
+  "CYB.TO": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1950978807.3585052,
+    "name": "CYB.TO",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CYB.TO",
+    "why_it_matters": ""
+  },
   "CYCU": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -2934,10 +4134,47 @@
     "why_it_matters": ""
   },
   "DAN": null,
-  "DAR": null,
-  "DARE": null,
-  "DASH": null,
+  "DAR": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 9497498946.125698,
+    "name": "DAR",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "DAR",
+    "why_it_matters": ""
+  },
+  "DARE": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 19173762.13143301,
+    "name": "DARE",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "DARE",
+    "why_it_matters": ""
+  },
+  "DASH": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 87361603761.0,
+    "name": "DASH",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "DASH",
+    "why_it_matters": ""
+  },
   "DATA": null,
+  "DATA.L": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 56058703722.0,
+    "name": "DATA.L",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "DATA.L",
+    "why_it_matters": ""
+  },
   "DB": null,
   "DBGI": {
     "cap": "micro",
@@ -2950,7 +4187,16 @@
     "why_it_matters": ""
   },
   "DBI": null,
-  "DBK": null,
+  "DBK": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 60494405000.0,
+    "name": "DBK",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "DBK",
+    "why_it_matters": ""
+  },
   "DBRG": null,
   "DBX": {
     "cap": "mid",
@@ -3005,12 +4251,31 @@
     "ticker": "DCX",
     "why_it_matters": ""
   },
-  "DDD": null,
+  "DDD": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 462253591.21810913,
+    "name": "DDD",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "DDD",
+    "why_it_matters": ""
+  },
   "DEA": null,
   "DEBS": null,
   "DEC": null,
   "DEFI": null,
   "DEI": null,
+  "DELL": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 277208017361.8273,
+    "name": "DELL",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "DELL",
+    "why_it_matters": ""
+  },
   "DERM": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -3104,6 +4369,16 @@
     "why_it_matters": ""
   },
   "DHF": null,
+  "DHL.DE": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 64244561918.6,
+    "name": "DHL.DE",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "DHL.DE",
+    "why_it_matters": ""
+  },
   "DHT": null,
   "DHX": null,
   "DHY": null,
@@ -3118,6 +4393,16 @@
     "why_it_matters": ""
   },
   "DIN": null,
+  "DIS": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 170421230091.47754,
+    "name": "DIS",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "DIS",
+    "why_it_matters": ""
+  },
   "DJT": {
     "cap": "mid",
     "exchange": "NASDAQ",
@@ -3128,7 +4413,16 @@
     "ticker": "DJT",
     "why_it_matters": ""
   },
-  "DKNG": null,
+  "DKNG": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 11659027199.5,
+    "name": "DKNG",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "DKNG",
+    "why_it_matters": ""
+  },
   "DLO": {
     "cap": "mid",
     "exchange": "NASDAQ",
@@ -3139,7 +4433,26 @@
     "ticker": "DLO",
     "why_it_matters": ""
   },
-  "DLPN": null,
+  "DLPN": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 13798306.515145779,
+    "name": "DLPN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "DLPN",
+    "why_it_matters": ""
+  },
+  "DLR": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 70746811554.07086,
+    "name": "DLR",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "DLR",
+    "why_it_matters": ""
+  },
   "DLX": null,
   "DMAC": {
     "cap": "small",
@@ -3183,7 +4496,16 @@
     "ticker": "DNLI",
     "why_it_matters": ""
   },
-  "DNN": null,
+  "DNN": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 2606448954.130972,
+    "name": "DNN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "DNN",
+    "why_it_matters": ""
+  },
   "DNOW": null,
   "DNP": null,
   "DNUT": {
@@ -3199,7 +4521,16 @@
   "DOC": null,
   "DOCRF": null,
   "DOCS": null,
-  "DOCU": null,
+  "DOCU": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 10526776442.990845,
+    "name": "DOCU",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "DOCU",
+    "why_it_matters": ""
+  },
   "DOGE-USD": null,
   "DOGZ": {
     "cap": "micro",
@@ -3224,7 +4555,16 @@
   },
   "DOUG": null,
   "DOW": null,
-  "DOYU": null,
+  "DOYU": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 141840631.54383945,
+    "name": "DOYU",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "DOYU",
+    "why_it_matters": ""
+  },
   "DPRO": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -3297,7 +4637,16 @@
     "ticker": "DSP",
     "why_it_matters": ""
   },
-  "DSS": null,
+  "DSS": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 5349649.36062777,
+    "name": "DSS",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "DSS",
+    "why_it_matters": ""
+  },
   "DSU": null,
   "DSX": null,
   "DSY": {
@@ -3310,7 +4659,16 @@
     "ticker": "DSY",
     "why_it_matters": ""
   },
-  "DT": null,
+  "DT": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 12982329414.674004,
+    "name": "DT",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "DT",
+    "why_it_matters": ""
+  },
   "DTCX": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -3351,7 +4709,16 @@
     "ticker": "DTSS",
     "why_it_matters": ""
   },
-  "DUKE": null,
+  "DUKE": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 13746007902.9,
+    "name": "DUKE",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "DUKE",
+    "why_it_matters": ""
+  },
   "DUO": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -3362,7 +4729,16 @@
     "ticker": "DUO",
     "why_it_matters": ""
   },
-  "DUOL": null,
+  "DUOL": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 6327345430.790909,
+    "name": "DUOL",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "DUOL",
+    "why_it_matters": ""
+  },
   "DUOT": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -3374,11 +4750,39 @@
     "why_it_matters": ""
   },
   "DV": null,
-  "DVN": null,
+  "DVLT": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 305007851.0135181,
+    "name": "DVLT",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "DVLT",
+    "why_it_matters": ""
+  },
+  "DVN": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 51407176126.999306,
+    "name": "DVN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "DVN",
+    "why_it_matters": ""
+  },
   "DVRG": null,
   "DX": null,
   "DXC": null,
-  "DXCM": null,
+  "DXCM": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 32947367470.85907,
+    "name": "DXCM",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "DXCM",
+    "why_it_matters": ""
+  },
   "DXST": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -3425,12 +4829,30 @@
     "why_it_matters": ""
   },
   "EBNB": null,
-  "EBON": null,
+  "EBON": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 12058782.450465202,
+    "name": "EBON",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "EBON",
+    "why_it_matters": ""
+  },
   "EBS": null,
   "ECAR": null,
   "ECAT": null,
   "ECC": null,
-  "ECOR": null,
+  "ECOR": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 54906741.025714874,
+    "name": "ECOR",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ECOR",
+    "why_it_matters": ""
+  },
   "ECVT": null,
   "ECX": {
     "cap": "small",
@@ -3463,7 +4885,16 @@
     "ticker": "EDHL",
     "why_it_matters": ""
   },
-  "EDIT": null,
+  "EDIT": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 406673885.33526134,
+    "name": "EDIT",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "EDIT",
+    "why_it_matters": ""
+  },
   "EDSA": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -3512,7 +4943,16 @@
   },
   "EGO": null,
   "EGY": null,
-  "EH": null,
+  "EH": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 411081867.8265419,
+    "name": "EH",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "EH",
+    "why_it_matters": ""
+  },
   "EHGO": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -3523,7 +4963,16 @@
     "ticker": "EHGO",
     "why_it_matters": ""
   },
-  "EHTH": null,
+  "EHTH": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 43802604.68864703,
+    "name": "EHTH",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "EHTH",
+    "why_it_matters": ""
+  },
   "EIKN": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -3534,7 +4983,16 @@
     "ticker": "EIKN",
     "why_it_matters": ""
   },
-  "EL": null,
+  "EL": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 30636793512.611046,
+    "name": "EL",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "EL",
+    "why_it_matters": ""
+  },
   "ELAB": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -3617,8 +5075,36 @@
     "ticker": "ELVA",
     "why_it_matters": ""
   },
-  "ELVN": null,
-  "ELYS": null,
+  "ELVN": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 4146277836.6036987,
+    "name": "ELVN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ELVN",
+    "why_it_matters": ""
+  },
+  "ELVR": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 986377499.4804497,
+    "name": "ELVR",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ELVR",
+    "why_it_matters": ""
+  },
+  "ELYS": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 3744.4381000000003,
+    "name": "ELYS",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ELYS",
+    "why_it_matters": ""
+  },
   "EMBC": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -3692,7 +5178,16 @@
     "ticker": "ENTX",
     "why_it_matters": ""
   },
-  "ENVB": null,
+  "ENVB": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 6445563.296046376,
+    "name": "ENVB",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ENVB",
+    "why_it_matters": ""
+  },
   "ENVX": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -3703,7 +5198,16 @@
     "ticker": "ENVX",
     "why_it_matters": ""
   },
-  "ENZC": null,
+  "ENZC": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 2898637.7405999997,
+    "name": "ENZC",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ENZC",
+    "why_it_matters": ""
+  },
   "EOLS": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -3714,7 +5218,16 @@
     "ticker": "EOLS",
     "why_it_matters": ""
   },
-  "EONR": null,
+  "EONR": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 24094735.312395334,
+    "name": "EONR",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "EONR",
+    "why_it_matters": ""
+  },
   "EOSE": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -3725,18 +5238,99 @@
     "ticker": "EOSE",
     "why_it_matters": ""
   },
-  "EPA:AIR": null,
-  "EPA:KER": null,
-  "EPA:RMS": null,
-  "EPA:SAN": null,
-  "EPA:SOP": null,
-  "EPA:SU": null,
-  "EPA:VIV": null,
+  "EPA:AIR": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 163743450000.0,
+    "name": "EPA:AIR",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "EPA:AIR",
+    "why_it_matters": ""
+  },
+  "EPA:KER": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 35363132428.399994,
+    "name": "EPA:KER",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "EPA:KER",
+    "why_it_matters": ""
+  },
+  "EPA:RMS": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 163449773962.5,
+    "name": "EPA:RMS",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "EPA:RMS",
+    "why_it_matters": ""
+  },
+  "EPA:SAN": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 89256117032.5,
+    "name": "EPA:SAN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "EPA:SAN",
+    "why_it_matters": ""
+  },
+  "EPA:SOP": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 3684441343.0,
+    "name": "EPA:SOP",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "EPA:SOP",
+    "why_it_matters": ""
+  },
+  "EPA:SU": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 163527714979.5,
+    "name": "EPA:SU",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "EPA:SU",
+    "why_it_matters": ""
+  },
+  "EPA:VIV": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1616787074.85,
+    "name": "EPA:VIV",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "EPA:VIV",
+    "why_it_matters": ""
+  },
   "EPAC": null,
-  "EPC": null,
+  "EPC": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1271383791.3714523,
+    "name": "EPC",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "EPC",
+    "why_it_matters": ""
+  },
   "EPD": null,
   "EPM": null,
-  "EPR": null,
+  "EPR": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 4689232045.482437,
+    "name": "EPR",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "EPR",
+    "why_it_matters": ""
+  },
   "EPRT": null,
   "EPRX": {
     "cap": "small",
@@ -3758,7 +5352,16 @@
     "ticker": "EPSM",
     "why_it_matters": ""
   },
-  "EQ": null,
+  "EQ": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 139098426.21487713,
+    "name": "EQ",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "EQ",
+    "why_it_matters": ""
+  },
   "EQH": null,
   "EQNR": null,
   "EQPT": {
@@ -3807,9 +5410,37 @@
   "ESI": null,
   "ESPO": null,
   "ESRT": null,
-  "ESSITY-A.ST": null,
-  "ESTC": null,
+  "ESSITY-A.ST": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 187006900308.0,
+    "name": "ESSITY-A.ST",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ESSITY-A.ST",
+    "why_it_matters": ""
+  },
+  "ESTC": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 7145635030.355354,
+    "name": "ESTC",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ESTC",
+    "why_it_matters": ""
+  },
   "ESYS": null,
+  "ESYS.L": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1173556195.5,
+    "name": "ESYS.L",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ESYS.L",
+    "why_it_matters": ""
+  },
   "ETD": null,
   "ETH-USD": null,
   "ETHE": null,
@@ -3834,7 +5465,16 @@
     "why_it_matters": ""
   },
   "ETR:DPW": null,
-  "ETSY": null,
+  "ETSY": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 7892519358.509811,
+    "name": "ETSY",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ETSY",
+    "why_it_matters": ""
+  },
   "ETW": null,
   "ETWO": null,
   "ETY": null,
@@ -3848,7 +5488,16 @@
     "ticker": "EU",
     "why_it_matters": ""
   },
-  "EURN": null,
+  "EURN": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 4715258746.25,
+    "name": "EURN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "EURN",
+    "why_it_matters": ""
+  },
   "EVC": null,
   "EVER": {
     "cap": "small",
@@ -3883,7 +5532,16 @@
     "why_it_matters": ""
   },
   "EVMN": null,
-  "EVSV": null,
+  "EVSV": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 103990.04669999999,
+    "name": "EVSV",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "EVSV",
+    "why_it_matters": ""
+  },
   "EVTC": null,
   "EVTL": null,
   "EVV": null,
@@ -3907,7 +5565,16 @@
     "ticker": "EXC",
     "why_it_matters": ""
   },
-  "EXEL": null,
+  "EXEL": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 13839611215.163677,
+    "name": "EXEL",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "EXEL",
+    "why_it_matters": ""
+  },
   "EXFY": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -3919,7 +5586,16 @@
     "why_it_matters": ""
   },
   "EXG": null,
-  "EXK": null,
+  "EXK": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 2289196828.3185077,
+    "name": "EXK",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "EXK",
+    "why_it_matters": ""
+  },
   "EXLS": {
     "cap": "mid",
     "exchange": "NASDAQ",
@@ -4074,7 +5750,16 @@
   },
   "FBP": null,
   "FBRT": null,
-  "FCEL": null,
+  "FCEL": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1706222554.840042,
+    "name": "FCEL",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "FCEL",
+    "why_it_matters": ""
+  },
   "FCF": null,
   "FCHL": {
     "cap": "micro",
@@ -4098,8 +5783,26 @@
     "why_it_matters": ""
   },
   "FCVT": null,
-  "FCX": null,
-  "FDMT": null,
+  "FCX": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 91486308931.18309,
+    "name": "FCX",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "FCX",
+    "why_it_matters": ""
+  },
+  "FDMT": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 527467410.8367233,
+    "name": "FDMT",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "FDMT",
+    "why_it_matters": ""
+  },
   "FDUS": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -4108,6 +5811,16 @@
     "sector": "Asset Management",
     "summary": "",
     "ticker": "FDUS",
+    "why_it_matters": ""
+  },
+  "FDX": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 73160364266.75684,
+    "name": "FDX",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "FDX",
     "why_it_matters": ""
   },
   "FE": null,
@@ -4216,7 +5929,16 @@
     "ticker": "FIEE",
     "why_it_matters": ""
   },
-  "FIG": null,
+  "FIG": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 13167144239.471933,
+    "name": "FIG",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "FIG",
+    "why_it_matters": ""
+  },
   "FIGR": {
     "cap": "mid",
     "exchange": "NASDAQ",
@@ -4240,12 +5962,48 @@
   },
   "FIRY": null,
   "FIS": null,
-  "FIVN": null,
-  "FIZZ": null,
+  "FIVN": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 2216527511.013687,
+    "name": "FIVN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "FIVN",
+    "why_it_matters": ""
+  },
+  "FIZZ": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 2951589640.3383293,
+    "name": "FIZZ",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "FIZZ",
+    "why_it_matters": ""
+  },
   "FJET": null,
   "FLG": null,
-  "FLGT": null,
-  "FLL": null,
+  "FLGT": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 500134988.3643646,
+    "name": "FLGT",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "FLGT",
+    "why_it_matters": ""
+  },
+  "FLL": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 83047267.68659306,
+    "name": "FLL",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "FLL",
+    "why_it_matters": ""
+  },
   "FLNA": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -4269,7 +6027,16 @@
   "FLNG": null,
   "FLO": null,
   "FLOC": null,
-  "FLT": null,
+  "FLT": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 25215321032.0325,
+    "name": "FLT",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "FLT",
+    "why_it_matters": ""
+  },
   "FLTA": null,
   "FLWS": {
     "cap": "micro",
@@ -4375,7 +6142,16 @@
     "ticker": "FOSL",
     "why_it_matters": ""
   },
-  "FOUR": null,
+  "FOUR": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 4305973897.882935,
+    "name": "FOUR",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "FOUR",
+    "why_it_matters": ""
+  },
   "FOXF": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -4450,7 +6226,16 @@
     "why_it_matters": ""
   },
   "FRO": null,
-  "FRPT": null,
+  "FRPT": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 2929893146.9298363,
+    "name": "FRPT",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "FRPT",
+    "why_it_matters": ""
+  },
   "FRSH": {
     "cap": "mid",
     "exchange": "NASDAQ",
@@ -4472,7 +6257,16 @@
     "why_it_matters": ""
   },
   "FSCO": null,
-  "FSJ": null,
+  "FSJ": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 22718169900.0,
+    "name": "FSJ",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "FSJ",
+    "why_it_matters": ""
+  },
   "FSK": null,
   "FSLY": {
     "cap": "mid",
@@ -4494,6 +6288,16 @@
     "sector": "Banks - Regional",
     "summary": "",
     "ticker": "FSUN",
+    "why_it_matters": ""
+  },
+  "FTAI": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 23106113587.22412,
+    "name": "FTAI",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "FTAI",
     "why_it_matters": ""
   },
   "FTEK": {
@@ -4518,7 +6322,16 @@
     "why_it_matters": ""
   },
   "FTK": null,
-  "FTNT": null,
+  "FTNT": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 119749410232.18602,
+    "name": "FTNT",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "FTNT",
+    "why_it_matters": ""
+  },
   "FTRE": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -4529,7 +6342,16 @@
     "ticker": "FTRE",
     "why_it_matters": ""
   },
-  "FUBO": null,
+  "FUBO": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 282954504.2712879,
+    "name": "FUBO",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "FUBO",
+    "why_it_matters": ""
+  },
   "FUFU": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -4550,8 +6372,27 @@
     "ticker": "FULC",
     "why_it_matters": ""
   },
+  "FULT": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 4715684269.319534,
+    "name": "FULT",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "FULT",
+    "why_it_matters": ""
+  },
   "FUN": null,
-  "FUNO11": null,
+  "FUNO11": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 119692511269.86098,
+    "name": "FUNO11",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "FUNO11",
+    "why_it_matters": ""
+  },
   "FURY": null,
   "FUV": null,
   "FVCB": {
@@ -4565,7 +6406,16 @@
     "why_it_matters": ""
   },
   "FVE": null,
-  "FVRR": null,
+  "FVRR": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 340093888.25141144,
+    "name": "FVRR",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "FVRR",
+    "why_it_matters": ""
+  },
   "FWDI": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -4629,7 +6479,16 @@
     "ticker": "GALT",
     "why_it_matters": ""
   },
-  "GAMA": null,
+  "GAMA": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 85378243410.0,
+    "name": "GAMA",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "GAMA",
+    "why_it_matters": ""
+  },
   "GANX": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -4875,10 +6734,28 @@
     "ticker": "GLBE",
     "why_it_matters": ""
   },
-  "GLBS": null,
+  "GLBS": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 69495009.83747458,
+    "name": "GLBS",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "GLBS",
+    "why_it_matters": ""
+  },
   "GLD": null,
   "GLDG": null,
-  "GLEN": null,
+  "GLEN": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 6316015653948.0,
+    "name": "GLEN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "GLEN",
+    "why_it_matters": ""
+  },
   "GLIBK": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -4970,8 +6847,26 @@
     "ticker": "GLXY",
     "why_it_matters": ""
   },
-  "GMBL": null,
-  "GME": null,
+  "GMBL": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 80218.67000000001,
+    "name": "GMBL",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "GMBL",
+    "why_it_matters": ""
+  },
+  "GME": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 8552055118.793016,
+    "name": "GME",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "GME",
+    "why_it_matters": ""
+  },
   "GMEX": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -5005,7 +6900,16 @@
   "GMTL": null,
   "GNK": null,
   "GNL": null,
-  "GNPX": null,
+  "GNPX": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 2398446.0,
+    "name": "GNPX",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "GNPX",
+    "why_it_matters": ""
+  },
   "GNTX": {
     "cap": "mid",
     "exchange": "NASDAQ",
@@ -5059,6 +6963,16 @@
     "ticker": "GOOD",
     "why_it_matters": ""
   },
+  "GOOG": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 4555283841431.689,
+    "name": "GOOG",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "GOOG",
+    "why_it_matters": ""
+  },
   "GOOS": null,
   "GORO": null,
   "GOVX": {
@@ -5105,7 +7019,16 @@
     "why_it_matters": ""
   },
   "GPS": null,
-  "GRAB": null,
+  "GRAB": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 15010300312.042236,
+    "name": "GRAB",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "GRAB",
+    "why_it_matters": ""
+  },
   "GRAN": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -5131,7 +7054,16 @@
   "GRNT": null,
   "GRO": null,
   "GROY": null,
-  "GRPN": null,
+  "GRPN": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1050257032.5102615,
+    "name": "GRPN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "GRPN",
+    "why_it_matters": ""
+  },
   "GRRR": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -5152,7 +7084,26 @@
     "ticker": "GRSD",
     "why_it_matters": ""
   },
-  "GRWG": null,
+  "GRWG": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 88333632.06921458,
+    "name": "GRWG",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "GRWG",
+    "why_it_matters": ""
+  },
+  "GS": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 302990339097.8511,
+    "name": "GS",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "GS",
+    "why_it_matters": ""
+  },
   "GSBD": null,
   "GSIT": {
     "cap": "micro",
@@ -5185,11 +7136,29 @@
     "ticker": "GT",
     "why_it_matters": ""
   },
-  "GTCH": null,
+  "GTCH": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 2221787.0767,
+    "name": "GTCH",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "GTCH",
+    "why_it_matters": ""
+  },
   "GTE": null,
   "GTES": null,
   "GTHX": null,
-  "GTLB": null,
+  "GTLB": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 6010306345.367432,
+    "name": "GTLB",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "GTLB",
+    "why_it_matters": ""
+  },
   "GTM": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -5235,6 +7204,16 @@
   },
   "GVP": null,
   "GWH": null,
+  "GWO.TO": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 83199890185.54688,
+    "name": "GWO.TO",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "GWO.TO",
+    "why_it_matters": ""
+  },
   "GWS": null,
   "GXAI": {
     "cap": "micro",
@@ -5279,7 +7258,16 @@
     "why_it_matters": ""
   },
   "HASI": null,
-  "HAYD": null,
+  "HAYD": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 2036973783.938,
+    "name": "HAYD",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "HAYD",
+    "why_it_matters": ""
+  },
   "HAYW": null,
   "HBAN": {
     "cap": "large",
@@ -5302,7 +7290,16 @@
     "ticker": "HBNC",
     "why_it_matters": ""
   },
-  "HCAC": null,
+  "HCAC": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 294338951.21219444,
+    "name": "HCAC",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "HCAC",
+    "why_it_matters": ""
+  },
   "HCAI": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -5343,7 +7340,16 @@
     "ticker": "HCKT",
     "why_it_matters": ""
   },
-  "HCMC": null,
+  "HCMC": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 52715641.8606,
+    "name": "HCMC",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "HCMC",
+    "why_it_matters": ""
+  },
   "HCSG": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -5408,6 +7414,16 @@
     "why_it_matters": ""
   },
   "HEMO": null,
+  "HEMO.L": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 4249975625.0,
+    "name": "HEMO.L",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "HEMO.L",
+    "why_it_matters": ""
+  },
   "HERO": null,
   "HESM": null,
   "HFFG": {
@@ -5442,7 +7458,16 @@
     "ticker": "HIHO",
     "why_it_matters": ""
   },
-  "HIMS": null,
+  "HIMS": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 7133526089.264717,
+    "name": "HIMS",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "HIMS",
+    "why_it_matters": ""
+  },
   "HIO": null,
   "HITI": {
     "cap": "micro",
@@ -5454,10 +7479,28 @@
     "ticker": "HITI",
     "why_it_matters": ""
   },
-  "HIVE": null,
+  "HIVE": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 790815426.6458259,
+    "name": "HIVE",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "HIVE",
+    "why_it_matters": ""
+  },
   "HIW": null,
   "HIX": null,
-  "HKG:0700": null,
+  "HKG:0700": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 4414398843438.416,
+    "name": "HKG:0700",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "HKG:0700",
+    "why_it_matters": ""
+  },
   "HKIT": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -5535,7 +7578,16 @@
     "ticker": "HNRG",
     "why_it_matters": ""
   },
-  "HNST": null,
+  "HNST": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 403438119.7758341,
+    "name": "HNST",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "HNST",
+    "why_it_matters": ""
+  },
   "HODO": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -5546,7 +7598,16 @@
     "ticker": "HODO",
     "why_it_matters": ""
   },
-  "HOG": null,
+  "HOG": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 2664340667.4006615,
+    "name": "HOG",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "HOG",
+    "why_it_matters": ""
+  },
   "HOLO": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -5558,7 +7619,16 @@
     "why_it_matters": ""
   },
   "HOMB": null,
-  "HOOD": null,
+  "HOOD": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 81223089250.28238,
+    "name": "HOOD",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "HOOD",
+    "why_it_matters": ""
+  },
   "HOPE": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -5698,8 +7768,26 @@
     "ticker": "HSTM",
     "why_it_matters": ""
   },
-  "HSW": null,
-  "HSY": null,
+  "HSW": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 13191919576.0,
+    "name": "HSW",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "HSW",
+    "why_it_matters": ""
+  },
+  "HSY": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 35698461111.284134,
+    "name": "HSY",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "HSY",
+    "why_it_matters": ""
+  },
   "HTCO": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -5763,7 +7851,16 @@
     "ticker": "HUBG",
     "why_it_matters": ""
   },
-  "HUMA": null,
+  "HUMA": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 185861581.1108029,
+    "name": "HUMA",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "HUMA",
+    "why_it_matters": ""
+  },
   "HUN": null,
   "HURA": {
     "cap": "micro",
@@ -5775,8 +7872,26 @@
     "ticker": "HURA",
     "why_it_matters": ""
   },
-  "HUT": null,
-  "HUYA": null,
+  "HUT": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 12619548279.125977,
+    "name": "HUT",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "HUT",
+    "why_it_matters": ""
+  },
+  "HUYA": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 572180070.2714596,
+    "name": "HUYA",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "HUYA",
+    "why_it_matters": ""
+  },
   "HWH": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -5854,6 +7969,16 @@
     "why_it_matters": ""
   },
   "IBIT": null,
+  "IBM": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 213214431500.7672,
+    "name": "IBM",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "IBM",
+    "why_it_matters": ""
+  },
   "IBN": null,
   "IBRX": {
     "cap": "mid",
@@ -5912,7 +8037,16 @@
     "why_it_matters": ""
   },
   "IE": null,
-  "IESC": null,
+  "IESC": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 14444618641.560791,
+    "name": "IESC",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "IESC",
+    "why_it_matters": ""
+  },
   "IFRX": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -5924,9 +8058,27 @@
     "why_it_matters": ""
   },
   "IGD": null,
-  "IGG": null,
+  "IGG": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 452315677794.0,
+    "name": "IGG",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "IGG",
+    "why_it_matters": ""
+  },
   "IGR": null,
-  "IHG": null,
+  "IHG": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 23314954632.0,
+    "name": "IHG",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "IHG",
+    "why_it_matters": ""
+  },
   "IHRT": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -5960,7 +8112,16 @@
     "ticker": "IIIV",
     "why_it_matters": ""
   },
-  "IIPR": null,
+  "IIPR": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1698838264.0043411,
+    "name": "IIPR",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "IIPR",
+    "why_it_matters": ""
+  },
   "IKT": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -5981,7 +8142,16 @@
     "ticker": "ILLR",
     "why_it_matters": ""
   },
-  "ILMN": null,
+  "ILMN": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 29981608554.07715,
+    "name": "ILMN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ILMN",
+    "why_it_matters": ""
+  },
   "ILPT": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -6103,7 +8273,16 @@
     "ticker": "IMXI",
     "why_it_matters": ""
   },
-  "INCY": null,
+  "INCY": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 24005494120.638443,
+    "name": "INCY",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "INCY",
+    "why_it_matters": ""
+  },
   "INDI": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -6137,11 +8316,38 @@
   },
   "INFQ": null,
   "INFU": null,
-  "INFY": null,
+  "INFY": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 49614013830.5,
+    "name": "INFY",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "INFY",
+    "why_it_matters": ""
+  },
   "ING": null,
   "INGM": null,
-  "INGN": null,
-  "INGR": null,
+  "INGN": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 181670003.39281082,
+    "name": "INGN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "INGN",
+    "why_it_matters": ""
+  },
+  "INGR": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 6332390790.155411,
+    "name": "INGR",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "INGR",
+    "why_it_matters": ""
+  },
   "INHD": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -6235,6 +8441,16 @@
     "ticker": "INTA",
     "why_it_matters": ""
   },
+  "INTC": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 459004000000.0,
+    "name": "INTC",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "INTC",
+    "why_it_matters": ""
+  },
   "INTR": {
     "cap": "mid",
     "exchange": "NASDAQ",
@@ -6289,8 +8505,26 @@
   },
   "INVH": null,
   "INVX": null,
-  "IONI": null,
-  "IONQ": null,
+  "IONI": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 5559316.142,
+    "name": "IONI",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "IONI",
+    "why_it_matters": ""
+  },
+  "IONQ": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 14501536910.23526,
+    "name": "IONQ",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "IONQ",
+    "why_it_matters": ""
+  },
   "IOT": null,
   "IOTR": {
     "cap": "micro",
@@ -6335,8 +8569,26 @@
     "ticker": "IPW",
     "why_it_matters": ""
   },
-  "IPWR": null,
-  "IQ": null,
+  "IPWR": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 63551280.52070618,
+    "name": "IPWR",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "IPWR",
+    "why_it_matters": ""
+  },
+  "IQ": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1264182347.6308417,
+    "name": "IQ",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "IQ",
+    "why_it_matters": ""
+  },
   "IQST": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -6347,7 +8599,16 @@
     "ticker": "IQST",
     "why_it_matters": ""
   },
-  "IR": null,
+  "IR": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 34351546810.813904,
+    "name": "IR",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "IR",
+    "why_it_matters": ""
+  },
   "IRD": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -6358,7 +8619,16 @@
     "ticker": "IRD",
     "why_it_matters": ""
   },
-  "IRDM": null,
+  "IRDM": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 5120005674.223457,
+    "name": "IRDM",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "IRDM",
+    "why_it_matters": ""
+  },
   "IREN": {
     "cap": "large",
     "exchange": "NASDAQ",
@@ -6403,7 +8673,16 @@
     "why_it_matters": ""
   },
   "ISUN": null,
-  "IT": null,
+  "IT": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 10145219658.44162,
+    "name": "IT",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "IT",
+    "why_it_matters": ""
+  },
   "ITRG": null,
   "IUKD": null,
   "IVA": {
@@ -6438,7 +8717,16 @@
     "ticker": "IVVD",
     "why_it_matters": ""
   },
-  "IVZ": null,
+  "IVZ": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 13646764932.632446,
+    "name": "IVZ",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "IVZ",
+    "why_it_matters": ""
+  },
   "IWMD": null,
   "IWMO": null,
   "IXHL": {
@@ -6451,7 +8739,16 @@
     "ticker": "IXHL",
     "why_it_matters": ""
   },
-  "IZEA": null,
+  "IZEA": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 60421061.78510165,
+    "name": "IZEA",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "IZEA",
+    "why_it_matters": ""
+  },
   "JACK": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -6462,7 +8759,16 @@
     "ticker": "JACK",
     "why_it_matters": ""
   },
-  "JAGX": null,
+  "JAGX": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 4910402.0,
+    "name": "JAGX",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "JAGX",
+    "why_it_matters": ""
+  },
   "JAN": null,
   "JANX": {
     "cap": "small",
@@ -6507,7 +8813,16 @@
     "ticker": "JCAP",
     "why_it_matters": ""
   },
-  "JD": null,
+  "JD": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 44593510618.20984,
+    "name": "JD",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "JD",
+    "why_it_matters": ""
+  },
   "JELD": null,
   "JEM": {
     "cap": "micro",
@@ -6531,7 +8846,16 @@
   },
   "JFR": null,
   "JHX": null,
-  "JKS": null,
+  "JKS": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 824306747.1334152,
+    "name": "JKS",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "JKS",
+    "why_it_matters": ""
+  },
   "JLHL": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -6542,8 +8866,26 @@
     "ticker": "JLHL",
     "why_it_matters": ""
   },
-  "JMIA": null,
-  "JOBY": null,
+  "JMIA": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 754262444.2484093,
+    "name": "JMIA",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "JMIA",
+    "why_it_matters": ""
+  },
+  "JOBY": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 7259284360.328991,
+    "name": "JOBY",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "JOBY",
+    "why_it_matters": ""
+  },
   "JP": null,
   "JQC": null,
   "JRSH": {
@@ -6693,7 +9035,16 @@
     "ticker": "KITT",
     "why_it_matters": ""
   },
-  "KLAR": null,
+  "KLAR": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 7486646734.322304,
+    "name": "KLAR",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "KLAR",
+    "why_it_matters": ""
+  },
   "KLC": null,
   "KLRA": {
     "cap": "mid",
@@ -6725,8 +9076,26 @@
     "ticker": "KLTR",
     "why_it_matters": ""
   },
-  "KLXE": null,
-  "KMI": null,
+  "KLXE": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 44364846.56290054,
+    "name": "KLXE",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "KLXE",
+    "why_it_matters": ""
+  },
+  "KMI": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 69921584745.14241,
+    "name": "KMI",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "KMI",
+    "why_it_matters": ""
+  },
   "KMPH": null,
   "KMPR": null,
   "KMRK": {
@@ -6751,7 +9120,26 @@
     "why_it_matters": ""
   },
   "KN": null,
-  "KNDI": null,
+  "KNDI": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 69909178.43453705,
+    "name": "KNDI",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "KNDI",
+    "why_it_matters": ""
+  },
+  "KO": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 373719429873.04767,
+    "name": "KO",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "KO",
+    "why_it_matters": ""
+  },
   "KOD": {
     "cap": "mid",
     "exchange": "NASDAQ",
@@ -6762,10 +9150,37 @@
     "ticker": "KOD",
     "why_it_matters": ""
   },
-  "KODK": null,
-  "KOPN": null,
+  "KODK": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 828292174.6948509,
+    "name": "KODK",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "KODK",
+    "why_it_matters": ""
+  },
+  "KOPN": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 693026800.1871707,
+    "name": "KOPN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "KOPN",
+    "why_it_matters": ""
+  },
   "KOS": null,
-  "KOSS": null,
+  "KOSS": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 35309813.920557976,
+    "name": "KOSS",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "KOSS",
+    "why_it_matters": ""
+  },
   "KPTI": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -6831,7 +9246,16 @@
     "ticker": "KSCP",
     "why_it_matters": ""
   },
-  "KSS": null,
+  "KSS": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 2279339902.5586643,
+    "name": "KSS",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "KSS",
+    "why_it_matters": ""
+  },
   "KT": null,
   "KULR": null,
   "KURA": {
@@ -6994,7 +9418,16 @@
     "ticker": "LBRX",
     "why_it_matters": ""
   },
-  "LBTI": null,
+  "LBTI": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 18598.637000000002,
+    "name": "LBTI",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LBTI",
+    "why_it_matters": ""
+  },
   "LBTYA": {
     "cap": "mid",
     "exchange": "NASDAQ",
@@ -7015,8 +9448,26 @@
     "ticker": "LBTYK",
     "why_it_matters": ""
   },
-  "LCID": null,
-  "LCTX": null,
+  "LCID": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 3004977347.164421,
+    "name": "LCID",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LCID",
+    "why_it_matters": ""
+  },
+  "LCTX": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 276721111.0162407,
+    "name": "LCTX",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LCTX",
+    "why_it_matters": ""
+  },
   "LCUT": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -7028,7 +9479,16 @@
     "why_it_matters": ""
   },
   "LDI": null,
-  "LDO": null,
+  "LDO": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 31561425947.7,
+    "name": "LDO",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LDO",
+    "why_it_matters": ""
+  },
   "LE": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -7039,7 +9499,16 @@
     "ticker": "LE",
     "why_it_matters": ""
   },
-  "LEA": null,
+  "LEA": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 6266395750.456268,
+    "name": "LEA",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LEA",
+    "why_it_matters": ""
+  },
   "LEDS": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -7104,6 +9573,16 @@
     "ticker": "LFVN",
     "why_it_matters": ""
   },
+  "LFWD": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 20320032.389513493,
+    "name": "LFWD",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LFWD",
+    "why_it_matters": ""
+  },
   "LGCL": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -7114,7 +9593,16 @@
     "ticker": "LGCL",
     "why_it_matters": ""
   },
-  "LGHL": null,
+  "LGHL": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 7719506.470783651,
+    "name": "LGHL",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LGHL",
+    "why_it_matters": ""
+  },
   "LGO": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -7156,7 +9644,16 @@
     "ticker": "LHSW",
     "why_it_matters": ""
   },
-  "LI": null,
+  "LI": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 12905841865.027103,
+    "name": "LI",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LI",
+    "why_it_matters": ""
+  },
   "LICN": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -7177,7 +9674,16 @@
     "ticker": "LIDR",
     "why_it_matters": ""
   },
-  "LIFE": null,
+  "LIFE": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1438158996.6539192,
+    "name": "LIFE",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LIFE",
+    "why_it_matters": ""
+  },
   "LILA": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -7198,7 +9704,16 @@
     "ticker": "LILAK",
     "why_it_matters": ""
   },
-  "LIN": null,
+  "LIN": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 222139384611.87836,
+    "name": "LIN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LIN",
+    "why_it_matters": ""
+  },
   "LINC": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -7262,8 +9777,36 @@
     "ticker": "LKQ",
     "why_it_matters": ""
   },
-  "LLOY.L": null,
-  "LMFA": null,
+  "LLOY.L": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 6768699552483.0,
+    "name": "LLOY.L",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LLOY.L",
+    "why_it_matters": ""
+  },
+  "LLY": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 999963129969.5417,
+    "name": "LLY",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LLY",
+    "why_it_matters": ""
+  },
+  "LMFA": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 2430118.6,
+    "name": "LMFA",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LMFA",
+    "why_it_matters": ""
+  },
   "LMND": null,
   "LMRI": {
     "cap": "small",
@@ -7323,62 +9866,495 @@
   "LOIL": null,
   "LOMA": null,
   "LON:AFC": null,
-  "LON:AML": null,
-  "LON:ANTO": null,
-  "LON:ARS": null,
-  "LON:ASC": null,
+  "LON:AML": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 35522204585.0,
+    "name": "LON:AML",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:AML",
+    "why_it_matters": ""
+  },
+  "LON:ANTO": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 3626966780905.0,
+    "name": "LON:ANTO",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:ANTO",
+    "why_it_matters": ""
+  },
+  "LON:ARS": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 5005879133.950001,
+    "name": "LON:ARS",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:ARS",
+    "why_it_matters": ""
+  },
+  "LON:ASC": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 43253017702.5,
+    "name": "LON:ASC",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:ASC",
+    "why_it_matters": ""
+  },
   "LON:AUGM": null,
-  "LON:BAG": null,
-  "LON:BIG": null,
-  "LON:CAML": null,
-  "LON:CARD": null,
-  "LON:CBG": null,
+  "LON:BAG": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 71579305860.0,
+    "name": "LON:BAG",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:BAG",
+    "why_it_matters": ""
+  },
+  "LON:BIG": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 28053714912.0,
+    "name": "LON:BIG",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:BIG",
+    "why_it_matters": ""
+  },
+  "LON:CAML": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 24981628230.6,
+    "name": "LON:CAML",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:CAML",
+    "why_it_matters": ""
+  },
+  "LON:CARD": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 25509144422.300003,
+    "name": "LON:CARD",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:CARD",
+    "why_it_matters": ""
+  },
+  "LON:CBG": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 65289083434.799995,
+    "name": "LON:CBG",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:CBG",
+    "why_it_matters": ""
+  },
   "LON:CBX": null,
   "LON:CCL": null,
-  "LON:CNA": null,
-  "LON:CPI": null,
-  "LON:ECO": null,
-  "LON:ELM": null,
-  "LON:EMH": null,
-  "LON:EZJ": null,
-  "LON:FUTR": null,
-  "LON:GAW": null,
-  "LON:GDR": null,
-  "LON:GRG": null,
-  "LON:GSK": null,
-  "LON:GST": null,
-  "LON:HLMA": null,
-  "LON:HOC": null,
+  "LON:CNA": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 694301105051.4,
+    "name": "LON:CNA",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:CNA",
+    "why_it_matters": ""
+  },
+  "LON:CPI": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 31861567248.0,
+    "name": "LON:CPI",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:CPI",
+    "why_it_matters": ""
+  },
+  "LON:ECO": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 19164054679.6,
+    "name": "LON:ECO",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:ECO",
+    "why_it_matters": ""
+  },
+  "LON:ELM": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 100920119702.2,
+    "name": "LON:ELM",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:ELM",
+    "why_it_matters": ""
+  },
+  "LON:EMH": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 2791432283.75,
+    "name": "LON:EMH",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:EMH",
+    "why_it_matters": ""
+  },
+  "LON:EZJ": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 480210819316.8,
+    "name": "LON:EZJ",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:EZJ",
+    "why_it_matters": ""
+  },
+  "LON:FUTR": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 28254949003.800003,
+    "name": "LON:FUTR",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:FUTR",
+    "why_it_matters": ""
+  },
+  "LON:GAW": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 635452292430.0,
+    "name": "LON:GAW",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:GAW",
+    "why_it_matters": ""
+  },
+  "LON:GDR": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1605568256.0,
+    "name": "LON:GDR",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:GDR",
+    "why_it_matters": ""
+  },
+  "LON:GRG": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 198200547216.0,
+    "name": "LON:GRG",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:GRG",
+    "why_it_matters": ""
+  },
+  "LON:GSK": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 7651160865945.0,
+    "name": "LON:GSK",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:GSK",
+    "why_it_matters": ""
+  },
+  "LON:GST": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 988171843.925,
+    "name": "LON:GST",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:GST",
+    "why_it_matters": ""
+  },
+  "LON:HLMA": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 1340002519700.0,
+    "name": "LON:HLMA",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:HLMA",
+    "why_it_matters": ""
+  },
+  "LON:HOC": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 226464601766.4,
+    "name": "LON:HOC",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:HOC",
+    "why_it_matters": ""
+  },
   "LON:HUM": null,
-  "LON:IPO": null,
-  "LON:ITM": null,
-  "LON:ITV": null,
-  "LON:KOD": null,
-  "LON:MER": null,
-  "LON:MNO": null,
-  "LON:MOON": null,
-  "LON:MTRO": null,
-  "LON:OMG": null,
-  "LON:SHI": null,
-  "LON:SHOE": null,
+  "LON:IPO": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 57599482258.4,
+    "name": "LON:IPO",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:IPO",
+    "why_it_matters": ""
+  },
+  "LON:ITM": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 70262538455.4,
+    "name": "LON:ITM",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:ITM",
+    "why_it_matters": ""
+  },
+  "LON:ITV": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 273578246487.7,
+    "name": "LON:ITV",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:ITV",
+    "why_it_matters": ""
+  },
+  "LON:KOD": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 6111959878.2,
+    "name": "LON:KOD",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:KOD",
+    "why_it_matters": ""
+  },
+  "LON:MER": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 34518840960.5,
+    "name": "LON:MER",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:MER",
+    "why_it_matters": ""
+  },
+  "LON:MNO": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 39423697336.8,
+    "name": "LON:MNO",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:MNO",
+    "why_it_matters": ""
+  },
+  "LON:MOON": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 81802029161.6,
+    "name": "LON:MOON",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:MOON",
+    "why_it_matters": ""
+  },
+  "LON:MTRO": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 120979480270.4,
+    "name": "LON:MTRO",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:MTRO",
+    "why_it_matters": ""
+  },
+  "LON:OMG": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 4231117825.2,
+    "name": "LON:OMG",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:OMG",
+    "why_it_matters": ""
+  },
+  "LON:SHI": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 10216297511.2,
+    "name": "LON:SHI",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:SHI",
+    "why_it_matters": ""
+  },
+  "LON:SHOE": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 2819836630.0,
+    "name": "LON:SHOE",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:SHOE",
+    "why_it_matters": ""
+  },
   "LON:SIS": null,
   "LON:SKG": null,
-  "LON:SLP": null,
-  "LON:SML": null,
+  "LON:SLP": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 19411814325.0,
+    "name": "LON:SLP",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:SLP",
+    "why_it_matters": ""
+  },
+  "LON:SML": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 10429471107.5,
+    "name": "LON:SML",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:SML",
+    "why_it_matters": ""
+  },
   "LON:SMRT": null,
-  "LON:SRT": null,
-  "LON:SSE": null,
-  "LON:SUPR": null,
-  "LON:TGP": null,
-  "LON:THG": null,
-  "LON:TPK": null,
-  "LON:TRN": null,
-  "LON:TSCO": null,
-  "LON:UOG": null,
-  "LON:WPP": null,
+  "LON:SRT": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 21704463460.5,
+    "name": "LON:SRT",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:SRT",
+    "why_it_matters": ""
+  },
+  "LON:SSE": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 2842027431812.0,
+    "name": "LON:SSE",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:SSE",
+    "why_it_matters": ""
+  },
+  "LON:SUPR": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 107675065670.40001,
+    "name": "LON:SUPR",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:SUPR",
+    "why_it_matters": ""
+  },
+  "LON:TGP": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 2027044479.5,
+    "name": "LON:TGP",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:TGP",
+    "why_it_matters": ""
+  },
+  "LON:THG": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 48875112871.200005,
+    "name": "LON:THG",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:THG",
+    "why_it_matters": ""
+  },
+  "LON:TPK": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 121384440903.0,
+    "name": "LON:TPK",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:TPK",
+    "why_it_matters": ""
+  },
+  "LON:TRN": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 85129386320.0,
+    "name": "LON:TRN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:TRN",
+    "why_it_matters": ""
+  },
+  "LON:TSCO": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 3046136115148.5,
+    "name": "LON:TSCO",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:TSCO",
+    "why_it_matters": ""
+  },
+  "LON:UOG": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 857664045.58,
+    "name": "LON:UOG",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:UOG",
+    "why_it_matters": ""
+  },
+  "LON:WPP": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 328195015696.2,
+    "name": "LON:WPP",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LON:WPP",
+    "why_it_matters": ""
+  },
   "LON:XSPS": null,
+  "LOW": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 118903533745.54633,
+    "name": "LOW",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LOW",
+    "why_it_matters": ""
+  },
   "LPA": null,
-  "LPCN": null,
+  "LPCN": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 17395372.965143442,
+    "name": "LPCN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LPCN",
+    "why_it_matters": ""
+  },
   "LPG": null,
   "LPL": null,
   "LPTH": {
@@ -7392,6 +10368,16 @@
     "why_it_matters": ""
   },
   "LQD": null,
+  "LRCX": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 368638993250.7324,
+    "name": "LRCX",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LRCX",
+    "why_it_matters": ""
+  },
   "LRHC": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -7467,8 +10453,27 @@
     "ticker": "LUCY",
     "why_it_matters": ""
   },
+  "LULU": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 14043212831.136566,
+    "name": "LULU",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LULU",
+    "why_it_matters": ""
+  },
   "LUMN": null,
-  "LUNA": null,
+  "LUNA": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 52045528.5,
+    "name": "LUNA",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LUNA",
+    "why_it_matters": ""
+  },
   "LUNG": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -7479,7 +10484,16 @@
     "ticker": "LUNG",
     "why_it_matters": ""
   },
-  "LUNR": null,
+  "LUNR": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 2101925309.1076984,
+    "name": "LUNR",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LUNR",
+    "why_it_matters": ""
+  },
   "LVS": null,
   "LVWR": null,
   "LWLG": {
@@ -7514,7 +10528,16 @@
     "why_it_matters": ""
   },
   "LXU": null,
-  "LYB": null,
+  "LYB": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 19567212594.488667,
+    "name": "LYB",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LYB",
+    "why_it_matters": ""
+  },
   "LYFT": {
     "cap": "mid",
     "exchange": "NASDAQ",
@@ -7535,8 +10558,26 @@
     "ticker": "LYTS",
     "why_it_matters": ""
   },
-  "LYV": null,
-  "LZ": null,
+  "LYV": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 42326413032.19879,
+    "name": "LYV",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LYV",
+    "why_it_matters": ""
+  },
+  "LZ": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1416094053.0,
+    "name": "LZ",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LZ",
+    "why_it_matters": ""
+  },
   "LZB": null,
   "LZM": null,
   "LZMH": {
@@ -7549,8 +10590,36 @@
     "ticker": "LZMH",
     "why_it_matters": ""
   },
-  "M": null,
-  "MAB": null,
+  "M": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 6825835106.982033,
+    "name": "M",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "M",
+    "why_it_matters": ""
+  },
+  "MA": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 500175369777.4463,
+    "name": "MA",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "MA",
+    "why_it_matters": ""
+  },
+  "MAB": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 168275009503.0,
+    "name": "MAB",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "MAB",
+    "why_it_matters": ""
+  },
   "MAC": null,
   "MAGN": null,
   "MAIA": null,
@@ -7576,8 +10645,36 @@
     "why_it_matters": ""
   },
   "MANO": null,
-  "MANU": null,
-  "MARA": null,
+  "MANO.L": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1891396538.0,
+    "name": "MANO.L",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "MANO.L",
+    "why_it_matters": ""
+  },
+  "MANU": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 3897016533.978487,
+    "name": "MANU",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "MANU",
+    "why_it_matters": ""
+  },
+  "MARA": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 4479928410.25,
+    "name": "MARA",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "MARA",
+    "why_it_matters": ""
+  },
   "MASK": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -7652,8 +10749,26 @@
     "ticker": "MBOT",
     "why_it_matters": ""
   },
-  "MBUU": null,
-  "MC.PA": null,
+  "MBUU": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 548266186.2181873,
+    "name": "MBUU",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "MBUU",
+    "why_it_matters": ""
+  },
+  "MC.PA": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 240090013626.3,
+    "name": "MC.PA",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "MC.PA",
+    "why_it_matters": ""
+  },
   "MCHB": {
     "cap": "mid",
     "exchange": "NASDAQ",
@@ -7664,7 +10779,16 @@
     "ticker": "MCHB",
     "why_it_matters": ""
   },
-  "MCK": null,
+  "MCK": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 96839687714.30603,
+    "name": "MCK",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "MCK",
+    "why_it_matters": ""
+  },
   "MCRP": null,
   "MCS": null,
   "MD": null,
@@ -7690,6 +10814,26 @@
     "ticker": "MDLN",
     "why_it_matters": ""
   },
+  "MDLZ": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 78786495774.36253,
+    "name": "MDLZ",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "MDLZ",
+    "why_it_matters": ""
+  },
+  "MDT": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 110954317459.83879,
+    "name": "MDT",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "MDT",
+    "why_it_matters": ""
+  },
   "MDU": null,
   "MDXG": {
     "cap": "small",
@@ -7703,7 +10847,16 @@
   },
   "MEC": null,
   "MED": null,
-  "MEDIF": null,
+  "MEDIF": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 22092942.44382991,
+    "name": "MEDIF",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "MEDIF",
+    "why_it_matters": ""
+  },
   "MEDS": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -7715,7 +10868,16 @@
     "why_it_matters": ""
   },
   "MEI": null,
-  "MELI": null,
+  "MELI": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 96263304190.13867,
+    "name": "MELI",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "MELI",
+    "why_it_matters": ""
+  },
   "MERC": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -7724,6 +10886,16 @@
     "sector": "Paper & Paper Products",
     "summary": "",
     "ticker": "MERC",
+    "why_it_matters": ""
+  },
+  "META": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 1503640049366.0095,
+    "name": "META",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "META",
     "why_it_matters": ""
   },
   "METC": {
@@ -7737,6 +10909,16 @@
     "why_it_matters": ""
   },
   "METX": null,
+  "METX.CN": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 75123595.0,
+    "name": "METX.CN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "METX.CN",
+    "why_it_matters": ""
+  },
   "MF": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -7792,7 +10974,16 @@
     "ticker": "MGRX",
     "why_it_matters": ""
   },
-  "MGTI": null,
+  "MGTI": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 18197406.087,
+    "name": "MGTI",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "MGTI",
+    "why_it_matters": ""
+  },
   "MGTX": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -7840,7 +11031,16 @@
     "why_it_matters": ""
   },
   "MKGI": null,
-  "MKS.L": null,
+  "MKS.L": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 843939014450.2001,
+    "name": "MKS.L",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "MKS.L",
+    "why_it_matters": ""
+  },
   "MLGO": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -7881,8 +11081,27 @@
     "ticker": "MLYS",
     "why_it_matters": ""
   },
-  "MMED": null,
+  "MMED": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 5364098446.633043,
+    "name": "MMED",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "MMED",
+    "why_it_matters": ""
+  },
   "MMI": null,
+  "MMM": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 91401481761.50612,
+    "name": "MMM",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "MMM",
+    "why_it_matters": ""
+  },
   "MMT": null,
   "MNDR": {
     "cap": "micro",
@@ -7904,7 +11123,16 @@
     "ticker": "MNKD",
     "why_it_matters": ""
   },
-  "MNR": null,
+  "MNR": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 2255159560.5957756,
+    "name": "MNR",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "MNR",
+    "why_it_matters": ""
+  },
   "MNRO": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -7947,12 +11175,39 @@
     "why_it_matters": ""
   },
   "MOGO": null,
-  "MOMO": null,
+  "MOMO": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 879097007.7694197,
+    "name": "MOMO",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "MOMO",
+    "why_it_matters": ""
+  },
   "MOON": null,
   "MOS": null,
-  "MOTS": null,
+  "MOTS": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 638.8876,
+    "name": "MOTS",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "MOTS",
+    "why_it_matters": ""
+  },
   "MOV": null,
-  "MP": null,
+  "MP": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 7804493187.484032,
+    "name": "MP",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "MP",
+    "why_it_matters": ""
+  },
   "MPLT": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -7986,6 +11241,16 @@
     "ticker": "MRAM",
     "why_it_matters": ""
   },
+  "MRK": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 315569457213.5134,
+    "name": "MRK",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "MRK",
+    "why_it_matters": ""
+  },
   "MRLN": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -7994,6 +11259,16 @@
     "sector": "Aerospace & Defense",
     "summary": "",
     "ticker": "MRLN",
+    "why_it_matters": ""
+  },
+  "MRNA": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 21878794079.080887,
+    "name": "MRNA",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "MRNA",
     "why_it_matters": ""
   },
   "MRP": null,
@@ -8039,9 +11314,27 @@
     "ticker": "MSS",
     "why_it_matters": ""
   },
-  "MSTR": null,
+  "MSTR": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 34654219850.473404,
+    "name": "MSTR",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "MSTR",
+    "why_it_matters": ""
+  },
   "MTA": null,
-  "MTCH": null,
+  "MTCH": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 9456625177.601883,
+    "name": "MTCH",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "MTCH",
+    "why_it_matters": ""
+  },
   "MTDR": null,
   "MTEK": {
     "cap": "micro",
@@ -8064,8 +11357,26 @@
     "why_it_matters": ""
   },
   "MTG": null,
-  "MTLS": null,
-  "MTO": null,
+  "MTLS": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 376991587.3744583,
+    "name": "MTLS",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "MTLS",
+    "why_it_matters": ""
+  },
+  "MTO": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 257306718917.6,
+    "name": "MTO",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "MTO",
+    "why_it_matters": ""
+  },
   "MTRX": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -8092,7 +11403,16 @@
   "MUC": null,
   "MUFG": null,
   "MUR": null,
-  "MUX": null,
+  "MUX": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1065165746.6521931,
+    "name": "MUX",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "MUX",
+    "why_it_matters": ""
+  },
   "MVST": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -8114,7 +11434,16 @@
     "ticker": "MWH",
     "why_it_matters": ""
   },
-  "MWK": null,
+  "MWK": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 4760721.185083687,
+    "name": "MWK",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "MWK",
+    "why_it_matters": ""
+  },
   "MWYN": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -8215,7 +11544,26 @@
     "why_it_matters": ""
   },
   "NANO": null,
-  "NAT": null,
+  "NANO.L": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 474347458.0,
+    "name": "NANO.L",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "NANO.L",
+    "why_it_matters": ""
+  },
+  "NAT": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1361556726.7405896,
+    "name": "NAT",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "NAT",
+    "why_it_matters": ""
+  },
   "NATL": null,
   "NAUT": {
     "cap": "micro",
@@ -8291,7 +11639,16 @@
     "ticker": "NCMI",
     "why_it_matters": ""
   },
-  "NCNO": null,
+  "NCNO": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 2103416723.5822678,
+    "name": "NCNO",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "NCNO",
+    "why_it_matters": ""
+  },
   "NCRA": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -8312,10 +11669,39 @@
     "ticker": "NCT",
     "why_it_matters": ""
   },
-  "NCTY": null,
+  "NCTY": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 69340177.59737492,
+    "name": "NCTY",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "NCTY",
+    "why_it_matters": ""
+  },
   "ND": null,
+  "NDAQ": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 52622129458.90729,
+    "name": "NDAQ",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "NDAQ",
+    "why_it_matters": ""
+  },
   "NE": null,
   "NEA": null,
+  "NEE": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 180541420354.85028,
+    "name": "NEE",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "NEE",
+    "why_it_matters": ""
+  },
   "NEO": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -8336,7 +11722,16 @@
     "ticker": "NEOG",
     "why_it_matters": ""
   },
-  "NEON": null,
+  "NEON": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 14579325.671056747,
+    "name": "NEON",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "NEON",
+    "why_it_matters": ""
+  },
   "NEOV": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -8367,7 +11762,16 @@
     "ticker": "NESR",
     "why_it_matters": ""
   },
-  "NET": null,
+  "NET": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 100355608859.15332,
+    "name": "NET",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "NET",
+    "why_it_matters": ""
+  },
   "NEWP": null,
   "NEWT": {
     "cap": "small",
@@ -8401,6 +11805,16 @@
     "why_it_matters": ""
   },
   "NFGC": null,
+  "NFLX": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 305341704065.48126,
+    "name": "NFLX",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "NFLX",
+    "why_it_matters": ""
+  },
   "NG": null,
   "NGEN": {
     "cap": "micro",
@@ -8455,6 +11869,16 @@
     "ticker": "NIXX",
     "why_it_matters": ""
   },
+  "NKE": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 63256383790.46425,
+    "name": "NKE",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "NKE",
+    "why_it_matters": ""
+  },
   "NKLR": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -8465,7 +11889,16 @@
     "ticker": "NKLR",
     "why_it_matters": ""
   },
-  "NKTR": null,
+  "NKTR": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 2384955875.1518555,
+    "name": "NKTR",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "NKTR",
+    "why_it_matters": ""
+  },
   "NKTX": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -8550,7 +11983,16 @@
     "ticker": "NNBR",
     "why_it_matters": ""
   },
-  "NNDM": null,
+  "NNDM": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 328390750.3946986,
+    "name": "NNDM",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "NNDM",
+    "why_it_matters": ""
+  },
   "NNE": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -8561,7 +12003,16 @@
     "ticker": "NNE",
     "why_it_matters": ""
   },
-  "NNN": null,
+  "NNN": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 9034886245.055248,
+    "name": "NNN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "NNN",
+    "why_it_matters": ""
+  },
   "NNOX": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -8574,10 +12025,28 @@
   },
   "NNVC": null,
   "NOG": null,
-  "NOK": null,
+  "NOK": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 52252517923.949,
+    "name": "NOK",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "NOK",
+    "why_it_matters": ""
+  },
   "NOMD": null,
   "NOV": null,
-  "NOVN": null,
+  "NOVN": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 236638997580.0,
+    "name": "NOVN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "NOVN",
+    "why_it_matters": ""
+  },
   "NP": null,
   "NPF": null,
   "NPKI": null,
@@ -8616,7 +12085,16 @@
   },
   "NRK": null,
   "NRO": null,
-  "NRR": null,
+  "NRR": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 35573892694.2,
+    "name": "NRR",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "NRR",
+    "why_it_matters": ""
+  },
   "NRXP": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -8627,7 +12105,16 @@
     "ticker": "NRXP",
     "why_it_matters": ""
   },
-  "NSA": null,
+  "NSA": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 3369725863.47,
+    "name": "NSA",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "NSA",
+    "why_it_matters": ""
+  },
   "NSLR": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -8678,8 +12165,36 @@
     "ticker": "NTGR",
     "why_it_matters": ""
   },
-  "NTLA": null,
-  "NTNX": null,
+  "NTLA": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1504808987.2497826,
+    "name": "NTLA",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "NTLA",
+    "why_it_matters": ""
+  },
+  "NTNX": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 16505770650.768726,
+    "name": "NTNX",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "NTNX",
+    "why_it_matters": ""
+  },
+  "NTRP": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 25513075.739150047,
+    "name": "NTRP",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "NTRP",
+    "why_it_matters": ""
+  },
   "NTSK": {
     "cap": "mid",
     "exchange": "NASDAQ",
@@ -8713,7 +12228,16 @@
     "ticker": "NUCL",
     "why_it_matters": ""
   },
-  "NUMD": null,
+  "NUMD": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 1537291.8296,
+    "name": "NUMD",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "NUMD",
+    "why_it_matters": ""
+  },
   "NUMI": null,
   "NUS": null,
   "NUV": null,
@@ -8729,7 +12253,16 @@
     "why_it_matters": ""
   },
   "NVA": null,
-  "NVAX": null,
+  "NVAX": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1218486436.6987343,
+    "name": "NVAX",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "NVAX",
+    "why_it_matters": ""
+  },
   "NVCR": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -8750,6 +12283,16 @@
     "ticker": "NVCT",
     "why_it_matters": ""
   },
+  "NVDA": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 5005027425216.675,
+    "name": "NVDA",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "NVDA",
+    "why_it_matters": ""
+  },
   "NVG": null,
   "NVGS": null,
   "NVIGF": null,
@@ -8763,10 +12306,28 @@
     "ticker": "NVNI",
     "why_it_matters": ""
   },
-  "NVO": null,
+  "NVO": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 208227060711.5277,
+    "name": "NVO",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "NVO",
+    "why_it_matters": ""
+  },
   "NVRI": null,
   "NVST": null,
-  "NVT": null,
+  "NVT": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 25779857845.557983,
+    "name": "NVT",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "NVT",
+    "why_it_matters": ""
+  },
   "NVTS": {
     "cap": "mid",
     "exchange": "NASDAQ",
@@ -8787,7 +12348,16 @@
     "ticker": "NWBI",
     "why_it_matters": ""
   },
-  "NWE": null,
+  "NWE": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 4238579958.8687897,
+    "name": "NWE",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "NWE",
+    "why_it_matters": ""
+  },
   "NWL": {
     "cap": "mid",
     "exchange": "NASDAQ",
@@ -8821,9 +12391,36 @@
   },
   "NX": null,
   "NXDR": null,
-  "NXE": null,
-  "NXMH": null,
-  "NXPI": null,
+  "NXE": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 6334472956.971275,
+    "name": "NXE",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "NXE",
+    "why_it_matters": ""
+  },
+  "NXMH": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 6038776.638,
+    "name": "NXMH",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "NXMH",
+    "why_it_matters": ""
+  },
+  "NXPI": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 56527642423.85361,
+    "name": "NXPI",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "NXPI",
+    "why_it_matters": ""
+  },
   "NXRT": null,
   "NXTC": {
     "cap": "micro",
@@ -8845,14 +12442,68 @@
     "ticker": "NXTS",
     "why_it_matters": ""
   },
-  "NYSE:AXP": null,
+  "NYSE:AXP": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 232792806456.11282,
+    "name": "NYSE:AXP",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "NYSE:AXP",
+    "why_it_matters": ""
+  },
   "NYSE:BODY": null,
   "NYSE:EMBI": null,
-  "NYSE:HL": null,
-  "NYSE:PATH": null,
-  "NYSE:TEVA": null,
-  "NYSE:VALE": null,
-  "NYSE:WPM": null,
+  "NYSE:HL": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 9678380179.975182,
+    "name": "NYSE:HL",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "NYSE:HL",
+    "why_it_matters": ""
+  },
+  "NYSE:PATH": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 6761469570.123598,
+    "name": "NYSE:PATH",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "NYSE:PATH",
+    "why_it_matters": ""
+  },
+  "NYSE:TEVA": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 40156101987.77957,
+    "name": "NYSE:TEVA",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "NYSE:TEVA",
+    "why_it_matters": ""
+  },
+  "NYSE:VALE": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 62049021401.37106,
+    "name": "NYSE:VALE",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "NYSE:VALE",
+    "why_it_matters": ""
+  },
+  "NYSE:WPM": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 50798432732.71596,
+    "name": "NYSE:WPM",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "NYSE:WPM",
+    "why_it_matters": ""
+  },
   "NYXH": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -8897,7 +12548,16 @@
     "why_it_matters": ""
   },
   "OBSV": null,
-  "OC": null,
+  "OC": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 11532461104.646439,
+    "name": "OC",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "OC",
+    "why_it_matters": ""
+  },
   "OCC": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -8918,7 +12578,16 @@
     "ticker": "OCCI",
     "why_it_matters": ""
   },
-  "OCDO": null,
+  "OCDO": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 180397898803.19998,
+    "name": "OCDO",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "OCDO",
+    "why_it_matters": ""
+  },
   "OCFC": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -8939,7 +12608,16 @@
     "ticker": "OCG",
     "why_it_matters": ""
   },
-  "OCGN": null,
+  "OCGN": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 423152320.0,
+    "name": "OCGN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "OCGN",
+    "why_it_matters": ""
+  },
   "OCN": null,
   "OCS": {
     "cap": "small",
@@ -9006,15 +12684,61 @@
   "OFRM": null,
   "OGC": null,
   "OGE": null,
-  "OGEN": null,
+  "OGEN": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 2388178.724781275,
+    "name": "OGEN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "OGEN",
+    "why_it_matters": ""
+  },
   "OGG": null,
-  "OGI": null,
+  "OGI": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 135763430.2904507,
+    "name": "OGI",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "OGI",
+    "why_it_matters": ""
+  },
   "OGN": null,
   "OI": null,
   "OII": null,
   "OIS": null,
-  "OKE": null,
-  "OKLO": null,
+  "OKE": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 55594097514.584625,
+    "name": "OKE",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "OKE",
+    "why_it_matters": ""
+  },
+  "OKLO": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 7171908696.531342,
+    "name": "OKLO",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "OKLO",
+    "why_it_matters": ""
+  },
+  "OKTA": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 24605909936.05316,
+    "name": "OKTA",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "OKTA",
+    "why_it_matters": ""
+  },
   "OKUR": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -9146,7 +12870,16 @@
     "ticker": "ONEG",
     "why_it_matters": ""
   },
-  "ONEW": null,
+  "ONEW": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 212372169.54263783,
+    "name": "ONEW",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ONEW",
+    "why_it_matters": ""
+  },
   "ONL": null,
   "ONMD": {
     "cap": "micro",
@@ -9184,9 +12917,27 @@
     "ticker": "OPCH",
     "why_it_matters": ""
   },
-  "OPEN": null,
+  "OPEN": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 3801062385.282673,
+    "name": "OPEN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "OPEN",
+    "why_it_matters": ""
+  },
   "OPFI": null,
-  "OPK": null,
+  "OPK": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 977689932.0447564,
+    "name": "OPK",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "OPK",
+    "why_it_matters": ""
+  },
   "OPLN": null,
   "OPRT": {
     "cap": "micro",
@@ -9208,7 +12959,16 @@
     "ticker": "OPRX",
     "why_it_matters": ""
   },
-  "OPTT": null,
+  "OPTT": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 48624990.07218343,
+    "name": "OPTT",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "OPTT",
+    "why_it_matters": ""
+  },
   "OPTU": null,
   "OPTX": {
     "cap": "micro",
@@ -9232,7 +12992,26 @@
     "why_it_matters": ""
   },
   "ORC": null,
-  "ORGO": null,
+  "ORCL": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 408594828930.99976,
+    "name": "ORCL",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ORCL",
+    "why_it_matters": ""
+  },
+  "ORGO": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 301098431.27577496,
+    "name": "ORGO",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ORGO",
+    "why_it_matters": ""
+  },
   "ORI": null,
   "ORIC": {
     "cap": "small",
@@ -9244,7 +13023,16 @@
     "ticker": "ORIC",
     "why_it_matters": ""
   },
-  "ORLY": null,
+  "ORLY": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 73259045118.39828,
+    "name": "ORLY",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ORLY",
+    "why_it_matters": ""
+  },
   "ORMP": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -9257,7 +13045,16 @@
   },
   "ORN": null,
   "ORPH": null,
-  "ORSTED.CO": null,
+  "ORSTED.CO": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 190497140400.0,
+    "name": "ORSTED.CO",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ORSTED.CO",
+    "why_it_matters": ""
+  },
   "ORTX": null,
   "OSBC": {
     "cap": "small",
@@ -9326,9 +13123,36 @@
     "why_it_matters": ""
   },
   "OTF": null,
-  "OTLK": null,
-  "OTLY": null,
-  "OUST": null,
+  "OTLK": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 170728256.85565495,
+    "name": "OTLK",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "OTLK",
+    "why_it_matters": ""
+  },
+  "OTLY": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 467750485.70632935,
+    "name": "OTLY",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "OTLY",
+    "why_it_matters": ""
+  },
+  "OUST": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 2858684135.194874,
+    "name": "OUST",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "OUST",
+    "why_it_matters": ""
+  },
   "OUT": null,
   "OVID": {
     "cap": "small",
@@ -9341,7 +13165,16 @@
     "why_it_matters": ""
   },
   "OWL": null,
-  "OWLT": null,
+  "OWLT": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 157817265.23084164,
+    "name": "OWLT",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "OWLT",
+    "why_it_matters": ""
+  },
   "OXLC": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -9363,7 +13196,16 @@
     "ticker": "OXSQ",
     "why_it_matters": ""
   },
-  "PAAS": null,
+  "PAAS": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 18425635307.121277,
+    "name": "PAAS",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "PAAS",
+    "why_it_matters": ""
+  },
   "PACB": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -9376,7 +13218,16 @@
   },
   "PACK": null,
   "PACS": null,
-  "PAF": null,
+  "PAF": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 192493414071.45,
+    "name": "PAF",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "PAF",
+    "why_it_matters": ""
+  },
   "PAGP": {
     "cap": "mid",
     "exchange": "NASDAQ",
@@ -9428,10 +13279,29 @@
     "ticker": "PANL",
     "why_it_matters": ""
   },
+  "PANW": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 282910953979.4922,
+    "name": "PANW",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "PANW",
+    "why_it_matters": ""
+  },
   "PAPL": null,
   "PAR": null,
   "PATH": null,
-  "PAVM": null,
+  "PAVM": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 39374687.0,
+    "name": "PAVM",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "PAVM",
+    "why_it_matters": ""
+  },
   "PAVS": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -9541,8 +13411,27 @@
     "why_it_matters": ""
   },
   "PCTI": null,
-  "PCTY": null,
+  "PCTY": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 7483853215.424896,
+    "name": "PCTY",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "PCTY",
+    "why_it_matters": ""
+  },
   "PD": null,
+  "PDD": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 128319193221.23064,
+    "name": "PDD",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "PDD",
+    "why_it_matters": ""
+  },
   "PDFS": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -9556,7 +13445,16 @@
   "PDI": null,
   "PDM": null,
   "PDO": null,
-  "PDSB": null,
+  "PDSB": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 39950537.83841479,
+    "name": "PDSB",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "PDSB",
+    "why_it_matters": ""
+  },
   "PDYN": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -9588,9 +13486,27 @@
     "ticker": "PECO",
     "why_it_matters": ""
   },
-  "PEGA": null,
+  "PEGA": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 5157383262.624121,
+    "name": "PEGA",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "PEGA",
+    "why_it_matters": ""
+  },
   "PEI": null,
-  "PENN": null,
+  "PENN": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 2674190491.311367,
+    "name": "PENN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "PENN",
+    "why_it_matters": ""
+  },
   "PEPG": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -9697,7 +13613,16 @@
     "ticker": "PHAT",
     "why_it_matters": ""
   },
-  "PHE": null,
+  "PHE": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1101155769.315,
+    "name": "PHE",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "PHE",
+    "why_it_matters": ""
+  },
   "PHG": null,
   "PHIO": {
     "cap": "micro",
@@ -9710,10 +13635,28 @@
     "why_it_matters": ""
   },
   "PHK": null,
-  "PHM": null,
+  "PHM": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 24627979300.469925,
+    "name": "PHM",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "PHM",
+    "why_it_matters": ""
+  },
   "PHR": null,
   "PHSP": null,
-  "PHUN": null,
+  "PHUN": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 44370900.79001427,
+    "name": "PHUN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "PHUN",
+    "why_it_matters": ""
+  },
   "PHVS": {
     "cap": "mid",
     "exchange": "NASDAQ",
@@ -9744,11 +13687,38 @@
     "ticker": "PIII",
     "why_it_matters": ""
   },
-  "PINS": null,
+  "PINS": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 13533400934.846775,
+    "name": "PINS",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "PINS",
+    "why_it_matters": ""
+  },
   "PK": null,
   "PKE": null,
-  "PKG": null,
-  "PKI": null,
+  "PKG": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 22371778948.94101,
+    "name": "PKG",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "PKG",
+    "why_it_matters": ""
+  },
+  "PKI": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 12853917181.241364,
+    "name": "PKI",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "PKI",
+    "why_it_matters": ""
+  },
   "PL": null,
   "PLAB": {
     "cap": "small",
@@ -9835,8 +13805,46 @@
     "ticker": "PLTK",
     "why_it_matters": ""
   },
-  "PLTXF": null,
-  "PLUG": null,
+  "PLTR": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 301222253568.0578,
+    "name": "PLTR",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "PLTR",
+    "why_it_matters": ""
+  },
+  "PLTXF": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 114580.68599999999,
+    "name": "PLTXF",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "PLTXF",
+    "why_it_matters": ""
+  },
+  "PLUG": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 2901743584.1246758,
+    "name": "PLUG",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "PLUG",
+    "why_it_matters": ""
+  },
+  "PLUR": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 16993535.464485645,
+    "name": "PLUR",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "PLUR",
+    "why_it_matters": ""
+  },
   "PLX": null,
   "PLYX": {
     "cap": "micro",
@@ -9923,7 +13931,16 @@
     "ticker": "POET",
     "why_it_matters": ""
   },
-  "POLA": null,
+  "POLA": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 6406679.805284739,
+    "name": "POLA",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "POLA",
+    "why_it_matters": ""
+  },
   "POR": null,
   "POWW": {
     "cap": "micro",
@@ -9935,7 +13952,16 @@
     "ticker": "POWW",
     "why_it_matters": ""
   },
-  "PPBT": null,
+  "PPBT": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 1370442.806672573,
+    "name": "PPBT",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "PPBT",
+    "why_it_matters": ""
+  },
   "PPC": {
     "cap": "mid",
     "exchange": "NASDAQ",
@@ -10008,7 +14034,16 @@
     "ticker": "PRCT",
     "why_it_matters": ""
   },
-  "PRD": null,
+  "PRD": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 2566630485.0,
+    "name": "PRD",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "PRD",
+    "why_it_matters": ""
+  },
   "PRDO": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -10051,7 +14086,16 @@
     "ticker": "PRGS",
     "why_it_matters": ""
   },
-  "PRIM": null,
+  "PRIM": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 4765753291.712494,
+    "name": "PRIM",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "PRIM",
+    "why_it_matters": ""
+  },
   "PRKS": null,
   "PRLD": {
     "cap": "small",
@@ -10075,7 +14119,16 @@
     "ticker": "PRME",
     "why_it_matters": ""
   },
-  "PROF": null,
+  "PROF": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 299422120.56297493,
+    "name": "PROF",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "PROF",
+    "why_it_matters": ""
+  },
   "PROK": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -10106,7 +14159,16 @@
     "ticker": "PRPL",
     "why_it_matters": ""
   },
-  "PRPO": null,
+  "PRPO": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 39554540.85997772,
+    "name": "PRPO",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "PRPO",
+    "why_it_matters": ""
+  },
   "PRQR": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -10125,6 +14187,16 @@
     "sector": "Semiconductors",
     "summary": "",
     "ticker": "PRSO",
+    "why_it_matters": ""
+  },
+  "PRSU": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1408147222.2578735,
+    "name": "PRSU",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "PRSU",
     "why_it_matters": ""
   },
   "PRTA": {
@@ -10168,7 +14240,16 @@
     "ticker": "PSEC",
     "why_it_matters": ""
   },
-  "PSFE": null,
+  "PSFE": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 405142623.24518585,
+    "name": "PSFE",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "PSFE",
+    "why_it_matters": ""
+  },
   "PSIG": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -10199,14 +14280,51 @@
     "ticker": "PSKY",
     "why_it_matters": ""
   },
-  "PSN": null,
-  "PSNL": null,
+  "PSN": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 5085004873.528839,
+    "name": "PSN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "PSN",
+    "why_it_matters": ""
+  },
+  "PSNL": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1409111608.8388853,
+    "name": "PSNL",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "PSNL",
+    "why_it_matters": ""
+  },
   "PSO": null,
   "PSTG": null,
   "PSTI": null,
   "PSTL": null,
   "PSUS": null,
-  "PTCT": null,
+  "PTC": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 16154061906.81102,
+    "name": "PTC",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "PTC",
+    "why_it_matters": ""
+  },
+  "PTCT": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 5684932349.938492,
+    "name": "PTCT",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "PTCT",
+    "why_it_matters": ""
+  },
   "PTEN": {
     "cap": "mid",
     "exchange": "NASDAQ",
@@ -10227,8 +14345,26 @@
     "ticker": "PTLO",
     "why_it_matters": ""
   },
-  "PTN": null,
-  "PTON": null,
+  "PTN": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 14643432.435512543,
+    "name": "PTN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "PTN",
+    "why_it_matters": ""
+  },
+  "PTON": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 2792797833.6633444,
+    "name": "PTON",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "PTON",
+    "why_it_matters": ""
+  },
   "PTRN": {
     "cap": "mid",
     "exchange": "NASDAQ",
@@ -10240,7 +14376,16 @@
     "why_it_matters": ""
   },
   "PTVE": null,
-  "PTY": null,
+  "PTY": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 2492907392.4388103,
+    "name": "PTY",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "PTY",
+    "why_it_matters": ""
+  },
   "PUBM": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -10274,7 +14419,16 @@
     "ticker": "PUSA",
     "why_it_matters": ""
   },
-  "PW": null,
+  "PW": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 2805614.230969906,
+    "name": "PW",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "PW",
+    "why_it_matters": ""
+  },
   "PWCM": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -10303,6 +14457,16 @@
     "sector": "Biotechnology",
     "summary": "",
     "ticker": "PYPD",
+    "why_it_matters": ""
+  },
+  "PYPL": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 49505519864.64921,
+    "name": "PYPL",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "PYPL",
     "why_it_matters": ""
   },
   "PYXS": {
@@ -10346,7 +14510,26 @@
     "ticker": "QCLS",
     "why_it_matters": ""
   },
-  "QDEL": null,
+  "QCOM": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 159148507690.4297,
+    "name": "QCOM",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "QCOM",
+    "why_it_matters": ""
+  },
+  "QDEL": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1207662352.759285,
+    "name": "QDEL",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "QDEL",
+    "why_it_matters": ""
+  },
   "QGEN": null,
   "QH": {
     "cap": "mega",
@@ -10442,7 +14625,16 @@
   },
   "QTUM": null,
   "QUAD": null,
-  "QUBT": null,
+  "QUBT": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1971175734.759138,
+    "name": "QUBT",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "QUBT",
+    "why_it_matters": ""
+  },
   "QUCY": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -10527,7 +14719,16 @@
     "why_it_matters": ""
   },
   "RBLX": null,
-  "RBRK": null,
+  "RBRK": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 15383626583.142746,
+    "name": "RBRK",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "RBRK",
+    "why_it_matters": ""
+  },
   "RBTX": null,
   "RC": null,
   "RCAT": {
@@ -10626,8 +14827,26 @@
     "ticker": "REAX",
     "why_it_matters": ""
   },
-  "REEMF": null,
-  "REI": null,
+  "REEMF": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 319457356.1273563,
+    "name": "REEMF",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "REEMF",
+    "why_it_matters": ""
+  },
+  "REI": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 319855565.0790632,
+    "name": "REI",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "REI",
+    "why_it_matters": ""
+  },
   "REKR": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -10713,7 +14932,16 @@
     "ticker": "RGC",
     "why_it_matters": ""
   },
-  "RGLD": null,
+  "RGLD": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 17146447698.296906,
+    "name": "RGLD",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "RGLD",
+    "why_it_matters": ""
+  },
   "RGNT": null,
   "RGNX": {
     "cap": "small",
@@ -10767,7 +14995,16 @@
     "ticker": "RILY",
     "why_it_matters": ""
   },
-  "RIOT": null,
+  "RIOT": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 8099999375.450649,
+    "name": "RIOT",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "RIOT",
+    "why_it_matters": ""
+  },
   "RITM": null,
   "RIVN": {
     "cap": "large",
@@ -10928,6 +15165,16 @@
     "ticker": "ROIV",
     "why_it_matters": ""
   },
+  "ROKU": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 21634220946.194763,
+    "name": "ROKU",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ROKU",
+    "why_it_matters": ""
+  },
   "ROL": null,
   "ROLR": null,
   "RPAY": {
@@ -10941,7 +15188,16 @@
     "why_it_matters": ""
   },
   "RPC": null,
-  "RPD": null,
+  "RPD": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 680335711.635086,
+    "name": "RPD",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "RPD",
+    "why_it_matters": ""
+  },
   "RPGL": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -10976,7 +15232,16 @@
   },
   "RSI": null,
   "RSKD": null,
-  "RTO": null,
+  "RTO": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 897794390968.0,
+    "name": "RTO",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "RTO",
+    "why_it_matters": ""
+  },
   "RUBI": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -11007,11 +15272,47 @@
     "ticker": "RUN",
     "why_it_matters": ""
   },
-  "RUSHB": null,
+  "RUSHB": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 6098199391.355438,
+    "name": "RUSHB",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "RUSHB",
+    "why_it_matters": ""
+  },
   "RVI": null,
-  "RVLV": null,
-  "RVP": null,
-  "RVSN": null,
+  "RVLV": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1861875261.615528,
+    "name": "RVLV",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "RVLV",
+    "why_it_matters": ""
+  },
+  "RVP": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 19764513.02628994,
+    "name": "RVP",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "RVP",
+    "why_it_matters": ""
+  },
+  "RVSN": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 9097738.109066963,
+    "name": "RVSN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "RVSN",
+    "why_it_matters": ""
+  },
   "RVT": null,
   "RWAY": {
     "cap": "micro",
@@ -11024,7 +15325,16 @@
     "why_it_matters": ""
   },
   "RWLK": null,
-  "RWT": null,
+  "RWT": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 580304325.6254196,
+    "name": "RWT",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "RWT",
+    "why_it_matters": ""
+  },
   "RXO": null,
   "RXRX": {
     "cap": "small",
@@ -11091,7 +15401,16 @@
     "ticker": "RZLT",
     "why_it_matters": ""
   },
-  "RZLV": null,
+  "RZLV": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1024986871.9653862,
+    "name": "RZLV",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "RZLV",
+    "why_it_matters": ""
+  },
   "S": null,
   "SA": null,
   "SABR": {
@@ -11115,7 +15434,16 @@
     "why_it_matters": ""
   },
   "SACH": null,
-  "SAFE": null,
+  "SAFE": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1177984587.5340958,
+    "name": "SAFE",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "SAFE",
+    "why_it_matters": ""
+  },
   "SAGT": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -11137,7 +15465,16 @@
     "why_it_matters": ""
   },
   "SALT": null,
-  "SAM": null,
+  "SAM": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1942315246.3310242,
+    "name": "SAM",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "SAM",
+    "why_it_matters": ""
+  },
   "SAN": null,
   "SANA": {
     "cap": "small",
@@ -11162,7 +15499,16 @@
   },
   "SAVA": null,
   "SB": null,
-  "SBAC": null,
+  "SBAC": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 19042553360.08699,
+    "name": "SBAC",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "SBAC",
+    "why_it_matters": ""
+  },
   "SBCF": {
     "cap": "mid",
     "exchange": "NASDAQ",
@@ -11173,7 +15519,16 @@
     "ticker": "SBCF",
     "why_it_matters": ""
   },
-  "SBET": null,
+  "SBET": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1307833309.2251515,
+    "name": "SBET",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "SBET",
+    "why_it_matters": ""
+  },
   "SBFM": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -11216,7 +15571,16 @@
     "why_it_matters": ""
   },
   "SBSW": null,
-  "SCCO": null,
+  "SCCO": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 145759470073.41248,
+    "name": "SCCO",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "SCCO",
+    "why_it_matters": ""
+  },
   "SCHL": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -11252,7 +15616,16 @@
     "why_it_matters": ""
   },
   "SDEV": null,
-  "SDF": null,
+  "SDF": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 2582622000.0,
+    "name": "SDF",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "SDF",
+    "why_it_matters": ""
+  },
   "SDGR": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -11284,7 +15657,16 @@
     "ticker": "SDST",
     "why_it_matters": ""
   },
-  "SE": null,
+  "SE": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 68077655554.87721,
+    "name": "SE",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "SE",
+    "why_it_matters": ""
+  },
   "SECO": null,
   "SEDG": {
     "cap": "mid",
@@ -11307,7 +15689,16 @@
     "ticker": "SEER",
     "why_it_matters": ""
   },
-  "SENS": null,
+  "SENS": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 272760487.1465373,
+    "name": "SENS",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "SENS",
+    "why_it_matters": ""
+  },
   "SEPN": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -11373,6 +15764,16 @@
   "SFR": null,
   "SG": null,
   "SGHC": null,
+  "SGLY": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 4879152.371321201,
+    "name": "SGLY",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "SGLY",
+    "why_it_matters": ""
+  },
   "SGML": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -11444,7 +15845,16 @@
     "ticker": "SHEN",
     "why_it_matters": ""
   },
-  "SHIP": null,
+  "SHIP": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 393711159.3131523,
+    "name": "SHIP",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "SHIP",
+    "why_it_matters": ""
+  },
   "SHLS": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -11484,6 +15894,16 @@
     "sector": "Footwear & Accessories",
     "summary": "",
     "ticker": "SHOO",
+    "why_it_matters": ""
+  },
+  "SHOP": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 151838568571.17932,
+    "name": "SHOP",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "SHOP",
     "why_it_matters": ""
   },
   "SHPH": {
@@ -11571,9 +15991,27 @@
     "ticker": "SKK",
     "why_it_matters": ""
   },
-  "SKLZ": null,
+  "SKLZ": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 137970803.88,
+    "name": "SKLZ",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "SKLZ",
+    "why_it_matters": ""
+  },
   "SKM": null,
-  "SKT": null,
+  "SKT": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 4681190928.25,
+    "name": "SKT",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "SKT",
+    "why_it_matters": ""
+  },
   "SKYA": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -11729,7 +16167,16 @@
     "ticker": "SLRC",
     "why_it_matters": ""
   },
-  "SLS": null,
+  "SLS": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 2206217532.786562,
+    "name": "SLS",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "SLS",
+    "why_it_matters": ""
+  },
   "SLVM": null,
   "SLXN": {
     "cap": "micro",
@@ -11775,9 +16222,27 @@
     "ticker": "SMPL",
     "why_it_matters": ""
   },
-  "SMR": null,
+  "SMR": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 3118413202.0673275,
+    "name": "SMR",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "SMR",
+    "why_it_matters": ""
+  },
   "SMRT": null,
-  "SMT.L": null,
+  "SMT.L": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 1445365548958.5,
+    "name": "SMT.L",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "SMT.L",
+    "why_it_matters": ""
+  },
   "SMWB": null,
   "SMX": {
     "cap": "micro",
@@ -11799,7 +16264,16 @@
     "ticker": "SNAL",
     "why_it_matters": ""
   },
-  "SNAP": null,
+  "SNAP": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 8352091044.144327,
+    "name": "SNAP",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "SNAP",
+    "why_it_matters": ""
+  },
   "SND": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -11811,7 +16285,16 @@
     "why_it_matters": ""
   },
   "SNDA": null,
-  "SNDL": null,
+  "SNDL": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 318867506.2060356,
+    "name": "SNDL",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "SNDL",
+    "why_it_matters": ""
+  },
   "SNDR": null,
   "SNDX": {
     "cap": "small",
@@ -11823,9 +16306,27 @@
     "ticker": "SNDX",
     "why_it_matters": ""
   },
-  "SNES": null,
+  "SNES": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 8220310.047112942,
+    "name": "SNES",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "SNES",
+    "why_it_matters": ""
+  },
   "SNN": null,
-  "SNPW": null,
+  "SNPW": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 32719.0,
+    "name": "SNPW",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "SNPW",
+    "why_it_matters": ""
+  },
   "SNSR": null,
   "SNWV": {
     "cap": "micro",
@@ -11882,8 +16383,26 @@
     "ticker": "SOPH",
     "why_it_matters": ""
   },
-  "SOS": null,
-  "SOUN": null,
+  "SOS": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 15315762.331175804,
+    "name": "SOS",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "SOS",
+    "why_it_matters": ""
+  },
+  "SOUN": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 2657612456.4508724,
+    "name": "SOUN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "SOUN",
+    "why_it_matters": ""
+  },
   "SOWG": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -11919,6 +16438,16 @@
   "SPIP": null,
   "SPIR": null,
   "SPNT": null,
+  "SPOT": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 99999201505.11844,
+    "name": "SPOT",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "SPOT",
+    "why_it_matters": ""
+  },
   "SPPL": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -11990,6 +16519,16 @@
     "why_it_matters": ""
   },
   "SPXX": null,
+  "SQ": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 48858406110.38208,
+    "name": "SQ",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "SQ",
+    "why_it_matters": ""
+  },
   "SRAD": {
     "cap": "mid",
     "exchange": "NASDAQ",
@@ -12003,8 +16542,26 @@
   "SRFM": null,
   "SRG": null,
   "SRI": null,
-  "SRP": null,
-  "SRPT": null,
+  "SRP": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 234783946860.4,
+    "name": "SRP",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "SRP",
+    "why_it_matters": ""
+  },
+  "SRPT": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1676550417.4422398,
+    "name": "SRPT",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "SRPT",
+    "why_it_matters": ""
+  },
   "SRRK": {
     "cap": "mid",
     "exchange": "NASDAQ",
@@ -12046,7 +16603,16 @@
     "ticker": "SSRM",
     "why_it_matters": ""
   },
-  "SST": null,
+  "SST": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 14462606.321632862,
+    "name": "SST",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "SST",
+    "why_it_matters": ""
+  },
   "SSTK": null,
   "SSYS": {
     "cap": "small",
@@ -12172,7 +16738,16 @@
     "ticker": "STOK",
     "why_it_matters": ""
   },
-  "STRA": null,
+  "STRA": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1902533741.0323486,
+    "name": "STRA",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "STRA",
+    "why_it_matters": ""
+  },
   "STRO": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -12238,7 +16813,16 @@
     "ticker": "SUPX",
     "why_it_matters": ""
   },
-  "SURG": null,
+  "SURG": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 5345939.1589696705,
+    "name": "SURG",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "SURG",
+    "why_it_matters": ""
+  },
   "SVA": null,
   "SVC": {
     "cap": "small",
@@ -12304,7 +16888,16 @@
     "ticker": "SWMR",
     "why_it_matters": ""
   },
-  "SWX:ABBN": null,
+  "SWX:ABBN": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 145249113369.36,
+    "name": "SWX:ABBN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "SWX:ABBN",
+    "why_it_matters": ""
+  },
   "SXC": null,
   "SY": {
     "cap": "micro",
@@ -12316,7 +16909,16 @@
     "ticker": "SY",
     "why_it_matters": ""
   },
-  "SYK": null,
+  "SYK": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 130802696674.0968,
+    "name": "SYK",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "SYK",
+    "why_it_matters": ""
+  },
   "SYM": {
     "cap": "large",
     "exchange": "NASDAQ",
@@ -12328,9 +16930,37 @@
     "why_it_matters": ""
   },
   "SYN": null,
+  "T": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 161647778529.09106,
+    "name": "T",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "T",
+    "why_it_matters": ""
+  },
   "TAC": null,
-  "TAKOF": null,
-  "TALK": null,
+  "TAKOF": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 255420472.5002152,
+    "name": "TAKOF",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "TAKOF",
+    "why_it_matters": ""
+  },
+  "TALK": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 872740475.2500973,
+    "name": "TALK",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "TALK",
+    "why_it_matters": ""
+  },
   "TALO": null,
   "TAP": null,
   "TARA": {
@@ -12375,8 +17005,26 @@
     "why_it_matters": ""
   },
   "TBI": null,
-  "TBIO": null,
-  "TBLA": null,
+  "TBIO": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 1953.4229,
+    "name": "TBIO",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "TBIO",
+    "why_it_matters": ""
+  },
+  "TBLA": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1418553402.5197449,
+    "name": "TBLA",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "TBLA",
+    "why_it_matters": ""
+  },
   "TBN": null,
   "TBPH": {
     "cap": "small",
@@ -12388,7 +17036,16 @@
     "ticker": "TBPH",
     "why_it_matters": ""
   },
-  "TCEHY": null,
+  "TCEHY": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 563321963995.9751,
+    "name": "TCEHY",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "TCEHY",
+    "why_it_matters": ""
+  },
   "TCMD": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -12399,7 +17056,16 @@
     "ticker": "TCMD",
     "why_it_matters": ""
   },
-  "TCOM": null,
+  "TCOM": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 29785056520.173042,
+    "name": "TCOM",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "TCOM",
+    "why_it_matters": ""
+  },
   "TCPC": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -12420,9 +17086,37 @@
     "ticker": "TCRX",
     "why_it_matters": ""
   },
-  "TCX": null,
+  "TCX": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 153301128.75,
+    "name": "TCX",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "TCX",
+    "why_it_matters": ""
+  },
   "TDAY": null,
-  "TDC": null,
+  "TDC": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 3019669014.3585205,
+    "name": "TDC",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "TDC",
+    "why_it_matters": ""
+  },
+  "TDG": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 71905980238.83838,
+    "name": "TDG",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "TDG",
+    "why_it_matters": ""
+  },
   "TDIC": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -12466,8 +17160,36 @@
     "ticker": "TEAD",
     "why_it_matters": ""
   },
-  "TECH": null,
-  "TEM": null,
+  "TEAM": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 26318264735.688583,
+    "name": "TEAM",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "TEAM",
+    "why_it_matters": ""
+  },
+  "TECH": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 11240180340.180725,
+    "name": "TECH",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "TECH",
+    "why_it_matters": ""
+  },
+  "TEM": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 8309020376.139206,
+    "name": "TEM",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "TEM",
+    "why_it_matters": ""
+  },
   "TEN": null,
   "TENB": {
     "cap": "mid",
@@ -12516,7 +17238,16 @@
   },
   "TGLS": null,
   "TGS": null,
-  "TGTX": null,
+  "TGTX": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 7067868608.295593,
+    "name": "TGTX",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "TGTX",
+    "why_it_matters": ""
+  },
   "TH": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -12549,9 +17280,27 @@
     "ticker": "THRY",
     "why_it_matters": ""
   },
-  "THULE": null,
+  "THULE": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 24155748288.0,
+    "name": "THULE",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "THULE",
+    "why_it_matters": ""
+  },
   "TIC": null,
-  "TIGR": null,
+  "TIGR": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 868485236.3191123,
+    "name": "TIGR",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "TIGR",
+    "why_it_matters": ""
+  },
   "TII": null,
   "TILE": {
     "cap": "small",
@@ -12573,7 +17322,16 @@
     "ticker": "TIPT",
     "why_it_matters": ""
   },
-  "TIT": null,
+  "TIT": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 15890653285.611,
+    "name": "TIT",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "TIT",
+    "why_it_matters": ""
+  },
   "TITN": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -12658,7 +17416,16 @@
     "ticker": "TLSI",
     "why_it_matters": ""
   },
-  "TLW.L": null,
+  "TLW.L": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 22513242389.26,
+    "name": "TLW.L",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "TLW.L",
+    "why_it_matters": ""
+  },
   "TLYS": null,
   "TMC": {
     "cap": "small",
@@ -12692,7 +17459,16 @@
     "ticker": "TMS",
     "why_it_matters": ""
   },
-  "TNDM": null,
+  "TNDM": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1378120021.6168365,
+    "name": "TNDM",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "TNDM",
+    "why_it_matters": ""
+  },
   "TNGX": {
     "cap": "mid",
     "exchange": "NASDAQ",
@@ -12777,7 +17553,16 @@
     "ticker": "TOYO",
     "why_it_matters": ""
   },
-  "TPE:2330": null,
+  "TPE:2330": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 61459717058790.0,
+    "name": "TPE:2330",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "TPE:2330",
+    "why_it_matters": ""
+  },
   "TPG": {
     "cap": "large",
     "exchange": "NASDAQ",
@@ -12790,7 +17575,16 @@
   },
   "TPVG": null,
   "TR": null,
-  "TRAK": null,
+  "TRAK": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 159018693.75,
+    "name": "TRAK",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "TRAK",
+    "why_it_matters": ""
+  },
   "TRAX": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -12823,7 +17617,16 @@
   },
   "TREX": null,
   "TRIN": null,
-  "TRIP": null,
+  "TRIP": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1687236950.5,
+    "name": "TRIP",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "TRIP",
+    "why_it_matters": ""
+  },
   "TRLV": null,
   "TRMD": {
     "cap": "mid",
@@ -12846,7 +17649,16 @@
     "why_it_matters": ""
   },
   "TRMR": null,
-  "TRN": null,
+  "TRN": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 2496841703.396599,
+    "name": "TRN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "TRN",
+    "why_it_matters": ""
+  },
   "TRNR": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -12941,10 +17753,46 @@
     "ticker": "TSCO",
     "why_it_matters": ""
   },
-  "TSE:ACB": null,
-  "TSE:AIF": null,
-  "TSE:FM": null,
-  "TSE:HUT": null,
+  "TSE:ACB": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 240335533.56871605,
+    "name": "TSE:ACB",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "TSE:ACB",
+    "why_it_matters": ""
+  },
+  "TSE:AIF": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1675962435.1959686,
+    "name": "TSE:AIF",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "TSE:AIF",
+    "why_it_matters": ""
+  },
+  "TSE:FM": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 32417250954.11902,
+    "name": "TSE:FM",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "TSE:FM",
+    "why_it_matters": ""
+  },
+  "TSE:HUT": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 17001710912.0,
+    "name": "TSE:HUT",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "TSE:HUT",
+    "why_it_matters": ""
+  },
   "TSHA": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -12955,8 +17803,37 @@
     "ticker": "TSHA",
     "why_it_matters": ""
   },
+  "TSLA": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 1272070171626.0466,
+    "name": "TSLA",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "TSLA",
+    "why_it_matters": ""
+  },
   "TSLX": null,
-  "TSQ": null,
+  "TSM": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 2106278885445.6895,
+    "name": "TSM",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "TSM",
+    "why_it_matters": ""
+  },
+  "TSQ": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 109159053.99023438,
+    "name": "TSQ",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "TSQ",
+    "why_it_matters": ""
+  },
   "TSSI": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -12968,7 +17845,16 @@
     "why_it_matters": ""
   },
   "TTAM": null,
-  "TTD": null,
+  "TTD": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 8602982647.635784,
+    "name": "TTD",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "TTD",
+    "why_it_matters": ""
+  },
   "TTEC": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -12999,8 +17885,26 @@
     "ticker": "TTGT",
     "why_it_matters": ""
   },
-  "TTI": null,
-  "TTOO": null,
+  "TTI": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1153014888.5948887,
+    "name": "TTI",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "TTI",
+    "why_it_matters": ""
+  },
+  "TTOO": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 14022.7085,
+    "name": "TTOO",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "TTOO",
+    "why_it_matters": ""
+  },
   "TU": null,
   "TUA": null,
   "TUSK": {
@@ -13077,12 +17981,58 @@
     "ticker": "TYRA",
     "why_it_matters": ""
   },
-  "U": null,
+  "U": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 14571538666.12968,
+    "name": "U",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "U",
+    "why_it_matters": ""
+  },
   "UA": null,
-  "UAA": null,
+  "UAA": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 2890482857.206522,
+    "name": "UAA",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "UAA",
+    "why_it_matters": ""
+  },
   "UAMY": null,
-  "UAVS": null,
-  "UBS": null,
+  "UAVS": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 42143049.58694458,
+    "name": "UAVS",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "UAVS",
+    "why_it_matters": ""
+  },
+  "UBER": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 145769246563.36102,
+    "name": "UBER",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "UBER",
+    "why_it_matters": ""
+  },
+  "UBS": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 172904222401.0,
+    "name": "UBS",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "UBS",
+    "why_it_matters": ""
+  },
   "UBSI": {
     "cap": "mid",
     "exchange": "NASDAQ",
@@ -13106,7 +18056,16 @@
   "UCB": null,
   "UDR": null,
   "UE": null,
-  "UEC": null,
+  "UEC": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 4933877621.165178,
+    "name": "UEC",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "UEC",
+    "why_it_matters": ""
+  },
   "UFG": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -13140,11 +18099,38 @@
     "ticker": "ULCC",
     "why_it_matters": ""
   },
-  "ULVR.L": null,
+  "ULVR.L": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 10271241000000.0,
+    "name": "ULVR.L",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ULVR.L",
+    "why_it_matters": ""
+  },
   "UMAC": null,
-  "UMC": null,
+  "UMC": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 46872812699.56768,
+    "name": "UMC",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "UMC",
+    "why_it_matters": ""
+  },
   "UMH": null,
-  "UNBLF": null,
+  "UNBLF": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 17047768098.0,
+    "name": "UNBLF",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "UNBLF",
+    "why_it_matters": ""
+  },
   "UNCY": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -13153,6 +18139,16 @@
     "sector": "Biotechnology",
     "summary": "",
     "ticker": "UNCY",
+    "why_it_matters": ""
+  },
+  "UNH": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 377206846342.54346,
+    "name": "UNH",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "UNH",
     "why_it_matters": ""
   },
   "UNIT": {
@@ -13205,7 +18201,16 @@
     "ticker": "UPST",
     "why_it_matters": ""
   },
-  "UPWK": null,
+  "UPWK": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1178363022.268157,
+    "name": "UPWK",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "UPWK",
+    "why_it_matters": ""
+  },
   "UPXI": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -13275,7 +18280,16 @@
     "why_it_matters": ""
   },
   "UTZ": null,
-  "UUUU": null,
+  "UUUU": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 3036517528.5634117,
+    "name": "UUUU",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "UUUU",
+    "why_it_matters": ""
+  },
   "UVE": null,
   "UVSP": {
     "cap": "small",
@@ -13288,7 +18302,16 @@
     "why_it_matters": ""
   },
   "UWMC": null,
-  "VANI": null,
+  "VANI": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 114692692.02080917,
+    "name": "VANI",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "VANI",
+    "why_it_matters": ""
+  },
   "VCEL": {
     "cap": "mid",
     "exchange": "NASDAQ",
@@ -13351,7 +18374,16 @@
     "ticker": "VERA",
     "why_it_matters": ""
   },
-  "VERI": null,
+  "VERI": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 103179386.43972337,
+    "name": "VERI",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "VERI",
+    "why_it_matters": ""
+  },
   "VERO": null,
   "VERU": {
     "cap": "micro",
@@ -13375,7 +18407,16 @@
   },
   "VET": null,
   "VFC": null,
-  "VFF": null,
+  "VFF": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 236313599.17008877,
+    "name": "VFF",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "VFF",
+    "why_it_matters": ""
+  },
   "VFS": {
     "cap": "mid",
     "exchange": "NASDAQ",
@@ -13387,7 +18428,16 @@
     "why_it_matters": ""
   },
   "VG": null,
-  "VGLS": null,
+  "VGLS": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 485196.04000000004,
+    "name": "VGLS",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "VGLS",
+    "why_it_matters": ""
+  },
   "VGNT": null,
   "VGZ": null,
   "VHUB": {
@@ -13411,7 +18461,16 @@
     "ticker": "VIAV",
     "why_it_matters": ""
   },
-  "VICR": null,
+  "VICR": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 9845631241.725525,
+    "name": "VICR",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "VICR",
+    "why_it_matters": ""
+  },
   "VIP": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -13452,7 +18511,16 @@
     "ticker": "VITL",
     "why_it_matters": ""
   },
-  "VIVE": null,
+  "VIVE": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 2144.7714,
+    "name": "VIVE",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "VIVE",
+    "why_it_matters": ""
+  },
   "VIVK": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -13475,7 +18543,16 @@
   },
   "VJET": null,
   "VKQ": null,
-  "VKTX": null,
+  "VKTX": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 3804052346.7693024,
+    "name": "VKTX",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "VKTX",
+    "why_it_matters": ""
+  },
   "VLN": null,
   "VLOS": {
     "cap": "small",
@@ -13497,7 +18574,16 @@
     "ticker": "VLY",
     "why_it_matters": ""
   },
-  "VMAR": null,
+  "VMAR": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 4069129.513274431,
+    "name": "VMAR",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "VMAR",
+    "why_it_matters": ""
+  },
   "VMD": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -13545,7 +18631,16 @@
   "VNRX": null,
   "VNT": null,
   "VNTG": null,
-  "VOD.L": null,
+  "VOD.L": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 2700086054100.75,
+    "name": "VOD.L",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "VOD.L",
+    "why_it_matters": ""
+  },
   "VOLT": null,
   "VOR": {
     "cap": "small",
@@ -13618,7 +18713,16 @@
     "ticker": "VRNS",
     "why_it_matters": ""
   },
-  "VRNT": null,
+  "VRNT": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 1242795464.9690056,
+    "name": "VRNT",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "VRNT",
+    "why_it_matters": ""
+  },
   "VRRM": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -13627,6 +18731,16 @@
     "sector": "Information Technology Services",
     "summary": "",
     "ticker": "VRRM",
+    "why_it_matters": ""
+  },
+  "VRTX": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 119471286200.06107,
+    "name": "VRTX",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "VRTX",
     "why_it_matters": ""
   },
   "VRXA": {
@@ -13672,7 +18786,16 @@
   },
   "VSTS": null,
   "VTEX": null,
-  "VTGN": null,
+  "VTGN": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 10052951.180657983,
+    "name": "VTGN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "VTGN",
+    "why_it_matters": ""
+  },
   "VTIX": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -13684,9 +18807,27 @@
     "why_it_matters": ""
   },
   "VTOL": null,
-  "VTRS": null,
+  "VTRS": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 20531062312.68852,
+    "name": "VTRS",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "VTRS",
+    "why_it_matters": ""
+  },
   "VTS": null,
-  "VUZI": null,
+  "VUZI": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 199579829.53058958,
+    "name": "VUZI",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "VUZI",
+    "why_it_matters": ""
+  },
   "VVI": null,
   "VVR": null,
   "VVV": null,
@@ -13700,8 +18841,26 @@
     "ticker": "VWAV",
     "why_it_matters": ""
   },
-  "VWDRY": null,
-  "VWS.CO": null,
+  "VWDRY": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 26366902002.816414,
+    "name": "VWDRY",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "VWDRY",
+    "why_it_matters": ""
+  },
+  "VWS.CO": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 171830833690.94998,
+    "name": "VWS.CO",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "VWS.CO",
+    "why_it_matters": ""
+  },
   "VXX": null,
   "VYGR": {
     "cap": "micro",
@@ -13713,11 +18872,38 @@
     "ticker": "VYGR",
     "why_it_matters": ""
   },
-  "VYNE": null,
+  "VYNE": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 19069540.56,
+    "name": "VYNE",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "VYNE",
+    "why_it_matters": ""
+  },
   "VYX": null,
   "VZLA": null,
-  "W": null,
-  "W7L": null,
+  "W": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 11788607003.432922,
+    "name": "W",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "W",
+    "why_it_matters": ""
+  },
+  "W7L": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 16561400805.0,
+    "name": "W7L",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "W7L",
+    "why_it_matters": ""
+  },
   "WAFD": {
     "cap": "mid",
     "exchange": "NASDAQ",
@@ -13738,7 +18924,16 @@
     "ticker": "WALD",
     "why_it_matters": ""
   },
-  "WATR": null,
+  "WATR": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 5162830666.0,
+    "name": "WATR",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "WATR",
+    "why_it_matters": ""
+  },
   "WATT": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -13802,6 +18997,16 @@
     "why_it_matters": ""
   },
   "WD": null,
+  "WDAY": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 40762973462.653244,
+    "name": "WDAY",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "WDAY",
+    "why_it_matters": ""
+  },
   "WEAV": null,
   "WEN": {
     "cap": "small",
@@ -13827,15 +19032,60 @@
   "WFH": null,
   "WGO": null,
   "WHLR": null,
-  "WHR": null,
+  "WHR": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 2541714515.06266,
+    "name": "WHR",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "WHR",
+    "why_it_matters": ""
+  },
   "WHWK": null,
-  "WIMI": null,
-  "WING": null,
+  "WIMI": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 22981317.5,
+    "name": "WIMI",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "WIMI",
+    "why_it_matters": ""
+  },
+  "WING": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 3552155556.3124695,
+    "name": "WING",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "WING",
+    "why_it_matters": ""
+  },
   "WIT": null,
   "WIW": null,
-  "WIX": null,
+  "WIX": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 2378726211.6257286,
+    "name": "WIX",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "WIX",
+    "why_it_matters": ""
+  },
   "WKC": null,
-  "WKP": null,
+  "WKP": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 69160857452.0,
+    "name": "WKP",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "WKP",
+    "why_it_matters": ""
+  },
   "WKSP": null,
   "WLDS": {
     "cap": "micro",
@@ -13848,8 +19098,27 @@
     "why_it_matters": ""
   },
   "WLTH": null,
-  "WM": null,
+  "WM": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 90507506185.51855,
+    "name": "WM",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "WM",
+    "why_it_matters": ""
+  },
   "WMG": null,
+  "WMT": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 881038935964.2109,
+    "name": "WMT",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "WMT",
+    "why_it_matters": ""
+  },
   "WNC": null,
   "WNW": {
     "cap": "micro",
@@ -13873,11 +19142,38 @@
   },
   "WOLF": null,
   "WOOF": null,
-  "WPC": null,
-  "WPRT": null,
+  "WPC": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 16609427504.66507,
+    "name": "WPC",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "WPC",
+    "why_it_matters": ""
+  },
+  "WPRT": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 33432491.658842564,
+    "name": "WPRT",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "WPRT",
+    "why_it_matters": ""
+  },
   "WRAP": null,
   "WRBY": null,
-  "WRK": null,
+  "WRK": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 24589634487.29091,
+    "name": "WRK",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "WRK",
+    "why_it_matters": ""
+  },
   "WRN": null,
   "WS": null,
   "WSBC": null,
@@ -13890,12 +19186,39 @@
   "WU": null,
   "WULF": null,
   "WVE": null,
-  "WW": null,
-  "WWR": null,
+  "WW": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 160780060.03715515,
+    "name": "WW",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "WW",
+    "why_it_matters": ""
+  },
+  "WWR": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 54970449.6738317,
+    "name": "WWR",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "WWR",
+    "why_it_matters": ""
+  },
   "WWW": null,
   "WY": null,
   "WYFI": null,
-  "WYNN": null,
+  "WYNN": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 10208462727.786392,
+    "name": "WYNN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "WYNN",
+    "why_it_matters": ""
+  },
   "WYY": null,
   "XAN": null,
   "XCUR": null,
@@ -13906,7 +19229,16 @@
   "XGN": null,
   "XHLD": null,
   "XHR": null,
-  "XL": null,
+  "XL": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 38942913.897800446,
+    "name": "XL",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "XL",
+    "why_it_matters": ""
+  },
   "XMAX": null,
   "XNCR": null,
   "XNDU": null,
@@ -13915,7 +19247,16 @@
   "XP": null,
   "XPEL": null,
   "XPER": null,
-  "XPEV": null,
+  "XPEV": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 11833062957.55655,
+    "name": "XPEV",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "XPEV",
+    "why_it_matters": ""
+  },
   "XPOF": null,
   "XPRO": null,
   "XRAY": null,
@@ -13926,7 +19267,16 @@
   "XXI": null,
   "XZO": null,
   "YAAS": null,
-  "YALA": null,
+  "YALA": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 839614329.9649892,
+    "name": "YALA",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "YALA",
+    "why_it_matters": ""
+  },
   "YCBD": null,
   "YELP": null,
   "YETI": null,
@@ -13936,12 +19286,39 @@
   "YSS": null,
   "YSWY": null,
   "YUMC": null,
-  "YYAI": null,
+  "YYAI": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 126427.31717412919,
+    "name": "YYAI",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "YYAI",
+    "why_it_matters": ""
+  },
   "YYGH": null,
   "Z": null,
-  "ZAL": null,
+  "ZAL": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 7109321108.62,
+    "name": "ZAL",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ZAL",
+    "why_it_matters": ""
+  },
   "ZBIO": null,
-  "ZBRA": null,
+  "ZBRA": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 13891803140.634766,
+    "name": "ZBRA",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ZBRA",
+    "why_it_matters": ""
+  },
   "ZCMD": null,
   "ZDAI": null,
   "ZENA": null,
@@ -13949,10 +19326,28 @@
   "ZETA": null,
   "ZG": null,
   "ZGN": null,
-  "ZIM": null,
+  "ZIM": {
+    "cap": "mid",
+    "exchange": "?",
+    "market_cap_usd": 3141947655.840317,
+    "name": "ZIM",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ZIM",
+    "why_it_matters": ""
+  },
   "ZIP": null,
   "ZJYL": null,
-  "ZKIN": null,
+  "ZKIN": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 68774772.33286381,
+    "name": "ZKIN",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ZKIN",
+    "why_it_matters": ""
+  },
   "ZNB": null,
   "ZNTL": null,
   "ZOM": null,
@@ -13963,7 +19358,16 @@
   "ZUO": null,
   "ZURA": null,
   "ZVIA": null,
-  "ZVRA": null,
+  "ZVRA": {
+    "cap": "small",
+    "exchange": "?",
+    "market_cap_usd": 594402187.660492,
+    "name": "ZVRA",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ZVRA",
+    "why_it_matters": ""
+  },
   "ZYBT": null,
   "ZYME": null,
   "ZYXI": null
