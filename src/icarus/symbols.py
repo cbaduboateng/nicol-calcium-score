@@ -63,12 +63,12 @@ _ALIASES: dict[str, str] = {
     "AAXN": "AXON",     # Axon Enterprise (renamed 2019)
     "CREE": "WOLF",     # Cree -> Wolfspeed
     "SQ": "XYZ",        # Block (renamed 2025)
-    "OSTK": "BYON",     # Overstock -> Beyond
     "WRK": "SW",        # WestRock -> Smurfit Westrock
     "PKI": "RVTY",      # PerkinElmer -> Revvity
     "FLT": "CPAY",      # FleetCor -> Corpay
-    "RLGY": "HOUS",     # Realogy -> Anywhere
     "FB": "META",
+    # (OSTK->BYON, RLGY->HOUS, USAT->CTLP, SMDS->SMDS.L removed 2026-08:
+    #  the rename targets themselves no longer price on Yahoo.)
     # Bare international tickers listed without an exchange prefix
     "DBK": "DBK.DE",       # Deutsche Bank
     "ZAL": "ZAL.DE",       # Zalando
@@ -80,7 +80,6 @@ _ALIASES: dict[str, str] = {
     "MAB": "MAB.L",        # Mitchells & Butlers
     "MTO": "MTO.L",        # Mitie
     "SRP": "SRP.L",        # Serco
-    "SMDS": "SMDS.L",      # DS Smith
     "BYG": "BYG.L",        # Big Yellow
     "CPI": "CPI.L",        # Capita
     "CMCX": "CMCX.L",      # CMC Markets
@@ -107,7 +106,6 @@ _ALIASES: dict[str, str] = {
     "WKP": "WKP.L",        # Workspace Group
     "HSW": "HSW.L",        # Hostelworld
     "EURN": "CMBT",        # Euronav -> CMB.TECH (renamed 2024)
-    "USAT": "CTLP",        # USA Technologies -> Cantaloupe
     "MWK": "ATER",         # Mohawk Group -> Aterian
     "XL": "SPRU",          # XL Fleet -> Spruce Power
 }
