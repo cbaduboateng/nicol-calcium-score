@@ -190,8 +190,14 @@ def main() -> int:
           f"dead={counts['dead']}")
 
     OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    OUT_PATH.write_text(json.dumps(results, indent=1, sort_keys=True))
+    payload = json.dumps(results, indent=1, sort_keys=True)
+    OUT_PATH.write_text(payload)
     print(f"wrote {OUT_PATH}")
+    # Echo to the job log too, so the verdicts survive even if the
+    # commit step fails.
+    print("::group::graveyard_probe.json")
+    print(payload)
+    print("::endgroup::")
     return 0
 
 

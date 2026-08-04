@@ -37,3 +37,4 @@ data/processed/*
 !data/cache/watchlist_volumes_v2_*.parquet
 !data/cache/ticker_facts_cache.json
 !data/cache/insider_overlay.json
+!data/cache/graveyard_probe.json
