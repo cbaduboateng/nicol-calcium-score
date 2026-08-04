@@ -1627,6 +1627,159 @@ def _fmt_dollar(v: float) -> str:
     return f"{sign}${av:.0f}"
 
 
+def _render_swing_tab(st) -> None:
+    """⚡ Swing: short-horizon +5% trades, evidence-gated.
+
+    Live candidates render ONLY for a strategy that beat the control in
+    both walk-forward halves with positive net averages. Until one does,
+    this tab is a Lab verdict, not a trade list — showing candidates for
+    a strategy the evidence says loses money would be malpractice.
+    """
+    from .swing import (
+        DEFAULT_SWING_VARIANTS,
+        compare_swing_variants,
+        todays_swing_candidates,
+    )
+    from .watchlist_alerts import (
+        WATCHLIST_PATH,
+        fetch_price_history,
+        fetch_volume_history,
+        load_watchlist,
+    )
+
+    st.subheader("⚡ Swing — 5% targets, days not months")
+    st.caption(
+        "A different game from the watchlist engine: instead of waiting "
+        "months for a 2.8× analyst target, a swing trade wants **+5% in "
+        "≤10 sessions** and exits fast when wrong (3% stop). At this size "
+        "of win, costs decide everything — returns below are net of a "
+        "0.5% round-trip spread+slippage haircut, target fills are "
+        "credited at the limit price (never the gap), and live candidates "
+        "require ≥ $1M average daily dollar volume."
+    )
+
+    watchlist = load_watchlist(WATCHLIST_PATH)
+    if watchlist.empty:
+        st.warning(f"No watchlist file at `{WATCHLIST_PATH}`.")
+        return
+    tickers = sorted(set(watchlist["ticker"].astype(str)))
+
+    if st.button("▶ Run the swing-strategy comparison", key="swing_lab_run"):
+        with st.spinner(f"Loading 2y history for {len(tickers)} tickers..."):
+            try:
+                history = fetch_price_history(tickers, period="2y")
+            except Exception as exc:  # noqa: BLE001
+                st.error(f"Price fetch failed: {exc}")
+                history = {}
+        if not history:
+            st.warning("No 2-year price history available yet — retry "
+                       "after the next scheduled cache warm.")
+        else:
+            with st.spinner("Replaying 7 swing strategies..."):
+                st.session_state["swing_lab_result"] = compare_swing_variants(
+                    history,
+                )
+
+    swing_lab = st.session_state.get("swing_lab_result")
+    if swing_lab is None:
+        st.info("👆 Run the comparison — it replays seven swing strategies "
+                "(dip-buys, oversold RSI, breakouts, a no-strategy control) "
+                "over 2 years of the whole watchlist.")
+    elif swing_lab.empty:
+        st.info("No swing setups fired — not enough history.")
+    else:
+        sd = swing_lab.copy()
+        sd["win_rate"] = sd["win_rate"] * 100.0
+        st.dataframe(
+            sd, use_container_width=True, hide_index=True,
+            column_config={
+                "variant": "Strategy",
+                "n_signals": st.column_config.NumberColumn("Signals", format="%d"),
+                "n_closed": st.column_config.NumberColumn("Closed", format="%d"),
+                "win_rate": st.column_config.NumberColumn("Win rate", format="%.0f%%"),
+                "avg_return_pct": st.column_config.NumberColumn(
+                    "Avg net", format="%+.2f%%",
+                    help="Mean net return per closed trade after the 0.5% cost haircut.",
+                ),
+                "median_return_pct": st.column_config.NumberColumn("Median", format="%+.2f%%"),
+                "avg_days_held": st.column_config.NumberColumn("Avg days", format="%.1f"),
+                "n_train": st.column_config.NumberColumn("n 1st half", format="%d"),
+                "avg_train_pct": st.column_config.NumberColumn("1st half", format="%+.2f%%"),
+                "n_test": st.column_config.NumberColumn("n 2nd half", format="%d"),
+                "avg_test_pct": st.column_config.NumberColumn("2nd half", format="%+.2f%%"),
+            },
+        )
+
+        # Evidence gate: positive in both halves AND beats control in both.
+        ctrl = swing_lab[swing_lab["variant"].str.startswith("control")]
+        c_tr = float(ctrl["avg_train_pct"].iloc[0]) if len(ctrl) else float("nan")
+        c_te = float(ctrl["avg_test_pct"].iloc[0]) if len(ctrl) else float("nan")
+        passing = swing_lab[
+            (~swing_lab["variant"].str.startswith("control"))
+            & (swing_lab["avg_train_pct"] > 0)
+            & (swing_lab["avg_test_pct"] > 0)
+            & (swing_lab["avg_train_pct"] > c_tr)
+            & (swing_lab["avg_test_pct"] > c_te)
+            & (swing_lab["n_train"] >= 15)
+            & (swing_lab["n_test"] >= 15)
+        ]
+        if passing.empty:
+            st.error(
+                "🧾 **Verdict (2026-08-04 run): no swing strategy earns its "
+                "keep on this universe.** With honest fills and a 0.5% cost, "
+                "every strategy — including 'buy any uptrend session' — "
+                "averaged a net LOSS in both halves of the last 2 years. "
+                "Dip-buying was worst; oversold-RSI's apparent edge was "
+                "entirely gap-inflation that a real limit order never "
+                "captures. These thematic small caps chop and bleed on a "
+                "5–10 session horizon — the money here has come from the "
+                "rare multi-month riders, not quick scalps. Live candidates "
+                "stay locked until a strategy beats the control in BOTH "
+                "halves net of costs; re-run as history accumulates."
+            )
+        else:
+            best_name = passing.sort_values(
+                "avg_test_pct", ascending=False,
+            ).iloc[0]["variant"]
+            best_variant = next(
+                v for v in DEFAULT_SWING_VARIANTS if v.name == best_name
+            )
+            st.success(
+                f"✅ **{best_name}** beat the control in both halves net of "
+                "costs — live candidates below. Re-verify after any regime "
+                "change; this gate re-evaluates on every run."
+            )
+            with st.spinner("Scanning today's setups (liquidity-gated)..."):
+                history = fetch_price_history(tickers, period="2y")
+                volumes = fetch_volume_history(tickers, period="3mo")
+                cands = todays_swing_candidates(history, volumes, best_variant)
+            if cands.empty:
+                st.info("No liquid ticker satisfies the setup today.")
+            else:
+                cd = cands.copy()
+                cd["avg_dollar_volume"] = cd["avg_dollar_volume"].map(_fmt_dollar)
+                st.dataframe(
+                    cd, use_container_width=True, hide_index=True,
+                    column_config={
+                        "ticker": "Ticker",
+                        "live_price": st.column_config.NumberColumn("Last", format="%.2f"),
+                        "target_price": st.column_config.NumberColumn("Sell ≥", format="%.2f"),
+                        "stop_price": st.column_config.NumberColumn("Stop", format="%.2f"),
+                        "target_pct": st.column_config.NumberColumn("Target", format="+%.0f%%"),
+                        "stop_pct": st.column_config.NumberColumn("Stop %", format="-%.0f%%"),
+                        "timeout_sessions": st.column_config.NumberColumn("Max hold", format="%d sess"),
+                        "avg_dollar_volume": "ADV ($)",
+                        "est_cost_pct": st.column_config.NumberColumn("Est. cost", format="%.1f%%"),
+                    },
+                )
+        st.caption(
+            "Close-only data; stops fill at the (worse) gap close, targets "
+            "at the limit price. Same evidence bar as every Lab: positive "
+            "AND above the control in both halves, n ≥ 15 per half. Not "
+            "financial advice."
+        )
+
+
 def _render_track_record_tab(st) -> None:
     """Forward-marked signal history. Replays watchlist BUY ZONE crossings
     against actual price data and grades each one (target / stop / timeout
@@ -2567,14 +2720,25 @@ The honesty page. Every historical buy-zone entry is replayed forward —
 cherry-picking, plus the £5k concentrated-trading simulation. Wait for 30+
 closed signals before believing any percentage.
 
+### ⚡ Swing
+
+A separate, short-horizon game: **+5% targets in ≤10 sessions** with a 3%
+stop. Ruthlessly evidence-gated — the strategy comparison (dip-buys,
+oversold RSI, breakouts vs a no-strategy control) runs net of a 0.5% cost
+haircut with conservative fills, and **live candidates only unlock when a
+strategy beats the control in both walk-forward halves**. First verdict
+(Aug 2026): nothing qualified — this universe chops and bleeds at that
+horizon, so the tab shows the evidence instead of trades.
+
 ### 🧪 Lab
 
-Where signal arguments go to be settled. Two panels: **entry definitions**
-(momentum windows, gates switched off one at a time, a no-gate control) and
+Where signal arguments go to be settled. Three panels: **entry definitions**
+(momentum windows, gates switched off one at a time, a no-gate control),
 **exit policies** (longer holds, wider stops, trailing exits, partial
-profit-taking). Every comparison uses a walk-forward split — a variant must
-win in BOTH halves of history with a decent sample before it changes any
-default. The current 6-month gates were chosen exactly this way.
+profit-taking) and **entry modes** (static analyst levels vs the learned
+rule tracked live). Every comparison uses a walk-forward split — a variant
+must win in BOTH halves of history with a decent sample before it changes
+any default. The current 6-month gates were chosen exactly this way.
 
 ---
 
@@ -2654,8 +2818,9 @@ def main() -> None:
         f"financial advice. · build `{_build_sha()}`"
     )
 
-    tab_watchlist, tab_portfolio, tab_track, tab_lab, tab_about = st.tabs(
-        ["Watchlist", "💼 Portfolio", "📊 Track record", "🧪 Lab", "ℹ️ About"],
+    tab_watchlist, tab_portfolio, tab_swing, tab_track, tab_lab, tab_about = st.tabs(
+        ["Watchlist", "💼 Portfolio", "⚡ Swing", "📊 Track record", "🧪 Lab",
+         "ℹ️ About"],
     )
 
     # ---- Watchlist: analyst-curated picks with live alerts ----------------
@@ -2665,6 +2830,10 @@ def main() -> None:
     # ---- Portfolio: real trades, marked to market -------------------------
     with tab_portfolio:
         _render_portfolio_tab(st)
+
+    # ---- Swing: short-horizon +5% engine (evidence-gated) -----------------
+    with tab_swing:
+        _render_swing_tab(st)
 
     # ---- Track record: forward-marked signal history ----------------------
     with tab_track:
