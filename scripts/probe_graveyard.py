@@ -127,7 +127,8 @@ CANDIDATES: dict[str, list[str]] = {
 }
 
 
-def _probe(symbols: list[str], chunk: int = 25) -> dict[str, dict]:
+def _probe_once(symbols: list[str], chunk: int,
+                pause: float) -> dict[str, dict]:
     """Fetch 3 months of daily closes; return per-symbol last date/close."""
     hits: dict[str, dict] = {}
     for i in range(0, len(symbols), chunk):
@@ -135,9 +136,9 @@ def _probe(symbols: list[str], chunk: int = 25) -> dict[str, dict]:
         try:
             df = yf.download(batch, period="3mo", interval="1d",
                              progress=False, group_by="ticker",
-                             threads=True, auto_adjust=True)
+                             threads=False, auto_adjust=True)
         except Exception as exc:  # noqa: BLE001
-            print(f"chunk failed ({exc}); retrying singly")
+            print(f"chunk failed ({exc})")
             df = None
         for s in batch:
             closes = pd.Series(dtype=float)
@@ -153,7 +154,21 @@ def _probe(symbols: list[str], chunk: int = 25) -> dict[str, dict]:
                     "last_close": float(closes.iloc[-1]),
                     "n_sessions": int(len(closes)),
                 }
-        time.sleep(2)
+        time.sleep(pause)
+    return hits
+
+
+def _probe(symbols: list[str], chunk: int = 25) -> dict[str, dict]:
+    """Probe with retries: a Yahoo rate-limit can blank a whole chunk,
+    and a false 'dead' verdict would prune a living ticker. Missing
+    symbols get two further passes in ever-smaller batches."""
+    hits = _probe_once(symbols, chunk, 2)
+    for retry_chunk, pause in ((6, 4), (1, 3)):
+        missing = [s for s in symbols if s not in hits]
+        if not missing:
+            break
+        print(f"retrying {len(missing)} missing in chunks of {retry_chunk}")
+        hits.update(_probe_once(missing, retry_chunk, pause))
     return hits
 
 
