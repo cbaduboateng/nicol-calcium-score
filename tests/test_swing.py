@@ -115,6 +115,33 @@ def test_candidates_require_liquidity():
     assert row["stop_price"] == pytest.approx(row["live_price"] * 0.97)
 
 
+def test_pools_are_well_formed():
+    from icarus.swing import SWING_POOLS
+    for name, pool in SWING_POOLS.items():
+        assert pool["tickers"], name
+        assert len(set(pool["tickers"])) == len(pool["tickers"]), f"dupes in {name}"
+        assert 0.0 < pool["cost_pct"] <= 2.0
+    all_syms = [t for p in SWING_POOLS.values() for t in p["tickers"]]
+    assert len(set(all_syms)) == len(all_syms), "symbol in two pools"
+
+
+def test_swing_cache_loader_missing_files_graceful(tmp_path):
+    from icarus.swing import load_swing_universe_cache
+    h, v = load_swing_universe_cache(
+        str(tmp_path / "nope.parquet"), str(tmp_path / "nope2.parquet"),
+    )
+    assert h == {} and v == {}
+
+
+def test_compare_swing_pools_tags_pool_and_cost():
+    from icarus.swing import compare_swing_pools
+    hist = {"AAA": _series(_uptrend_base(300))}
+    res = compare_swing_pools({"etf": hist, "empty": {}})
+    assert not res.empty
+    assert set(res["pool"]) == {"etf"}
+    assert res["cost_pct"].iloc[0] == pytest.approx(0.10)
+
+
 def test_candidates_empty_without_volume_data():
     prices = _dip_base() + [12.6]
     cands = todays_swing_candidates({"A": _series(prices)}, None,

@@ -38,3 +38,5 @@ data/processed/*
 !data/cache/ticker_facts_cache.json
 !data/cache/insider_overlay.json
 !data/cache/graveyard_probe.json
+!data/cache/swing_prices_v1_2y.parquet
+!data/cache/swing_volumes_v1_3mo.parquet

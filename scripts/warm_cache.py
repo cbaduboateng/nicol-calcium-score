@@ -40,6 +40,52 @@ def _expire_existing_caches() -> None:
         m.unlink(missing_ok=True)
 
 
+def _warm_swing_universe(chunk: int = 40) -> None:
+    """Fetch 2y closes + 3mo volumes for the swing instrument pools and
+    write the dedicated swing parquets."""
+    import time as _time
+
+    import pandas as pd
+    import yfinance as yf
+
+    from icarus.swing import (
+        SWING_POOLS,
+        SWING_PRICES_CACHE,
+        SWING_VOLUMES_CACHE,
+    )
+
+    symbols = sorted({t for p in SWING_POOLS.values() for t in p["tickers"]})
+    log.info("Warming swing universe: %d symbols", len(symbols))
+    closes: dict[str, pd.Series] = {}
+    vols: dict[str, pd.Series] = {}
+    for i in range(0, len(symbols), chunk):
+        batch = symbols[i:i + chunk]
+        try:
+            df = yf.download(batch, period="2y", interval="1d",
+                             progress=False, group_by="ticker",
+                             threads=True, auto_adjust=True)
+        except Exception as exc:  # noqa: BLE001
+            log.warning("swing chunk failed (%s)", exc)
+            continue
+        for s in batch:
+            try:
+                sub = df[s] if len(batch) > 1 else df
+                c = sub["Close"].dropna()
+                if not c.empty:
+                    closes[s] = c
+                    v = sub["Volume"].dropna().tail(63)
+                    if not v.empty:
+                        vols[s] = v
+            except Exception:  # noqa: BLE001
+                continue
+        _time.sleep(2)
+    log.info("Swing universe: %d/%d priced", len(closes), len(symbols))
+    if closes:
+        pd.DataFrame(closes).sort_index().to_parquet(SWING_PRICES_CACHE)
+    if vols:
+        pd.DataFrame(vols).sort_index().to_parquet(SWING_VOLUMES_CACHE)
+
+
 def main() -> int:
     from icarus.ticker_facts import quick_market_caps
     from icarus.watchlist_alerts import (
@@ -67,6 +113,15 @@ def main() -> int:
     log.info("3mo volumes: %d / %d", len(vol), len(tickers))
     n_caps = quick_market_caps(tickers, max_workers=8)
     log.info("Market caps: %d newly fetched", n_caps)
+
+    # ---- Swing-universe caches (ETFs / large caps / OTC ADRs) -------------
+    # Separate parquets keyed by bare Yahoo symbols: these pools are not
+    # watchlist rows and must not pollute the watchlist caches' coverage
+    # accounting.
+    try:
+        _warm_swing_universe()
+    except Exception as exc:  # noqa: BLE001
+        log.warning("Swing-universe warm failed (%s) — app degrades gracefully", exc)
 
     # Clear cooldown markers so the freshly-deployed app can still top up.
     for m in CACHE_DIR.glob("*.topup"):

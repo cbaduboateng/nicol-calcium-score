@@ -1636,8 +1636,11 @@ def _render_swing_tab(st) -> None:
     a strategy the evidence says loses money would be malpractice.
     """
     from .swing import (
+        DEFAULT_COST_PCT,
         DEFAULT_SWING_VARIANTS,
+        SWING_POOLS,
         compare_swing_variants,
+        load_swing_universe_cache,
         todays_swing_candidates,
     )
     from .watchlist_alerts import (
@@ -1652,33 +1655,58 @@ def _render_swing_tab(st) -> None:
         "A different game from the watchlist engine: instead of waiting "
         "months for a 2.8× analyst target, a swing trade wants **+5% in "
         "≤10 sessions** and exits fast when wrong (3% stop). At this size "
-        "of win, costs decide everything — returns below are net of a "
-        "0.5% round-trip spread+slippage haircut, target fills are "
-        "credited at the limit price (never the gap), and live candidates "
-        "require ≥ $1M average daily dollar volume."
+        "of win, costs decide everything — so each instrument pool is "
+        "tested at ITS OWN round-trip cost, target fills are credited at "
+        "the limit price (never the gap), and live candidates require "
+        "≥ $1M average daily dollar volume. Pool constituent lists are "
+        "today's members replayed over history — mild survivorship bias."
     )
 
-    watchlist = load_watchlist(WATCHLIST_PATH)
-    if watchlist.empty:
-        st.warning(f"No watchlist file at `{WATCHLIST_PATH}`.")
-        return
-    tickers = sorted(set(watchlist["ticker"].astype(str)))
+    pool_options = {
+        "curated": "Curated watchlist (microcaps · 0.5% cost)",
+        "largecap": "S&P 100 / Nasdaq-100 large caps (0.15% cost)",
+        "etf": "Index & sector ETFs — S&P, Nasdaq, sectors (0.1% cost)",
+        "otc": "OTC liquid ADRs — optimistic bound for OTC (1% cost)",
+    }
+    pool = st.radio(
+        "Instrument pool",
+        list(pool_options), format_func=pool_options.get,
+        horizontal=True, key="swing_pool",
+    )
+
+    def _pool_data(which: str) -> tuple[dict, dict, float]:
+        if which == "curated":
+            watchlist = load_watchlist(WATCHLIST_PATH)
+            if watchlist.empty:
+                return {}, {}, DEFAULT_COST_PCT
+            tickers = sorted(set(watchlist["ticker"].astype(str)))
+            hist = fetch_price_history(tickers, period="2y")
+            vols = fetch_volume_history(tickers, period="3mo")
+            return hist, vols, DEFAULT_COST_PCT
+        hist_all, vols_all = load_swing_universe_cache()
+        members = set(SWING_POOLS[which]["tickers"])
+        return (
+            {t: s for t, s in hist_all.items() if t in members},
+            {t: s for t, s in vols_all.items() if t in members},
+            float(SWING_POOLS[which]["cost_pct"]),
+        )
 
     if st.button("▶ Run the swing-strategy comparison", key="swing_lab_run"):
-        with st.spinner(f"Loading 2y history for {len(tickers)} tickers..."):
-            try:
-                history = fetch_price_history(tickers, period="2y")
-            except Exception as exc:  # noqa: BLE001
-                st.error(f"Price fetch failed: {exc}")
-                history = {}
+        with st.spinner("Loading pool history..."):
+            history, _, cost = _pool_data(pool)
         if not history:
-            st.warning("No 2-year price history available yet — retry "
-                       "after the next scheduled cache warm.")
+            st.warning(
+                "No 2-year history for this pool yet — the nightly warm-cache "
+                "job builds it; retry after the next warm."
+            )
         else:
+            st.caption(f"Pool loaded: **{len(history)} instruments**, "
+                       f"cost haircut **{cost:.2f}%**.")
             with st.spinner("Replaying 7 swing strategies..."):
                 st.session_state["swing_lab_result"] = compare_swing_variants(
-                    history,
+                    history, cost_pct=cost,
                 )
+                st.session_state["swing_lab_pool"] = pool
 
     swing_lab = st.session_state.get("swing_lab_result")
     if swing_lab is None:
@@ -1723,20 +1751,35 @@ def _render_swing_tab(st) -> None:
             & (swing_lab["n_train"] >= 15)
             & (swing_lab["n_test"] >= 15)
         ]
-        if passing.empty:
-            st.error(
-                "🧾 **Verdict (2026-08-04 run): no swing strategy earns its "
-                "keep on this universe.** With honest fills and a 0.5% cost, "
-                "every strategy — including 'buy any uptrend session' — "
-                "averaged a net LOSS in both halves of the last 2 years. "
-                "Dip-buying was worst; oversold-RSI's apparent edge was "
-                "entirely gap-inflation that a real limit order never "
-                "captures. These thematic small caps chop and bleed on a "
-                "5–10 session horizon — the money here has come from the "
-                "rare multi-month riders, not quick scalps. Live candidates "
-                "stay locked until a strategy beats the control in BOTH "
-                "halves net of costs; re-run as history accumulates."
+        result_pool = st.session_state.get("swing_lab_pool", "curated")
+        if result_pool != pool:
+            st.caption(
+                f"ℹ️ Table shows the last run "
+                f"(**{pool_options.get(result_pool, result_pool)}**) — press "
+                "run to test the selected pool."
             )
+        if passing.empty:
+            if result_pool == "curated":
+                st.error(
+                    "🧾 **Verdict (2026-08-04 run): no swing strategy earns "
+                    "its keep on this universe.** With honest fills and a "
+                    "0.5% cost, every strategy — including 'buy any uptrend "
+                    "session' — averaged a net LOSS in both halves of the "
+                    "last 2 years. Dip-buying was worst; oversold-RSI's "
+                    "apparent edge was entirely gap-inflation that a real "
+                    "limit order never captures. These thematic small caps "
+                    "chop and bleed on a 5–10 session horizon — the money "
+                    "here has come from the rare multi-month riders, not "
+                    "quick scalps. Try the large-cap or ETF pools above."
+                )
+            else:
+                st.error(
+                    "🧾 **Verdict: no strategy cleared the bar on this pool** "
+                    "(positive AND above its control in both halves, "
+                    "n ≥ 15/half, net of this pool's costs). Live candidates "
+                    "stay locked; re-run as history accumulates or after a "
+                    "regime change."
+                )
         else:
             best_name = passing.sort_values(
                 "avg_test_pct", ascending=False,
@@ -1750,8 +1793,7 @@ def _render_swing_tab(st) -> None:
                 "change; this gate re-evaluates on every run."
             )
             with st.spinner("Scanning today's setups (liquidity-gated)..."):
-                history = fetch_price_history(tickers, period="2y")
-                volumes = fetch_volume_history(tickers, period="3mo")
+                history, volumes, _ = _pool_data(result_pool)
                 cands = todays_swing_candidates(history, volumes, best_variant)
             if cands.empty:
                 st.info("No liquid ticker satisfies the setup today.")

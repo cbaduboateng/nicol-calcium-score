@@ -51,6 +51,114 @@ RSI_WINDOW = 14
 RSI_OVERSOLD = 30.0
 
 
+# ---------------------------------------------------------------------------
+# Instrument pools — same strategies, different games. Costs are per-pool
+# because they ARE the difference: a +5% target nets +4.9% on SPY and can
+# net −5% on a wide-spread microcap. OTC gets 1% round-trip (liquid-ADR
+# spreads; retail OTC pennies are far worse — treat that arm's results as
+# the OPTIMISTIC bound for OTC). Constituent lists are today's members
+# replayed over history — mild survivorship bias, surfaced in the UI.
+# ---------------------------------------------------------------------------
+
+SWING_POOLS: dict[str, dict] = {
+    "etf": {
+        "label": "Index & sector ETFs (S&P / Nasdaq / sectors)",
+        "cost_pct": 0.10,
+        "tickers": [
+            "SPY", "QQQ", "IWM", "DIA", "MDY", "RSP", "EFA", "EEM", "VWO",
+            "VNQ", "GLD", "SLV", "GDX", "GDXJ", "TLT", "IEF", "LQD", "HYG",
+            "XLK", "XLF", "XLE", "XLV", "XLI", "XLP", "XLU", "XLY", "XLB",
+            "XLRE", "XLC", "SMH", "SOXX", "XBI", "KRE", "ITB", "XOP",
+            "JETS", "ARKK", "USO", "IBIT",
+        ],
+    },
+    "largecap": {
+        "label": "S&P 100 / Nasdaq-100 large caps",
+        "cost_pct": 0.15,
+        "tickers": [
+            "AAPL", "MSFT", "NVDA", "GOOGL", "AMZN", "META", "TSLA", "AVGO",
+            "BRK-B", "JPM", "V", "UNH", "XOM", "LLY", "JNJ", "WMT", "MA",
+            "PG", "HD", "COST", "ORCL", "MRK", "ABBV", "CVX", "CRM", "AMD",
+            "NFLX", "PEP", "KO", "ADBE", "TMO", "BAC", "CSCO", "ACN", "MCD",
+            "LIN", "ABT", "INTU", "DIS", "WFC", "QCOM", "IBM", "GE", "CAT",
+            "PFE", "TXN", "AMGN", "VZ", "CMCSA", "PM", "DHR", "NOW", "SPGI",
+            "UNP", "RTX", "HON", "COP", "T", "LOW", "GS", "NEE", "INTC",
+            "BLK", "UPS", "BA", "SBUX", "AXP", "ELV", "BKNG", "PLD", "MS",
+            "DE", "MDT", "ADI", "GILD", "LMT", "TJX", "SYK", "VRTX", "MMC",
+            "AMT", "CVS", "REGN", "ZTS", "SCHW", "CB", "SO", "PGR", "MO",
+            "CI", "BMY", "DUK", "BSX", "ETN", "PANW", "MU", "ANET", "KLAC",
+            "LRCX", "SNPS", "CDNS", "ISRG", "MRVL", "ABNB", "PYPL", "SHOP",
+            "UBER", "PLTR", "COIN", "MSTR", "APP", "DASH", "MELI", "CRWD",
+            "DDOG", "SNOW", "ZS", "FTNT", "TEAM", "WDAY", "NET",
+        ],
+    },
+    "otc": {
+        "label": "OTC — liquid ADRs (optimistic bound for OTC)",
+        "cost_pct": 1.00,
+        "tickers": [
+            "TCEHY", "NTDOY", "NSRGY", "RHHBY", "BAYRY", "VWAGY", "BMWYY",
+            "DTEGY", "SIEGY", "ALIZY", "BASFY", "SFTBY", "LVMUY", "ADDYY",
+            "HEINY", "DANOY", "PRNDY", "HESAY", "GLNCY", "TSCDY", "SBGSY",
+            "MURGY", "ZURVY", "AXAHY", "NTTYY", "PROSY",
+        ],
+    },
+}
+
+SWING_PRICES_CACHE = "data/cache/swing_prices_v1_2y.parquet"
+SWING_VOLUMES_CACHE = "data/cache/swing_volumes_v1_3mo.parquet"
+
+
+def load_swing_universe_cache(
+    prices_path: str = SWING_PRICES_CACHE,
+    volumes_path: str = SWING_VOLUMES_CACHE,
+) -> tuple[dict[str, pd.Series], dict[str, pd.Series]]:
+    """Load the committed swing-universe caches (warmed by the nightly
+    Actions job). Returns ({} , {}) gracefully when not yet warmed."""
+    from pathlib import Path
+    history: dict[str, pd.Series] = {}
+    volumes: dict[str, pd.Series] = {}
+    try:
+        if Path(prices_path).exists():
+            df = pd.read_parquet(prices_path)
+            history = {c: df[c].dropna() for c in df.columns
+                       if not df[c].dropna().empty}
+        if Path(volumes_path).exists():
+            dv = pd.read_parquet(volumes_path)
+            volumes = {c: dv[c].dropna() for c in dv.columns
+                       if not dv[c].dropna().empty}
+    except Exception as exc:  # noqa: BLE001
+        log.warning("Swing cache load failed (%s)", exc)
+    return history, volumes
+
+
+def compare_swing_pools(
+    pool_histories: dict[str, dict[str, pd.Series]],
+    variants: tuple["SwingVariant", ...] | None = None,
+    *,
+    cost_by_pool: dict[str, float] | None = None,
+    as_of: date | None = None,
+) -> pd.DataFrame:
+    """Run the variant comparison per instrument pool; rows tagged with
+    ``pool``. Each pool is judged against ITS OWN control at its own
+    cost — cross-pool rows are context, not competition."""
+    frames: list[pd.DataFrame] = []
+    for pool, hist in pool_histories.items():
+        if not hist:
+            continue
+        cost = (cost_by_pool or {}).get(
+            pool, SWING_POOLS.get(pool, {}).get("cost_pct", DEFAULT_COST_PCT),
+        )
+        res = compare_swing_variants(
+            hist, variants or DEFAULT_SWING_VARIANTS,
+            cost_pct=cost, as_of=as_of,
+        )
+        if not res.empty:
+            res.insert(0, "pool", pool)
+            res.insert(1, "cost_pct", cost)
+            frames.append(res)
+    return pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
+
+
 @dataclass(frozen=True)
 class SwingVariant:
     name: str

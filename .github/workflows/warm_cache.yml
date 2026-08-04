@@ -11,7 +11,9 @@ on:
   workflow_dispatch: {}
   push:
     branches: [congress-signal-extract]
-    paths: ["data/watchlist.csv"]   # watchlist edits warm their own prices
+    paths:
+      - "data/watchlist.csv"        # watchlist edits warm their own prices
+      - ".warm-cache-request"       # touch this file to trigger a warm
 
 permissions:
   contents: write
@@ -38,7 +40,7 @@ jobs:
         run: |
           git config user.name "icarus-cache-warmer"
           git config user.email "actions@users.noreply.github.com"
-          git add data/cache/*.parquet data/cache/ticker_facts_cache.json 2>/dev/null || true
+          git add -f data/cache/*.parquet data/cache/ticker_facts_cache.json 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "No cache changes to commit"
             exit 0
