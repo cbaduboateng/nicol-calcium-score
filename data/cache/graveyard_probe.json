@@ -98,9 +98,9 @@
   "symbol": "BBOX.L"
  },
  "BFIT": {
-  "last_close": 35.70000076293945,
-  "last_date": "2026-07-30",
-  "n_sessions": 64,
+  "last_close": 34.619998931884766,
+  "last_date": "2026-07-31",
+  "n_sessions": 65,
   "status": "rescued",
   "symbol": "BFIT.AS"
  },
@@ -182,9 +182,9 @@
   ]
  },
  "CPG": {
-  "last_close": 31.940000534057617,
-  "last_date": "2026-07-30",
-  "n_sessions": 62,
+  "last_close": 31.709999084472656,
+  "last_date": "2026-07-31",
+  "n_sessions": 63,
   "status": "rescued",
   "symbol": "CPG.L"
  },
@@ -316,9 +316,9 @@
   "symbol": "ESYS.L"
  },
  "ETR:DPW": {
-  "last_close": 57.81999969482422,
-  "last_date": "2026-07-30",
-  "n_sessions": 64,
+  "last_close": 57.7599983215332,
+  "last_date": "2026-07-31",
+  "n_sessions": 65,
   "status": "rescued",
   "symbol": "DHL.DE"
  },
@@ -600,8 +600,8 @@
  },
  "METX": {
   "last_close": 2.5,
-  "last_date": "2026-07-30",
-  "n_sessions": 64,
+  "last_date": "2026-07-31",
+  "n_sessions": 65,
   "status": "rescued",
   "symbol": "METX.CN"
  },
@@ -864,7 +864,7 @@
   ]
  },
  "RNDR-USD": {
-  "last_close": 1.3609999418258667,
+  "last_close": 1.3600000143051147,
   "last_date": "2026-08-04",
   "n_sessions": 92,
   "status": "rescued",
