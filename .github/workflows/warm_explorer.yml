@@ -1,0 +1,55 @@
+name: Build explorer universe
+
+# NOTE: this copy lives on MAIN because GitHub only fires 'schedule:'
+# crons from the default branch. The job itself checks out and operates
+# on congress-signal-extract; keep the two copies in sync.
+
+# Weekly: downloads the full US listing directory, filters it to the
+# runbook habitat (price $0.50-$50, cap $50M-$2B, avg volume > 200k),
+# warms the shared price/volume caches for the survivors, and commits
+# data/explorer/watchlist.csv. The dashboard's Explorer pool derives
+# its targets at runtime from the pattern learned on the curated list.
+
+on:
+  schedule:
+    - cron: "0 4 * * 0"   # Sundays 04:00 UTC, before the week starts
+  workflow_dispatch: {}
+  push:
+    branches: [congress-signal-extract]
+    paths: [".explorer-build-request"]   # touch this file to trigger a build
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: congress-signal-extract
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install
+        run: pip install -e ".[prices]" pyarrow
+
+      - name: Build explorer universe
+        run: python scripts/warm_explorer.py
+
+      - name: Commit
+        run: |
+          git config user.name "icarus-explorer"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/explorer/watchlist.csv data/cache/*.parquet data/cache/ticker_facts_cache.json 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No changes"
+            exit 0
+          fi
+          git commit -m "Refresh explorer universe + caches"
+          # The branch may have moved during the (long) build — rebase so
+          # our push isn't rejected as non-fast-forward.
+          git pull --rebase origin congress-signal-extract
+          git push origin congress-signal-extract

@@ -1,0 +1,52 @@
+name: Warm price cache
+
+# NOTE: this copy lives on MAIN because GitHub only fires 'schedule:'
+# crons from the default branch. The job itself checks out and operates
+# on congress-signal-extract; keep the two copies in sync.
+
+# Streamlit Cloud wipes its disk on every deploy, so runtime caches die
+# with each push and the app re-fights Yahoo rate limits from zero.
+# This job fetches prices/volumes/caps on a GitHub runner and commits
+# the cache files, so every deploy boots with warm data.
+
+on:
+  schedule:
+    - cron: "30 5 * * 1-5"   # 05:30 UTC weekdays, before London open
+  workflow_dispatch: {}
+  push:
+    branches: [congress-signal-extract]
+    paths: ["data/watchlist.csv"]   # watchlist edits warm their own prices
+
+permissions:
+  contents: write
+
+jobs:
+  warm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: congress-signal-extract
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install
+        run: pip install -e ".[prices]" pyarrow
+
+      - name: Warm caches
+        run: python scripts/warm_cache.py
+
+      - name: Commit warmed cache
+        run: |
+          git config user.name "icarus-cache-warmer"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/cache/*.parquet data/cache/ticker_facts_cache.json 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No cache changes to commit"
+            exit 0
+          fi
+          git commit -m "Warm price/volume/cap caches"
+          git pull --rebase origin congress-signal-extract
+          git push origin congress-signal-extract
