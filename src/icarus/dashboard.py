@@ -2369,7 +2369,7 @@ def _render_portfolio_tab(st) -> None:
                 },
             )
     if not trades.empty:
-        with st.expander(f"Trade history ({len(trades)})"):
+        with st.expander(f"📜 Trade history ({len(trades)}) — view & 🗑 delete"):
             st.dataframe(trades, use_container_width=True, hide_index=True)
 
             # ---- Delete trades --------------------------------------------
