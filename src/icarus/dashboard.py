@@ -2200,11 +2200,23 @@ def _render_portfolio_tab(st) -> None:
     held = sorted(positions["ticker"].tolist())
     quotes: dict = {}
     if held:
-        with st.spinner("Fetching live quotes..."):
-            try:
-                quotes = fetch_live_quotes(held)
-            except Exception:  # noqa: BLE001
-                quotes = {}
+        # 60s session cache: widget interactions rerun the whole script,
+        # and refetching quotes on every click made the tab feel like it
+        # was reloading. Fresh enough for a personal portfolio.
+        import time as _time
+        cached = st.session_state.get("portfolio_quotes_cache")
+        if cached and cached[0] == held and _time.time() - cached[1] < 60:
+            quotes = cached[2]
+        else:
+            with st.spinner("Fetching live quotes..."):
+                try:
+                    quotes = fetch_live_quotes(held)
+                except Exception:  # noqa: BLE001
+                    quotes = {}
+            if quotes:
+                st.session_state["portfolio_quotes_cache"] = (
+                    held, _time.time(), quotes,
+                )
     totals = portfolio_totals(positions, quotes)
     realised_total = float(realised["realised_pnl"].sum()) if not realised.empty else 0.0
 
@@ -2391,16 +2403,15 @@ def _render_portfolio_tab(st) -> None:
             _label(row): str(row["id"])
             for _, row in trades.iterrows()
         }
-        chosen = st.multiselect(
-            "Trades to delete", list(options),
-            key="portfolio_delete_sel",
-        )
-        if st.button(
-            f"Delete {len(chosen)} selected trade(s)",
-            key="portfolio_delete_btn",
-            disabled=not chosen,
-            type="secondary",
-        ):
+        # Inside a form, picking entries does NOT rerun the page — only
+        # the submit button does. Without this every selection triggered
+        # a full rerun + quote refetch, which read as a broken reload.
+        with st.form("delete_trades_form"):
+            chosen = st.multiselect("Trades to delete", list(options))
+            delete_submitted = st.form_submit_button("🗑 Delete selected")
+        if delete_submitted and not chosen:
+            st.warning("Pick at least one trade first.")
+        elif delete_submitted:
             doomed_ids = {options[c] for c in chosen}
             updated = trades[~trades["id"].astype(str).isin(doomed_ids)]
             updated = updated.reset_index(drop=True)
