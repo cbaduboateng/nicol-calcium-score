@@ -2228,6 +2228,31 @@ def _render_portfolio_tab(st) -> None:
             f'{_change_chip(totals["unrealised_pct"], "all")}',
             unsafe_allow_html=True,
         )
+        # ---- £ equivalents (display only; book currency stays USD) --------
+        rate = None
+        try:
+            import time as _t
+
+            from .portfolio import fetch_gbpusd
+            fx = st.session_state.get("gbpusd_cache")
+            if fx and _t.time() - fx[0] < 900:
+                rate = fx[1]
+            else:
+                rate = fetch_gbpusd()
+                if rate:
+                    st.session_state["gbpusd_cache"] = (_t.time(), rate)
+        except Exception:  # noqa: BLE001
+            rate = None
+        if rate:
+            def _gbp(v: float) -> str:
+                sign = "-" if v < 0 else ""
+                return f"{sign}£{abs(v) / rate:,.2f}"
+            st.caption(
+                f"💷 ≈ **{_gbp(totals['value'])}** · unrealised "
+                f"{_gbp(totals['unrealised'])} · day {_gbp(totals['day_pnl'])} · "
+                f"realised {_gbp(realised_total)} — at GBP/USD {rate:.4f}, "
+                "display only (the book stays in USD)."
+            )
         h = st.columns(3)
         h[0].metric("Unrealised", _fmt_dollar(totals["unrealised"]))
         h[1].metric("Day P&L", _fmt_dollar(totals["day_pnl"]))

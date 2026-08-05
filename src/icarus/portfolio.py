@@ -216,6 +216,17 @@ def fetch_live_quotes(tickers: list[str]) -> dict[str, dict]:
     return out
 
 
+def fetch_gbpusd() -> float | None:
+    """Current GBP/USD spot via the same quote path as equities.
+    Display-only: the book currency stays USD."""
+    q = fetch_live_quotes(["GBPUSD=X"]).get("GBPUSD=X", {})
+    px = q.get("price")
+    try:
+        return float(px) if px and float(px) > 0 else None
+    except (TypeError, ValueError):
+        return None
+
+
 DEFAULT_PORTFOLIO_STOP_PCT = 0.20  # Exit-Lab verdict 2026-08-03
 PICKS_PATH = "portfolio/picks.csv"
 PICK_COLUMNS = ["date", "ticker", "adjusted_score", "pool"]
