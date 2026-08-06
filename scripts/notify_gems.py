@@ -26,8 +26,10 @@ NTFY_SERVER = os.environ.get("NTFY_SERVER", "https://ntfy.sh")
 def main() -> int:
     topic = os.environ.get("NTFY_TOPIC", "").strip()
     if not topic:
-        log.info("NTFY_TOPIC not set — skipping notification run")
-        return 0
+        # The scan, pick log and scan log run regardless — a missing ntfy
+        # secret must not blind the whole pipeline (it silently did for
+        # two days once; the 0-second 'successful' runs hid it).
+        log.warning("NTFY_TOPIC not set — scanning and logging, skipping pushes")
 
     from icarus.daily_signals import find_gems
     from icarus.target_inference import derive_targets, learn_target_pattern
@@ -104,7 +106,7 @@ def main() -> int:
                 else:
                     b_title = "⚠️ Position near its stop"
                     prio = "high"
-                if blines:
+                if blines and topic:
                     _rq.post(
                         f"{NTFY_SERVER}/{topic}",
                         data=("\n".join(blines)
@@ -241,6 +243,9 @@ def main() -> int:
             lines.append(f"   {reasons}")
 
     n = len(gems)
+    if not topic:
+        log.info("Found %d gem(s); no NTFY_TOPIC so nothing pushed", n)
+        return 0
     title = f"💎 {n} gem{'s' if n != 1 else ''} on the watchlist"
     body = "\n".join(lines) + "\n\nScreening signal, not financial advice."
 
