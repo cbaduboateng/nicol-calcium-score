@@ -1,0 +1,78 @@
+{
+ "scanned_at_utc": "2026-08-07 11:39",
+ "n_quoted": 44,
+ "rows": [
+  {
+   "ticker": "AQB",
+   "gap_pct": 17.18,
+   "premarket_price": 1.16,
+   "prev_close": 0.9899,
+   "is_holding": false,
+   "is_gem": true,
+   "news_count": 0,
+   "news_tags": []
+  },
+  {
+   "ticker": "FIG",
+   "gap_pct": -15.38,
+   "premarket_price": 23.82,
+   "prev_close": 28.15,
+   "is_holding": false,
+   "is_gem": true,
+   "news_count": 4,
+   "news_tags": [
+    "guidance"
+   ]
+  },
+  {
+   "ticker": "GDX",
+   "gap_pct": 4.59,
+   "premarket_price": 87.52,
+   "prev_close": 83.68,
+   "is_holding": false,
+   "is_gem": false,
+   "news_count": 0,
+   "news_tags": []
+  },
+  {
+   "ticker": "GDXJ",
+   "gap_pct": 3.98,
+   "premarket_price": 113.8335,
+   "prev_close": 109.48,
+   "is_holding": false,
+   "is_gem": false,
+   "news_count": 0,
+   "news_tags": []
+  },
+  {
+   "ticker": "MTCH",
+   "gap_pct": -3.87,
+   "premarket_price": 36.6732,
+   "prev_close": 38.15,
+   "is_holding": false,
+   "is_gem": true,
+   "news_count": 0,
+   "news_tags": []
+  },
+  {
+   "ticker": "SLV",
+   "gap_pct": 3.24,
+   "premarket_price": 57.8855,
+   "prev_close": 56.07,
+   "is_holding": false,
+   "is_gem": false,
+   "news_count": 0,
+   "news_tags": []
+  },
+  {
+   "ticker": "DDD",
+   "gap_pct": -0.56,
+   "premarket_price": 3.5501,
+   "prev_close": 3.57,
+   "is_holding": true,
+   "is_gem": false,
+   "news_count": 0,
+   "news_tags": []
+  }
+ ]
+}
