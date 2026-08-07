@@ -1,0 +1,50 @@
+name: Premarket scan
+
+# NOTE: keep a copy of this file on MAIN — GitHub only fires 'schedule:'
+# crons from the default branch. The job checks out and operates on
+# congress-signal-extract.
+
+# 12:45 UTC = 08:45 ET during US daylight saving: late premarket, when
+# gaps have mostly formed but the open hasn't happened yet.
+
+on:
+  schedule:
+    - cron: "45 12 * * 1-5"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: congress-signal-extract
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install
+        run: pip install -e ".[prices]" pyarrow
+
+      - name: Premarket scan
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          PICKLOG_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/premarket_scan.py
+
+      - name: Commit report
+        run: |
+          git config user.name "icarus-premarket"
+          git config user.email "actions@users.noreply.github.com"
+          git add -f data/cache/premarket.json
+          if git diff --cached --quiet; then
+            echo "No premarket changes"
+            exit 0
+          fi
+          git commit -m "Premarket report"
+          git pull --rebase origin congress-signal-extract
+          git push origin congress-signal-extract
