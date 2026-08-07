@@ -1,2 +1,3 @@
-scanned_at_utc,n_curated_gems,n_explorer_gems,pick,best_score,verdict
-2026-08-07 00:21,5,5,MTCH,0.656,pick: MTCH
+scanned_at_utc,n_curated_gems,n_explorer_gems,pick,best_score,verdict,gems
+2026-08-07 00:21,5,5,MTCH,0.656,pick: MTCH,
+2026-08-07 15:34,5,5,AQB,0.561,pick: AQB,AQB MTCH AMS:AVTX ORCL FIG ATOM CLNN SLNH CNVS POET
