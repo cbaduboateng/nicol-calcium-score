@@ -186,6 +186,13 @@ def main() -> int:
                     f"pick: {pk['ticker']}" if pk is not None
                     else (verdict.get("reason") or "no gems")
                 ),
+                # The authoritative gem set for this scan — downstream
+                # consumers (premarket) annotate THESE, never their own
+                # recomputation, so every surface shows the same picks.
+                "gems": " ".join(
+                    list(gems["ticker"].astype(str))
+                    + list(explorer_gems["ticker"].astype(str))
+                ),
             })
             log.info("Scan verdict logged")
         except Exception as exc:  # noqa: BLE001

@@ -232,7 +232,7 @@ PICKS_PATH = "portfolio/picks.csv"
 PICK_COLUMNS = ["date", "ticker", "adjusted_score", "pool"]
 SCANS_PATH = "portfolio/scans.csv"
 SCAN_COLUMNS = ["scanned_at_utc", "n_curated_gems", "n_explorer_gems",
-                "pick", "best_score", "verdict"]
+                "pick", "best_score", "verdict", "gems"]
 
 
 def portfolio_risk(

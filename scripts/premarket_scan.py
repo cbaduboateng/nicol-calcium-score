@@ -38,31 +38,27 @@ def _shortlist() -> tuple[list[str], list[str], list[str]]:
     except Exception as exc:  # noqa: BLE001
         log.warning("holdings unavailable (%s)", exc)
 
+    # Gems come from the LAST LOGGED SCAN — the same set the app showed
+    # and pushed — never a private recomputation that can drift from what
+    # the user actually saw.
     gems: list[str] = []
     try:
-        from icarus.daily_signals import find_gems
-        from icarus.target_inference import derive_targets, learn_target_pattern
-        from icarus.watchlist_alerts import (
-            WATCHLIST_PATH,
-            build_watchlist_view,
-            load_watchlist,
+        from icarus.portfolio import load_public_scans
+        scans = load_public_scans(
+            REPO, token=os.environ.get("PICKLOG_TOKEN", "").strip(),
         )
-        wl = load_watchlist(WATCHLIST_PATH)
-        prices = pd.read_parquet("data/cache/watchlist_prices_v2_1y.parquet")
-        vols = pd.read_parquet("data/cache/watchlist_volumes_v2_3mo.parquet")
-        history = {c: prices[c].dropna() for c in prices.columns
-                   if not prices[c].dropna().empty}
-        volumes = {c: vols[c].dropna() for c in vols.columns
-                   if not vols[c].dropna().empty}
-        pattern = learn_target_pattern(wl, history)
-        if pattern is not None:
-            wl = derive_targets(wl, history, pattern)
-        view = build_watchlist_view(wl, history)
-        g = find_gems(view, history, volumes, top_n=5)
-        if not g.empty:
-            gems = sorted(g["ticker"].astype(str))
+        if not scans.empty:
+            last = scans.iloc[-1]
+            age_h = (
+                datetime.now(timezone.utc)
+                - pd.Timestamp(str(last["scanned_at_utc"]), tz="UTC")
+            ).total_seconds() / 3600.0
+            if age_h < 24 and str(last.get("gems") or "").strip():
+                gems = sorted(set(str(last["gems"]).split()))
+                log.info("Using gem set from scan %s (%.0fh old)",
+                         last["scanned_at_utc"], age_h)
     except Exception as exc:  # noqa: BLE001
-        log.warning("gems unavailable (%s)", exc)
+        log.warning("gems unavailable from scan log (%s)", exc)
 
     from icarus.swing import SWING_POOLS
     etfs = list(SWING_POOLS["etf"]["tickers"])
