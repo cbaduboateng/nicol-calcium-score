@@ -843,6 +843,35 @@ def _render_watchlist_tab(st) -> None:
             )
     except Exception:  # noqa: BLE001
         pass
+
+    # 🌅 Premarket context (unvalidated by design — annotates, never gates)
+    try:
+        import json as _json
+        from datetime import datetime as _dt, timezone as _tz
+        from pathlib import Path as _P
+
+        from .premarket import PREMARKET_CACHE_PATH
+        _pmf = _P(PREMARKET_CACHE_PATH)
+        if _pmf.exists():
+            pm = _json.loads(_pmf.read_text())
+            ts = _dt.strptime(pm["scanned_at_utc"], "%Y-%m-%d %H:%M").replace(
+                tzinfo=_tz.utc,
+            )
+            age_h = (_dt.now(_tz.utc) - ts).total_seconds() / 3600.0
+            if age_h < 16 and pm.get("rows"):
+                bits = []
+                for r in pm["rows"][:6]:
+                    badge = "💼" if r.get("is_holding") else (
+                        "💎" if r.get("is_gem") else "👀")
+                    bits.append(f"{badge}{r['ticker']} {r['gap_pct']:+.1f}%")
+                st.caption(
+                    f"🌅 Premarket ({pm['scanned_at_utc']} UTC): "
+                    + " · ".join(bits)
+                    + " — thin prints, context only, never a gate."
+                )
+    except Exception:  # noqa: BLE001
+        pass
+
     st.caption(
         "A gem passes EVERY strict quality gate (buy zone, own 6m momentum "
         "> 0, hot theme on the 6m median, R:R ≥ 3, not parabolic) AND shows day-scale action "
