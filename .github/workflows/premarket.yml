@@ -11,6 +11,9 @@ on:
   schedule:
     - cron: "45 12 * * 1-5"
   workflow_dispatch: {}
+  push:
+    branches: [congress-signal-extract]
+    paths: [".premarket-request"]   # touch this file to trigger a scan
 
 permissions:
   contents: write
