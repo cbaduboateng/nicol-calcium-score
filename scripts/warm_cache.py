@@ -54,6 +54,29 @@ def _warm_swing_universe(chunk: int = 40) -> None:
         SWING_VOLUMES_CACHE,
     )
 
+    # 10y ETF closes for the rotation experiment (monthly rotation needs
+    # far more than 2y under the project's own >=3y backtest rule).
+    etf = sorted(SWING_POOLS["etf"]["tickers"])
+    try:
+        df10 = yf.download(etf, period="10y", interval="1d",
+                           progress=False, group_by="ticker",
+                           threads=True, auto_adjust=True)
+        cols10 = {}
+        for s in etf:
+            try:
+                c = (df10[s]["Close"] if len(etf) > 1 else df10["Close"]).dropna()
+                if not c.empty:
+                    cols10[s] = c
+            except Exception:  # noqa: BLE001
+                continue
+        if cols10:
+            pd.DataFrame(cols10).sort_index().to_parquet(
+                "data/cache/etf_prices_v1_10y.parquet",
+            )
+            log.info("10y ETF cache: %d/%d", len(cols10), len(etf))
+    except Exception as exc:  # noqa: BLE001
+        log.warning("10y ETF fetch failed (%s)", exc)
+
     symbols = sorted({t for p in SWING_POOLS.values() for t in p["tickers"]})
     log.info("Warming swing universe: %d symbols", len(symbols))
     closes: dict[str, pd.Series] = {}

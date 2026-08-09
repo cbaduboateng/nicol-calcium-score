@@ -41,3 +41,4 @@ data/processed/*
 !data/cache/swing_prices_v1_2y.parquet
 !data/cache/swing_volumes_v1_3mo.parquet
 !data/cache/premarket.json
+!data/cache/etf_prices_v1_10y.parquet

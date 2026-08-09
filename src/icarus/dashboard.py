@@ -2886,6 +2886,67 @@ def _render_lab_tab(st) -> None:
                 "bar is met. Not financial advice."
             )
 
+    # ---- Rotation panel (pre-registered ledger experiment) -----------------
+    st.divider()
+    st.markdown("### 🔄 ETF momentum rotation — pre-registered experiment")
+    st.caption(
+        "Ledger id `etf-momentum-rotation`, design fixed BEFORE results: "
+        "each month-end, rank the ETF pool by trailing momentum and hold "
+        "the top K for a month, 0.10% per one-way trade on turnover. "
+        "Believed only if it beats BOTH controls (SPY buy-and-hold and "
+        "equal-weight-everything) in BOTH halves of a decade at ≥ 36 "
+        "months per half."
+    )
+    from pathlib import Path as _Path
+    _etf10 = _Path("data/cache/etf_prices_v1_10y.parquet")
+    if not _etf10.exists():
+        st.info("Awaiting the 10-year ETF cache — the nightly warm job "
+                "builds it; check back after the next warm.")
+    elif st.button("▶ Run the rotation experiment", key="rotation_run"):
+        from .rotation import compare_rotation, rotation_verdict
+        px10 = pd.read_parquet(_etf10)
+        with st.spinner("Replaying a decade of monthly rotations..."):
+            rot = compare_rotation(px10)
+        st.session_state["rotation_result"] = rot
+    rot = st.session_state.get("rotation_result")
+    if rot is not None and not rot.empty:
+        st.dataframe(
+            rot, use_container_width=True, hide_index=True,
+            column_config={
+                "variant": "Strategy",
+                "n_months": st.column_config.NumberColumn("Months", format="%d"),
+                "mean_monthly_pct": st.column_config.NumberColumn(
+                    "Mean/mo", format="%+.2f%%"),
+                "cagr_pct": st.column_config.NumberColumn("CAGR", format="%+.1f%%"),
+                "max_drawdown_pct": st.column_config.NumberColumn(
+                    "Max DD", format="%.1f%%"),
+                "pct_positive_months": st.column_config.NumberColumn(
+                    "+months", format="%.0f%%"),
+                "n_first": st.column_config.NumberColumn("n 1st", format="%d"),
+                "mean_first_pct": st.column_config.NumberColumn(
+                    "1st half/mo", format="%+.2f%%"),
+                "n_second": st.column_config.NumberColumn("n 2nd", format="%d"),
+                "mean_second_pct": st.column_config.NumberColumn(
+                    "2nd half/mo", format="%+.2f%%"),
+            },
+        )
+        from .rotation import rotation_verdict as _rv
+        passing = _rv(rot)
+        if passing.empty:
+            st.error(
+                "🪦 **No rotation variant cleared the pre-registered bar** "
+                "— the ledger records the tombstone. Momentum rotation on "
+                "this pool does not beat simply holding, after costs, in "
+                "both halves."
+            )
+        else:
+            st.success(
+                "✅ Cleared the bar: "
+                + ", ".join(passing["variant"])
+                + " — beat both controls in both halves. Tell Claude to "
+                "flip the ledger row and surface monthly holdings."
+            )
+
 
 def _render_about_tab(st) -> None:
     """Plain-English guide to what the app is and how each piece works."""
