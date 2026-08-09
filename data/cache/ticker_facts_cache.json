@@ -3532,7 +3532,16 @@
     "ticker": "COUR",
     "why_it_matters": ""
   },
-  "COWI": null,
+  "COWI": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 219610.1245721815,
+    "name": "COWI",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "COWI",
+    "why_it_matters": ""
+  },
   "COYA": {
     "cap": "micro",
     "exchange": "NASDAQ",
