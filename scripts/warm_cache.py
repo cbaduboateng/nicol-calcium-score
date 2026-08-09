@@ -152,6 +152,19 @@ def main() -> int:
     n_caps = quick_market_caps(tickers, max_workers=8)
     log.info("Market caps: %d newly fetched", n_caps)
 
+    # ---- Short-interest positioning (context layer, US names) -------------
+    try:
+        import json as _json
+
+        from icarus.positioning import POSITIONING_CACHE_PATH, fetch_positioning
+        pos = fetch_positioning(tickers)
+        if pos:
+            POSITIONING_CACHE_PATH.write_text(_json.dumps(pos))
+            log.info("Positioning: short data for %d/%d tickers",
+                     len(pos), len(tickers))
+    except Exception as exc:  # noqa: BLE001
+        log.warning("Positioning warm failed (%s)", exc)
+
     # ---- Swing-universe caches (ETFs / large caps / OTC ADRs) -------------
     # Separate parquets keyed by bare Yahoo symbols: these pools are not
     # watchlist rows and must not pollute the watchlist caches' coverage

@@ -44,3 +44,4 @@ data/processed/*
 !data/cache/etf_prices_v1_10y.parquet
 !data/cache/gbpusd_v1_10y.parquet
 !data/cache/earnings_v1.parquet
+!data/cache/positioning_v1.json

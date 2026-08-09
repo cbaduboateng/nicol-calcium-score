@@ -1635,6 +1635,16 @@ def _render_watchlist_ticker_card(
         except Exception:  # noqa: BLE001
             pass
 
+        # ---- Short-interest positioning (context only) ----------------------
+        try:
+            from .positioning import load_positioning, positioning_note
+            _pnote = positioning_note(
+                load_positioning().get(ticker.upper()))
+            if _pnote:
+                st.caption(_pnote)
+        except Exception:  # noqa: BLE001
+            pass
+
         # ---- Insider buying (SEC Form 4) ------------------------------------
         ck = ticker.upper()
         ins = (insider_overlay or {}).get(ck)
