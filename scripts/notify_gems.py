@@ -254,7 +254,13 @@ def main() -> int:
     if not topic:
         log.info("Found %d gem(s); no NTFY_TOPIC so nothing pushed", n)
         return 0
-    title = f"💎 {n} gem{'s' if n != 1 else ''} on the watchlist"
+    # Lead the lock-screen title with the crown when one exists — the
+    # pick was getting buried in the body.
+    if verdict["pick"] is not None:
+        title = (f"👑 Pick: {verdict['pick']['ticker']} · "
+                 f"+{max(n - 1, 0)} more gem{'s' if n - 1 != 1 else ''}")
+    else:
+        title = f"💎 {n} gem{'s' if n != 1 else ''} on the watchlist"
     body = "\n".join(lines) + "\n\nScreening signal, not financial advice."
 
     import requests
