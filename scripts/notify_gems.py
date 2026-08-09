@@ -24,7 +24,8 @@ NTFY_SERVER = os.environ.get("NTFY_SERVER", "https://ntfy.sh")
 
 
 def main() -> int:
-    topic = os.environ.get("NTFY_TOPIC", "").strip()
+    from icarus.notify_util import clean_ntfy_topic
+    topic = clean_ntfy_topic(os.environ.get("NTFY_TOPIC", ""))
     if not topic:
         # The scan, pick log and scan log run regardless — a missing ntfy
         # secret must not blind the whole pipeline (it silently did for

@@ -57,3 +57,13 @@ def test_push_formatting_and_silence():
 
 def test_empty_quotes_no_rows():
     assert build_premarket_report({}) == []
+
+
+def test_clean_ntfy_topic_accepts_all_paste_styles():
+    from icarus.notify_util import clean_ntfy_topic
+    assert clean_ntfy_topic("mytopic") == "mytopic"
+    assert clean_ntfy_topic("  mytopic \n") == "mytopic"
+    assert clean_ntfy_topic("https://ntfy.sh/mytopic") == "mytopic"
+    assert clean_ntfy_topic("http://ntfy.sh/mytopic/") == "mytopic"
+    assert clean_ntfy_topic("ntfy.sh/mytopic") == "mytopic"
+    assert clean_ntfy_topic("") == ""

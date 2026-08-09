@@ -103,7 +103,8 @@ def main() -> int:
     Path(PREMARKET_CACHE_PATH).write_text(json.dumps(payload, indent=1))
     log.info("Wrote %s (%d material rows)", PREMARKET_CACHE_PATH, len(rows))
 
-    topic = os.environ.get("NTFY_TOPIC", "").strip()
+    from icarus.notify_util import clean_ntfy_topic
+    topic = clean_ntfy_topic(os.environ.get("NTFY_TOPIC", ""))
     push = format_premarket_push(rows)
     if not topic:
         log.warning("NTFY_TOPIC not set — report written, push skipped")
