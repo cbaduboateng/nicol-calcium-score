@@ -1956,6 +1956,23 @@ def _render_track_record_tab(st) -> None:
             "noise floor drops below the signal."
         )
 
+    # Luck detector: is the P&L a process or a couple of moonshots?
+    t3 = summary.get("top3_pnl_share_pct")
+    if t3 is not None and pd.notna(t3) and summary["closed"] >= 10:
+        if t3 > 70:
+            st.warning(
+                f"🎲 **{t3:.0f}% of all winning P&L came from just 3 trades.** "
+                "That's a lottery-ticket profile, not (yet) a repeatable "
+                "edge — expect long droughts between the moonshots and size "
+                "so the droughts are survivable."
+            )
+        else:
+            st.caption(
+                f"🎲 Top-3 winners carry {t3:.0f}% of winning P&L — the "
+                "lower this is, the more the returns look like a process "
+                "rather than luck."
+            )
+
     # ---- Cumulative P&L chart ---------------------------------------------
     pnl = cumulative_pnl_series(signals, position_size_usd=position_size_usd)
     if not pnl.empty:
@@ -2437,6 +2454,51 @@ def _render_portfolio_tab(st) -> None:
                     ),
                 },
             )
+    # ---- Position sizer (the '2% rule': size follows from the stop) -------
+    with st.expander("📐 Position sizer — risk first, size second"):
+        st.caption(
+            "Pick how much of the account one losing trade may cost (the "
+            "classic answer is 2%); the stop distance then dictates the "
+            "size. With the house 20% stop, 2% risk ≈ 10% of the account "
+            "per position — the Exit-Lab's 'size smaller at wider stops' "
+            "rule made concrete."
+        )
+        pcols = st.columns(4)
+        with pcols[0]:
+            ps_account = st.number_input(
+                "Account value", min_value=0.0, value=5000.0, step=500.0,
+                format="%g", key="ps_account",
+            )
+        with pcols[1]:
+            ps_risk = st.number_input(
+                "Risk per trade %", min_value=0.1, max_value=10.0,
+                value=2.0, step=0.5, format="%g", key="ps_risk",
+            )
+        with pcols[2]:
+            ps_entry = st.number_input(
+                "Entry price", min_value=0.0, value=0.0, step=0.01,
+                format="%.4f", key="ps_entry",
+            )
+        with pcols[3]:
+            ps_stop = st.number_input(
+                "Stop price (0 = entry −20%)", min_value=0.0, value=0.0,
+                step=0.01, format="%.4f", key="ps_stop",
+            )
+        if ps_entry > 0:
+            from .portfolio import position_size
+            stop_eff = ps_stop if ps_stop > 0 else ps_entry * 0.80
+            sz = position_size(ps_account, ps_risk, ps_entry, stop_eff)
+            if sz["qty"] > 0:
+                st.markdown(
+                    f"**{sz['qty']:,.0f} shares** ≈ "
+                    f"{_fmt_dollar(sz['position_value'])} "
+                    f"({sz['pct_of_account']:.1f}% of the account) — "
+                    f"if the stop at {stop_eff:,.2f} fires you lose "
+                    f"{_fmt_dollar(sz['risk_amount'])}."
+                )
+            else:
+                st.warning("Stop must be below entry.")
+
     # ---- Delete trades (own section — NOT hidden in an expander) ----------
     if not trades.empty:
         st.markdown("### 🗑 Delete trades")
@@ -2556,6 +2618,38 @@ def _render_lab_tab(st) -> None:
         fetch_price_history,
         load_watchlist,
     )
+
+    # ---- 🧬 Hypothesis ledger: the memory of everything ever tested -------
+    from .hypotheses import ledger_summary, load_hypotheses
+    ledger = load_hypotheses()
+    if not ledger.empty:
+        counts = ledger_summary(ledger)
+        headline = " · ".join(
+            f"{counts.get(s, 0)} {s}" for s in
+            ("adopted", "rejected", "monitoring", "untestable", "proposed")
+            if counts.get(s, 0)
+        )
+        with st.expander(f"🧬 Hypothesis ledger — {headline}"):
+            st.caption(
+                "Every idea this project has tested, and how it died. The "
+                "rejections are the most valuable rows — each one is a "
+                "strategy that LOOKED good and would have cost real money. "
+                "Nothing is ever deleted; new tests only append."
+            )
+            _status_icon = {"adopted": "✅", "rejected": "🪦",
+                            "monitoring": "🔬", "untestable": "🚫",
+                            "proposed": "📋"}
+            led = ledger.copy()
+            led["status"] = led["status"].map(
+                lambda s: f"{_status_icon.get(s, '')} {s}")
+            st.dataframe(
+                led[["date", "hypothesis", "verdict", "status"]],
+                use_container_width=True, hide_index=True,
+                column_config={
+                    "date": "Date", "hypothesis": "Hypothesis",
+                    "verdict": "What the data said", "status": "Status",
+                },
+            )
 
     st.subheader("🧪 Signal Lab — which signal definition actually works?")
     st.caption(

@@ -216,6 +216,40 @@ def fetch_live_quotes(tickers: list[str]) -> dict[str, dict]:
     return out
 
 
+def position_size(
+    account_value: float,
+    risk_pct: float,
+    entry_price: float,
+    stop_price: float,
+) -> dict:
+    """Risk-based sizing (the '2% rule'): the size follows from the stop.
+
+    risk budget = account × risk_pct; qty = budget / per-share loss at
+    the stop. With the house 20% stop, 2% account risk implies ~10% of
+    the account per position — which is the Exit-Lab's 'size ~0.6× at
+    the wider stop' corollary made concrete. Pure function.
+    """
+    out = {"qty": 0.0, "position_value": 0.0, "risk_amount": 0.0,
+           "pct_of_account": 0.0}
+    if (account_value <= 0 or risk_pct <= 0 or entry_price <= 0
+            or stop_price <= 0 or stop_price >= entry_price):
+        return out
+    risk_amount = account_value * risk_pct / 100.0
+    per_share = entry_price - stop_price
+    qty = risk_amount / per_share
+    value = qty * entry_price
+    if value > account_value:          # never lever past the account
+        qty = account_value / entry_price
+        value = account_value
+        risk_amount = qty * per_share
+    return {
+        "qty": qty,
+        "position_value": value,
+        "risk_amount": risk_amount,
+        "pct_of_account": value / account_value * 100.0,
+    }
+
+
 def fetch_gbpusd() -> float | None:
     """Current GBP/USD spot via the same quote path as equities.
     Display-only: the book currency stays USD."""

@@ -272,7 +272,7 @@ def summarise_track_record(
             "total": 0, "open": 0, "closed": 0,
             "win_rate": 0.0, "hit_rate": 0.0,
             "avg_return_pct": 0.0, "total_realised_usd": 0.0,
-            "avg_days_held": 0.0,
+            "avg_days_held": 0.0, "top3_pnl_share_pct": float("nan"),
         }
     total = len(signals)
     closed = signals[~signals["open"]]
@@ -283,7 +283,7 @@ def summarise_track_record(
             "total": total, "open": n_open, "closed": 0,
             "win_rate": 0.0, "hit_rate": 0.0,
             "avg_return_pct": 0.0, "total_realised_usd": 0.0,
-            "avg_days_held": 0.0,
+            "avg_days_held": 0.0, "top3_pnl_share_pct": float("nan"),
         }
     wins = closed[closed["return_pct"] > 0]
     hits = closed[closed["close_reason"] == "target"]
@@ -298,7 +298,21 @@ def summarise_track_record(
             (closed["return_pct"] / 100.0 * position_size_usd).sum()
         ),
         "avg_days_held": float(closed["days_held"].mean()),
+        "top3_pnl_share_pct": _top3_pnl_share(closed),
     }
+
+
+def _top3_pnl_share(closed: pd.DataFrame) -> float:
+    """Share of total positive P&L carried by the top 3 winners — the
+    luck detector. Near 100% on a decent sample means the 'edge' is a
+    couple of moonshots, not a repeatable process. NaN when there are
+    no winners to attribute."""
+    wins = closed.loc[closed["return_pct"] > 0, "return_pct"]
+    if wins.empty:
+        return float("nan")
+    total = float(wins.sum())
+    top3 = float(wins.nlargest(3).sum())
+    return top3 / total * 100.0
 
 
 def cumulative_pnl_series(
