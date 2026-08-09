@@ -1,0 +1,47 @@
+name: Warm earnings events
+
+# NOTE: keep a copy of this file on MAIN — GitHub only fires 'schedule:'
+# crons from the default branch. The job checks out and operates on
+# congress-signal-extract.
+
+on:
+  schedule:
+    - cron: "20 3 * * 0"   # Sundays, off-peak
+  workflow_dispatch: {}
+  push:
+    branches: [congress-signal-extract]
+    paths: [".earnings-request"]   # touch this file to trigger a fetch
+
+permissions:
+  contents: write
+
+jobs:
+  warm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: congress-signal-extract
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install
+        run: pip install -e ".[prices]" pyarrow
+
+      - name: Fetch earnings events
+        run: python scripts/warm_earnings.py
+
+      - name: Commit
+        run: |
+          git config user.name "icarus-earnings"
+          git config user.email "actions@users.noreply.github.com"
+          git add -f data/cache/earnings_v1.parquet
+          if git diff --cached --quiet; then
+            echo "No changes"
+            exit 0
+          fi
+          git commit -m "Warm earnings events"
+          git pull --rebase origin congress-signal-extract
+          git push origin congress-signal-extract
