@@ -1940,6 +1940,16 @@
   },
   "BRCC": null,
   "BRNT": null,
+  "BRNT.L": {
+    "cap": "unknown",
+    "exchange": "LSE",
+    "market_cap_usd": null,
+    "name": "WisdomTree Brent Crude Oil",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "BRNT.L",
+    "why_it_matters": ""
+  },
   "BRR": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -2812,6 +2822,16 @@
     "why_it_matters": ""
   },
   "CHRG": null,
+  "CHRG.L": {
+    "cap": "unknown",
+    "exchange": "LSE",
+    "market_cap_usd": null,
+    "name": "WisdomTree Battery Solutions UCITS ETF - USD Acc",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CHRG.L",
+    "why_it_matters": ""
+  },
   "CHRN": {
     "cap": "mid",
     "exchange": "NASDAQ",
@@ -3834,6 +3854,16 @@
     "why_it_matters": ""
   },
   "CSPX": null,
+  "CSPX.L": {
+    "cap": "unknown",
+    "exchange": "LSE",
+    "market_cap_usd": null,
+    "name": "iShares VII PLC - iShares Core S&P 500 UCITS ETF",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "CSPX.L",
+    "why_it_matters": ""
+  },
   "CSQ": {
     "cap": "mid",
     "exchange": "NASDAQ",
@@ -4841,6 +4871,16 @@
   },
   "EBS": null,
   "ECAR": null,
+  "ECAR.L": {
+    "cap": "unknown",
+    "exchange": "LSE",
+    "market_cap_usd": null,
+    "name": "iShares Electric Vehicles and Driving Technology UCITS ETF USD (Acc)",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ECAR.L",
+    "why_it_matters": ""
+  },
   "ECAT": null,
   "ECC": null,
   "ECOR": {
@@ -8421,6 +8461,16 @@
   },
   "INR": null,
   "INRG": null,
+  "INRG.L": {
+    "cap": "unknown",
+    "exchange": "LSE",
+    "market_cap_usd": null,
+    "name": "iShares Global Clean Energy Transition UCITS ETF USD (Dist)",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "INRG.L",
+    "why_it_matters": ""
+  },
   "INSG": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -8673,6 +8723,16 @@
     "why_it_matters": ""
   },
   "ISUN": null,
+  "ISUN.L": {
+    "cap": "unknown",
+    "exchange": "LSE",
+    "market_cap_usd": null,
+    "name": "Invesco Solar Energy UCITS ETF",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "ISUN.L",
+    "why_it_matters": ""
+  },
   "IT": {
     "cap": "large",
     "exchange": "?",
@@ -8685,6 +8745,16 @@
   },
   "ITRG": null,
   "IUKD": null,
+  "IUKD.L": {
+    "cap": "unknown",
+    "exchange": "LSE",
+    "market_cap_usd": null,
+    "name": "iShares UK Dividend UCITS ETF GBP (Dist)",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "IUKD.L",
+    "why_it_matters": ""
+  },
   "IVA": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -8729,6 +8799,16 @@
   },
   "IWMD": null,
   "IWMO": null,
+  "IWMO.L": {
+    "cap": "unknown",
+    "exchange": "LSE",
+    "market_cap_usd": null,
+    "name": "iShares Edge MSCI World Momentum Factor UCITS ETF USD (Acc)",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "IWMO.L",
+    "why_it_matters": ""
+  },
   "IXHL": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -9332,6 +9412,16 @@
     "ticker": "LAB",
     "why_it_matters": ""
   },
+  "LABD": {
+    "cap": "unknown",
+    "exchange": "NYSE Arca",
+    "market_cap_usd": null,
+    "name": "Direxion Daily S&P Biotech Bear 3X Shares",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LABD",
+    "why_it_matters": ""
+  },
   "LABT": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -9852,6 +9942,16 @@
     "why_it_matters": ""
   },
   "LOCK": null,
+  "LOCK.L": {
+    "cap": "unknown",
+    "exchange": "LSE",
+    "market_cap_usd": null,
+    "name": "iShares Digital Security UCITS ETF USD Acc",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LOCK.L",
+    "why_it_matters": ""
+  },
   "LOCO": {
     "cap": "small",
     "exchange": "NASDAQ",
@@ -9864,6 +9964,16 @@
   },
   "LODE": null,
   "LOIL": null,
+  "LOIL.L": {
+    "cap": "unknown",
+    "exchange": "LSE",
+    "market_cap_usd": null,
+    "name": "WisdomTree WTI Crude Oil 2x Daily Leveraged",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "LOIL.L",
+    "why_it_matters": ""
+  },
   "LOMA": null,
   "LON:AFC": null,
   "LON:AML": {
@@ -12049,6 +12159,16 @@
   },
   "NP": null,
   "NPF": null,
+  "NPF.NZ": {
+    "cap": "unknown",
+    "exchange": "NZE",
+    "market_cap_usd": null,
+    "name": "Smart NZ Property ETF",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "NPF.NZ",
+    "why_it_matters": ""
+  },
   "NPKI": null,
   "NPT": {
     "cap": "micro",
@@ -12218,6 +12338,16 @@
     "why_it_matters": ""
   },
   "NUCG": null,
+  "NUCG.L": {
+    "cap": "unknown",
+    "exchange": "LSE",
+    "market_cap_usd": null,
+    "name": "VanEck Uranium and Nuclear Technologies UCITS ETF",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "NUCG.L",
+    "why_it_matters": ""
+  },
   "NUCL": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -13647,6 +13777,16 @@
   },
   "PHR": null,
   "PHSP": null,
+  "PHSP.L": {
+    "cap": "unknown",
+    "exchange": "LSE",
+    "market_cap_usd": null,
+    "name": "WisdomTree Physical Silver",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "PHSP.L",
+    "why_it_matters": ""
+  },
   "PHUN": {
     "cap": "micro",
     "exchange": "?",
@@ -14730,6 +14870,7 @@
     "why_it_matters": ""
   },
   "RBTX": null,
+  "RBTX.L": null,
   "RC": null,
   "RCAT": {
     "cap": "small",
@@ -14875,6 +15016,16 @@
     "sector": "Software - Infrastructure",
     "summary": "",
     "ticker": "RELY",
+    "why_it_matters": ""
+  },
+  "RENDER-USD": {
+    "cap": "small",
+    "exchange": "CCC",
+    "market_cap_usd": 692724224.0,
+    "name": "Render USD",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "RENDER-USD",
     "why_it_matters": ""
   },
   "RENX": {
@@ -18417,6 +18568,16 @@
     "ticker": "VFF",
     "why_it_matters": ""
   },
+  "VFMO": {
+    "cap": "unknown",
+    "exchange": "BTS",
+    "market_cap_usd": null,
+    "name": "Vanguard U.S. Momentum Factor ETF ETF Shares",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "VFMO",
+    "why_it_matters": ""
+  },
   "VFS": {
     "cap": "mid",
     "exchange": "NASDAQ",
@@ -19263,6 +19424,16 @@
   "XRP-USD": null,
   "XRX": null,
   "XSPX": null,
+  "XSPX.L": {
+    "cap": "unknown",
+    "exchange": "LSE",
+    "market_cap_usd": null,
+    "name": "Xtrackers S&P 500 Swap UCITS ETF 1C",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "XSPX.L",
+    "why_it_matters": ""
+  },
   "XTIA": null,
   "XXI": null,
   "XZO": null,
