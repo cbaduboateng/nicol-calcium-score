@@ -161,6 +161,23 @@ def main() -> int:
         (explorer_gems, "explorer", 0.85),
     ])
 
+    # ---- Reddit attention (context + forward-test logging) ----------------
+    try:
+        from icarus.reddit_overlay import (
+            format_gem_mentions,
+            load_reddit_overlay,
+        )
+        _reddit = load_reddit_overlay()
+        _all_gem_ticks = (list(gems["ticker"].astype(str))
+                          + list(explorer_gems["ticker"].astype(str)))
+        _gem_mentions_line = format_gem_mentions(_all_gem_ticks, _reddit)
+        if _reddit:
+            log.info("Reddit overlay: %d tickers tracked", len(_reddit))
+    except Exception as exc:  # noqa: BLE001
+        log.warning("Reddit overlay unavailable (%s)", exc)
+        _reddit = {}
+        _gem_mentions_line = ""
+
     # ---- Scan-verdict log: EVERY run writes a line ------------------------
     # A dead scheduler and strict-but-working gates are indistinguishable
     # from phone silence; this log is the difference. (The scheduler WAS
@@ -194,6 +211,9 @@ def main() -> int:
                     list(gems["ticker"].astype(str))
                     + list(explorer_gems["ticker"].astype(str))
                 ),
+                # Raw material for the pre-registered reddit-attention
+                # hypothesis: every gem's mention count at signal time.
+                "gem_mentions": _gem_mentions_line,
             })
             log.info("Scan verdict logged")
         except Exception as exc:  # noqa: BLE001
@@ -242,9 +262,15 @@ def main() -> int:
             import pandas as pd
             return f"{v:,.2f}" if v is not None and pd.notna(v) else "—"
 
+        from icarus.reddit_overlay import attention_label
+        _att = attention_label(_reddit.get(str(g["ticker"]).upper()))
+        _att_tag = (" 🔥 viral on Reddit — crowded, historically a caution flag"
+                    if _att == "viral"
+                    else (" 👁 elevated Reddit chatter" if _att == "elevated" else ""))
         lines.append(
             f"{g['ticker']}  score {g['gem_score']:.2f} | "
             f"live {_f(live)} buy≤{_f(entry)} stop {_f(stop)} sell≥{_f(exit_)}"
+            + _att_tag
         )
         reasons = str(g.get("reasons") or "")
         if reasons:

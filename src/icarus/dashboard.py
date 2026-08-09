@@ -1617,6 +1617,24 @@ def _render_watchlist_ticker_card(
         if summary and row.get("description"):
             st.markdown(f"**Analyst note.** {row['description']}")
 
+        # ---- Reddit attention (context only, never scored) ------------------
+        try:
+            from .reddit_overlay import attention_label, load_reddit_overlay
+            _ratt = (load_reddit_overlay() or {}).get(ticker.upper())
+            _rlabel = attention_label(_ratt)
+            if _rlabel != "quiet" and _ratt:
+                icon = "🔥" if _rlabel == "viral" else "👁"
+                st.caption(
+                    f"{icon} **Reddit attention: {_rlabel}** — "
+                    f"{_ratt['mentions']} mentions "
+                    f"(vs {_ratt['mentions_24h_ago']} yesterday, "
+                    f"rank #{_ratt['rank']}). Context only: on this "
+                    "universe, peak crowd attention has historically "
+                    "coincided with tops, not entries."
+                )
+        except Exception:  # noqa: BLE001
+            pass
+
         # ---- Insider buying (SEC Form 4) ------------------------------------
         ck = ticker.upper()
         ins = (insider_overlay or {}).get(ck)
