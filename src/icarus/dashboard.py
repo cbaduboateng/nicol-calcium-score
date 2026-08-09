@@ -2895,7 +2895,12 @@ def _render_lab_tab(st) -> None:
         "the top K for a month, 0.10% per one-way trade on turnover. "
         "Believed only if it beats BOTH controls (SPY buy-and-hold and "
         "equal-weight-everything) in BOTH halves of a decade at ≥ 36 "
-        "months per half."
+        "months per half. **Verdict (2026-08-09 run, 120 months): 🪦 "
+        "rejected** — the flashy variant (12m lookback, 23.5% CAGR vs "
+        "SPY's 15.4%) lost the FIRST half and won only the second (the "
+        "2024-26 metals/crypto regime), 3m did the mirror image, and "
+        "every variant drew down deeper than just holding SPY. The bar "
+        "exists precisely so that 23.5% headline doesn't get traded."
     )
     from pathlib import Path as _Path
     _etf10 = _Path("data/cache/etf_prices_v1_10y.parquet")
