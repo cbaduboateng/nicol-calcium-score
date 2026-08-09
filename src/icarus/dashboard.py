@@ -2473,6 +2473,96 @@ def _render_portfolio_tab(st) -> None:
                     ),
                 },
             )
+    # ---- 🎯 Blueprint: 80/20 core-satellite planner -----------------------
+    with st.expander("🎯 Blueprint — ETF core + stock satellite"):
+        from pathlib import Path as _P
+
+        from .blueprint import (
+            PRESET_CORES,
+            classify_holdings,
+            core_history_stats,
+            rebalance_hint,
+            required_satellite_cagr,
+        )
+        st.caption(
+            "Plan the 80% ETF core / 20% stock satellite split. Core stats "
+            "are the LAST DECADE's history (monthly rebalanced) — a decade "
+            "that was unusually kind to US tech — **not a forecast**. The "
+            "blend maths below shows what your target demands of the "
+            "satellite; if that number looks heroic, the target is."
+        )
+        bp_cols = st.columns([2, 1, 1])
+        with bp_cols[0]:
+            preset_name = st.selectbox(
+                "Core preset", list(PRESET_CORES), index=1, key="bp_preset",
+            )
+        with bp_cols[1]:
+            bp_target = st.number_input(
+                "Blend target %/yr", min_value=5.0, max_value=40.0,
+                value=20.0, step=1.0, format="%g", key="bp_target",
+            )
+        with bp_cols[2]:
+            bp_core_w = st.number_input(
+                "Core weight %", min_value=50.0, max_value=95.0,
+                value=80.0, step=5.0, format="%g", key="bp_core_w",
+            )
+        weights = PRESET_CORES[preset_name]
+        st.caption("Core mix: " + " · ".join(
+            f"{t} {w * 100:.0f}%" for t, w in weights.items()))
+
+        _etf10p = _P("data/cache/etf_prices_v1_10y.parquet")
+        stats = None
+        if _etf10p.exists():
+            stats = core_history_stats(pd.read_parquet(_etf10p), weights)
+        if stats:
+            req = required_satellite_cagr(
+                bp_target, stats["cagr_pct"], core_weight=bp_core_w / 100.0,
+            )
+            bcols = st.columns(3)
+            bcols[0].metric(
+                "Core CAGR (last decade)", f"{stats['cagr_pct']:+.1f}%",
+                help="History, not a forecast. Monthly rebalanced.",
+            )
+            bcols[1].metric("Core max drawdown", f"{stats['max_drawdown_pct']:.1f}%")
+            bcols[2].metric(
+                f"Satellite must do ({100 - bp_core_w:.0f}%)",
+                f"{req:+.0f}%/yr",
+                help="What the stock sleeve must compound at, EVERY year, "
+                     "for the blend to hit your target — assuming the core "
+                     "repeats its decade, which it may not.",
+            )
+            if req > 35:
+                st.warning(
+                    f"⚠️ A {bp_target:.0f}% blend on this core needs the "
+                    f"satellite to compound at **{req:+.0f}%/yr** — beyond "
+                    "world-class. Either the target, the core choice, or "
+                    "the split has to give. The honest levers: a growthier "
+                    "core (more risk), a bigger satellite (more risk), or "
+                    "a target the maths can reach."
+                )
+        else:
+            st.info("Core stats need the 10-year ETF cache — available "
+                    "after the next nightly warm.")
+
+        # Actual vs blueprint, from real holdings
+        from .swing import SWING_POOLS
+        etf_syms = set(SWING_POOLS["etf"]["tickers"])
+        split = classify_holdings(positions, quotes, etf_syms)
+        if split["total_value"] > 0:
+            st.markdown(
+                f"**Your current split:** core {split['core_pct']:.0f}% "
+                f"({', '.join(split['core_names']) or 'none'}) · satellite "
+                f"{split['satellite_pct']:.0f}% "
+                f"({', '.join(split['satellite_names']) or 'none'})"
+            )
+            hint = rebalance_hint(split, core_weight=bp_core_w / 100.0)
+            if hint:
+                st.info("⚖️ " + hint + " (5-point drift band — a convention, "
+                        "not Lab-validated.)")
+        else:
+            st.caption("Log trades and the actual core/satellite split "
+                       "appears here against the blueprint.")
+
     # ---- Position sizer (the '2% rule': size follows from the stop) -------
     with st.expander("📐 Position sizer — risk first, size second"):
         st.caption(
