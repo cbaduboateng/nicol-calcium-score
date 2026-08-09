@@ -2299,6 +2299,25 @@ def _render_portfolio_tab(st) -> None:
                 f"realised {_gbp(realised_total)} — at GBP/USD {rate:.4f}, "
                 "display only (the book stays in USD)."
             )
+            # FX-aware split: stocks vs currency, booked at trade-date rates
+            try:
+                from pathlib import Path as _P
+
+                from .portfolio import fx_pnl_breakdown
+                _fxf = _P("data/cache/gbpusd_v1_10y.parquet")
+                if _fxf.exists():
+                    fx_series = pd.read_parquet(_fxf)["GBPUSD"]
+                    fxb = fx_pnl_breakdown(trades, positions, quotes, fx_series)
+                    if fxb:
+                        st.caption(
+                            f"💱 In pounds you're {fxb['total_gbp_return_pct']:+.1f}% "
+                            f"overall: stocks {fxb['stock_return_pct']:+.1f}% "
+                            f"{'+' if fxb['fx_contribution_pts'] >= 0 else '−'} "
+                            f"currency {abs(fxb['fx_contribution_pts']):.1f}pts "
+                            "(each buy booked at its trade-date rate)."
+                        )
+            except Exception:  # noqa: BLE001
+                pass
         h = st.columns(3)
         h[0].metric("Unrealised", _fmt_dollar(totals["unrealised"]))
         h[1].metric("Day P&L", _fmt_dollar(totals["day_pnl"]))
@@ -2952,6 +2971,47 @@ def _render_lab_tab(st) -> None:
                 "flip the ledger row and surface monthly holdings."
             )
 
+    # ---- Trend-filter panel (pre-registered experiment #2) -----------------
+    st.divider()
+    st.markdown("### 🛡 Trend filter on SPY — pre-registered experiment #2")
+    st.caption(
+        "Ledger id `trend-filter-defensive`: hold SPY only above its "
+        "long-term trend, cash (at 0%) otherwise; 0.10% per switch. "
+        "Defensive bar: drawdown ≥ 25% shallower AND CAGR within 3pts of "
+        "buy-and-hold, in BOTH halves. **Verdict (2026-08-09 run, 10y): "
+        "🪦 rejected** — SMA filters gave up ~7pts of CAGR/yr for almost "
+        "no drawdown relief (this decade's crashes were too fast for "
+        "month-end signals); 12m momentum came closest but helped not at "
+        "all in the first half. Re-runnable below as history grows."
+    )
+    if _etf10.exists() and st.button("▶ Re-run the trend-filter experiment",
+                                     key="trend_run"):
+        from .trend_filter import compare_trend_filters, trend_verdict
+        spy10 = pd.read_parquet(_etf10)
+        if "SPY" in spy10.columns:
+            with st.spinner("Replaying a decade of trend filtering..."):
+                st.session_state["trend_result"] = compare_trend_filters(
+                    spy10["SPY"].dropna(),
+                )
+    trend_res = st.session_state.get("trend_result")
+    if trend_res is not None and not trend_res.empty:
+        st.dataframe(
+            trend_res, use_container_width=True, hide_index=True,
+            column_config={
+                "variant": "Strategy",
+                "n_months": st.column_config.NumberColumn("Months", format="%d"),
+                "cagr_pct": st.column_config.NumberColumn("CAGR", format="%+.1f%%"),
+                "max_drawdown_pct": st.column_config.NumberColumn("Max DD", format="%.1f%%"),
+                "pct_in_market": st.column_config.NumberColumn("Time in mkt", format="%.0f%%"),
+                "n_first": st.column_config.NumberColumn("n 1st", format="%d"),
+                "cagr_first_pct": st.column_config.NumberColumn("CAGR 1st", format="%+.1f%%"),
+                "dd_first_pct": st.column_config.NumberColumn("DD 1st", format="%.1f%%"),
+                "n_second": st.column_config.NumberColumn("n 2nd", format="%d"),
+                "cagr_second_pct": st.column_config.NumberColumn("CAGR 2nd", format="%+.1f%%"),
+                "dd_second_pct": st.column_config.NumberColumn("DD 2nd", format="%.1f%%"),
+            },
+        )
+
 
 def _render_about_tab(st) -> None:
     """Plain-English guide to what the app is and how each piece works."""
@@ -3053,13 +3113,19 @@ cluster — size accordingly.
 
 ### 🧪 Lab
 
-Where signal arguments go to be settled. Three panels: **entry definitions**
-(momentum windows, gates switched off one at a time, a no-gate control),
-**exit policies** (longer holds, wider stops, trailing exits, partial
-profit-taking) and **entry modes** (static analyst levels vs the learned
-rule tracked live). Every comparison uses a walk-forward split — a variant
-must win in BOTH halves of history with a decent sample before it changes
-any default. The current 6-month gates were chosen exactly this way.
+Where signal arguments go to be settled. It opens with the **🧬 hypothesis
+ledger** — an append-only record of every idea ever tested here and how it
+died (the rejections are the point: each is a strategy that looked good and
+would have cost money). Below it, the experiment panels: **entry
+definitions**, **exit policies**, **entry modes** (static analyst levels vs
+the learned rule tracked live), **ETF momentum rotation** (rejected — its
+23.5% CAGR headline was one regime's story) and the **SPY trend filter**
+(rejected — insurance that cost 7%/yr and didn't pay out). Every comparison
+uses a walk-forward split with pre-registered verdict bars — a variant must
+win in BOTH halves of history with a decent sample before it changes any
+default, and the bar is written down before the experiment runs. The
+current 6-month gates and 20% stop were chosen exactly this way; a
+post-earnings-drift experiment is queued next.
 
 ---
 

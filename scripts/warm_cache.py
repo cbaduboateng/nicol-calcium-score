@@ -77,6 +77,21 @@ def _warm_swing_universe(chunk: int = 40) -> None:
     except Exception as exc:  # noqa: BLE001
         log.warning("10y ETF fetch failed (%s)", exc)
 
+    # GBP/USD daily history for FX-aware P&L (booking trades at their
+    # trade-date rate splits stock returns from currency drift).
+    try:
+        fx = yf.download("GBPUSD=X", period="10y", interval="1d",
+                         progress=False, auto_adjust=True)["Close"].dropna()
+        if isinstance(fx, pd.DataFrame):
+            fx = fx.iloc[:, 0].dropna()
+        if not fx.empty:
+            fx.to_frame("GBPUSD").sort_index().to_parquet(
+                "data/cache/gbpusd_v1_10y.parquet",
+            )
+            log.info("GBPUSD cache: %d sessions", len(fx))
+    except Exception as exc:  # noqa: BLE001
+        log.warning("GBPUSD fetch failed (%s)", exc)
+
     symbols = sorted({t for p in SWING_POOLS.values() for t in p["tickers"]})
     log.info("Warming swing universe: %d symbols", len(symbols))
     closes: dict[str, pd.Series] = {}

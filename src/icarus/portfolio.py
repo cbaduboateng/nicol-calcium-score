@@ -216,6 +216,78 @@ def fetch_live_quotes(tickers: list[str]) -> dict[str, dict]:
     return out
 
 
+def fx_pnl_breakdown(
+    trades: pd.DataFrame,
+    positions: pd.DataFrame,
+    quotes: dict[str, dict],
+    fx: pd.Series,
+) -> dict | None:
+    """Split the GBP return into stock performance vs currency drift.
+
+    Books each buy at the GBP/USD rate of its trade date (average-cost
+    in both currencies in parallel; sells reduce both bases pro rata).
+    Returns None when inputs are unusable. Pure given the fx series.
+    """
+    if trades is None or trades.empty or positions is None or positions.empty:
+        return None
+    fx = fx.dropna().sort_index() if fx is not None else pd.Series(dtype=float)
+    if fx.empty:
+        return None
+    fx_now = float(fx.iloc[-1])
+    held = set(positions["ticker"].astype(str))
+
+    usd_cost_total = 0.0
+    gbp_cost_total = 0.0
+    for ticker in held:
+        tt = trades[trades["ticker"].astype(str) == ticker].copy()
+        tt["date"] = pd.to_datetime(tt["date"], errors="coerce")
+        tt = tt.dropna(subset=["date"]).sort_values("date")
+        qty = usd_cost = gbp_cost = 0.0
+        for _, tr in tt.iterrows():
+            q = float(tr["qty"])
+            p = float(tr["price"])
+            if q <= 0 or p <= 0:
+                continue
+            if str(tr["side"]).lower() == "buy":
+                rate_idx = fx.index.searchsorted(tr["date"], side="right") - 1
+                rate = float(fx.iloc[max(rate_idx, 0)])
+                qty += q
+                usd_cost += q * p
+                gbp_cost += q * p / rate
+            else:
+                if qty <= 0:
+                    continue
+                f = min(q / qty, 1.0)
+                usd_cost *= (1.0 - f)
+                gbp_cost *= (1.0 - f)
+                qty *= (1.0 - f)
+        usd_cost_total += usd_cost
+        gbp_cost_total += gbp_cost
+    if usd_cost_total <= 0 or gbp_cost_total <= 0:
+        return None
+
+    value_usd = 0.0
+    for _, p in positions.iterrows():
+        q = quotes.get(str(p["ticker"])) or {}
+        px = q.get("price")
+        value_usd += (
+            float(p["qty"]) * float(px)
+            if px and pd.notna(px) else float(p["invested"])
+        )
+    value_gbp = value_usd / fx_now
+
+    stock_return_pct = (value_usd / usd_cost_total - 1.0) * 100.0
+    total_gbp_return_pct = (value_gbp / gbp_cost_total - 1.0) * 100.0
+    return {
+        "invested_gbp": gbp_cost_total,
+        "value_gbp": value_gbp,
+        "stock_return_pct": stock_return_pct,
+        "total_gbp_return_pct": total_gbp_return_pct,
+        "fx_contribution_pts": total_gbp_return_pct - stock_return_pct,
+        "fx_now": fx_now,
+    }
+
+
 def position_size(
     account_value: float,
     risk_pct: float,

@@ -42,3 +42,5 @@ data/processed/*
 !data/cache/swing_volumes_v1_3mo.parquet
 !data/cache/premarket.json
 !data/cache/etf_prices_v1_10y.parquet
+!data/cache/gbpusd_v1_10y.parquet
+!data/cache/earnings_v1.parquet
