@@ -71,3 +71,33 @@ def test_classify_empty():
     split = classify_holdings(pd.DataFrame(), {}, {"SPY"})
     assert split["total_value"] == 0.0
     assert rebalance_hint(split) is None
+
+
+def test_plan_progress_tracks_caps_and_rotation():
+    from icarus.blueprint import plan_progress
+    positions = pd.DataFrame([
+        {"ticker": "VWRP", "account": "SIPP", "qty": 100, "avg_cost": 100.0,
+         "invested": 10000.0},
+        {"ticker": "MNTS", "account": "SIPP", "qty": 100, "avg_cost": 10.0,
+         "invested": 1000.0},
+        {"ticker": "VWRP", "account": "ISA", "qty": 80, "avg_cost": 100.0,
+         "invested": 8000.0},
+        {"ticker": "AQB", "account": "ISA", "qty": 100, "avg_cost": 10.0,
+         "invested": 1000.0},
+    ])
+    prog = plan_progress(positions, {})
+    sipp, isa = prog["SIPP"], prog["ISA"]
+    assert sipp["stock_pct"] == pytest.approx(1000 / 11000 * 100)
+    assert not sipp["over_cap"]                  # 9.1% < 10%
+    assert "MNTS" in sipp["sell_pending"]
+    assert "SLNH" in sipp["sell_done"]           # not held in SIPP here
+    assert isa["stock_pct"] == pytest.approx(1000 / 9000 * 100)
+    assert not isa["over_cap"]                   # 11% < 20%
+    assert isa["sell_done"] == ["SRXH", "IREN", "SMR", "KITT"]
+
+
+def test_plan_progress_empty():
+    from icarus.blueprint import plan_progress
+    prog = plan_progress(pd.DataFrame(), {})
+    assert prog["SIPP"]["stock_pct"] == 0.0
+    assert not prog["ISA"]["over_cap"]

@@ -2376,7 +2376,9 @@ def _render_portfolio_tab(st) -> None:
                 fact = _facts(t, cache_only=True)
                 themes[t] = _mt(wl_desc.get(t, ""), sector=(fact.sector if fact else None))
 
-            risk = portfolio_risk(positions, quotes)
+            from .portfolio import load_stop_overrides
+            _ovr = load_stop_overrides(repo, token=token)
+            risk = portfolio_risk(positions, quotes, overrides=_ovr)
             conc = theme_concentration(positions, quotes, themes)
             r = st.columns(2)
             r[0].metric(
@@ -2577,6 +2579,28 @@ def _render_portfolio_tab(st) -> None:
                     ),
                 },
             )
+    # ---- 📜 The Plan: adopted targets vs reality ---------------------------
+    with st.expander("📜 The Plan — adopted 11 Aug 2026 (SIPP ≤10% stocks · ISA ≤20%)"):
+        from .blueprint import ADOPTED_PLAN, plan_progress
+        prog = plan_progress(positions, quotes)
+        for wrapper, w in prog.items():
+            st.markdown(f"**{wrapper}** — stocks {w['stock_pct']:.0f}% "
+                        f"(cap {w['cap_pct']:.0f}%"
+                        + (" · ⏳ converging via contributions/exits, no new "
+                           "spec buys meanwhile" if w['over_cap'] else " · ✅ within cap")
+                        + ")")
+            if w["sell_pending"]:
+                st.caption("Rotation pending: " + " · ".join(w["sell_pending"]))
+            if w["sell_done"]:
+                st.caption("✅ Rotated: " + " · ".join(w["sell_done"]))
+        st.caption(
+            "Core builds: SIPP → VWRP £20–22k · EQQQ £5k · SGLN £3.5k "
+            "(INRG stays £3.9k, capped). ISA Pie → VWRP £14k · SGLN £3.5k, "
+            "auto-invest. Contracts: AQB & DDD to their written exits. "
+            "Calendar: SLNH earnings 13 Aug · AQB timeout 10 Feb 2027. "
+            "Full terms in the hypothesis ledger (allocation-constitution)."
+        )
+
     # ---- 🎯 Blueprint: 80/20 core-satellite planner -----------------------
     with st.expander("🎯 Blueprint — ETF core + stock satellite"):
         from pathlib import Path as _P

@@ -146,3 +146,55 @@ def rebalance_hint(
     return (f"Core is {split['core_pct']:.0f}% vs the {target_core_pct:.0f}% "
             f"target — deploying ≈ {move:,.0f} of core into satellite ideas "
             "(as gems appear) would restore the blueprint.")
+
+
+# ---------------------------------------------------------------------------
+# The adopted plan (11 Aug 2026): per-wrapper caps + rotation lists.
+# Chat decisions made executable — the app measures reality against THIS.
+# ---------------------------------------------------------------------------
+
+ADOPTED_PLAN: dict = {
+    "SIPP": {
+        "stock_cap_pct": 10.0,
+        # core + capped tilt never count against the stock cap
+        "core": {"VWRP", "EQQQ", "SGLN", "INRG.L"},
+        "sell": ["SLNH", "MNTS", "WWR", "SNAP", "JKS", "SBET", "LITS",
+                 "OMG.L", "YYAI"],
+    },
+    "ISA": {
+        "stock_cap_pct": 20.0,
+        "core": {"VWRP", "SGLN"},
+        "sell": ["SRXH", "IREN", "SMR", "KITT"],
+    },
+}
+
+
+def plan_progress(positions: pd.DataFrame, quotes: dict[str, dict]) -> dict:
+    """Per wrapper: stock share vs cap, and the rotation checklist state
+    (a sell-list ticker is 'done' once it no longer appears among that
+    wrapper's holdings)."""
+    out: dict = {}
+    for wrapper, plan in ADOPTED_PLAN.items():
+        rows = positions[positions.get("account", "") == wrapper] \
+            if positions is not None and not positions.empty else pd.DataFrame()
+        total = stock = 0.0
+        held: set[str] = set()
+        for _, p in rows.iterrows():
+            t = str(p["ticker"]).upper()
+            held.add(t)
+            q = quotes.get(t) or {}
+            px = q.get("price")
+            v = (float(p["qty"]) * float(px)
+                 if px and pd.notna(px) else float(p["invested"]))
+            total += v
+            if t not in plan["core"]:
+                stock += v
+        stock_pct = stock / total * 100.0 if total > 0 else 0.0
+        out[wrapper] = {
+            "stock_pct": stock_pct,
+            "cap_pct": plan["stock_cap_pct"],
+            "over_cap": stock_pct > plan["stock_cap_pct"],
+            "sell_pending": [t for t in plan["sell"] if t.upper() in held],
+            "sell_done": [t for t in plan["sell"] if t.upper() not in held],
+        }
+    return out
