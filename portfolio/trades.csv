@@ -1,3 +1,24 @@
 id,date,ticker,side,qty,price,note
-1e75f14227,2026-08-04,DDD,buy,737.0,3.6497,Gem pick. stop loss 2.81
-ccb69040a2,2026-08-11,AQB,buy,2001.0,1.36,Pick of the day #1 - stop 1.09 target 3.97 timeout 2027-02-07
+1e75f14227,2026-08-04,DDD,buy,737.0,3.6497,SIPP - gem pick (alert stop = avg cost -20%)
+ccb69040a2,2026-08-11,AQB,buy,2001.0,1.36,ISA - pick of the day #1 - stop 1.09 target 3.97 timeout 2027-02-07
+6e3c98ca2e,2026-04-20,SLNH,buy,10000,2.9052,SIPP import - avg cost from HL tape
+543510f4bd,2026-07-24,MNTS,buy,2000,14.4443,SIPP import - avg cost from HL tape
+8c9170fba8,2025-11-07,WWR,buy,3061,2.0226,SIPP import - avg cost from HL tape
+e303936b53,2026-02-04,FIG,buy,153,31.4658,SIPP import - avg cost from HL tape
+c54e0e8bde,2025-09-02,SNAP,buy,579,7.1473,SIPP import - avg cost from HL tape
+4b8861819d,2025-09-02,JKS,buy,118,23.3221,SIPP import - avg cost from HL tape
+439cd42c8c,2026-05-19,NOW,buy,26,103.1351,SIPP import - avg cost from HL tape
+4a406ea661,2025-09-04,SBET,buy,263,15.6892,SIPP import - avg cost from HL tape
+aa929e3c90,2025-10-10,LITS,buy,1000,2.9536,SIPP import - avg cost from HL tape
+d29a635281,2026-05-20,YYAI,buy,225,51.4149,SIPP import - avg cost from HL tape
+183dd2c239,2026-01-14,INRG.L,buy,512,682.6,SIPP import - avg cost from HL tape
+cf1e93c444,2025-09-02,OMG.L,buy,3476,43.58,SIPP import - avg cost from HL tape
+3253e0c24d,2026-08-11,SLNH,buy,11000.2112,1.2383,ISA import - avg cost from T212 tape
+f1a5557364,2026-08-11,SRXH,buy,1500,2.6,ISA import - avg cost from T212 tape
+b969eef719,2026-08-11,IREN,buy,50,56.2014,ISA import - avg cost from T212 tape
+2fe96ec6c4,2026-08-11,SMR,buy,172.4832,15.257,ISA import - avg cost from T212 tape
+3da66343dc,2026-08-11,KITT,buy,1000,1.75,ISA import - avg cost from T212 tape
+eccdf1d374,2026-08-11,RGTI,buy,100.7559,16.8189,ISA import - avg cost from T212 tape
+729707019d,2026-08-11,SPCX,buy,10.3237,117.1393,ISA import - avg cost from T212 tape
+8b101fa1c1,2026-08-11,IIPR,buy,20.7666,51.44,ISA import - avg cost from T212 tape
+3ba3acf65d,2026-08-11,ARQQ,buy,61.2269,14.5431,ISA import - avg cost from T212 tape
