@@ -1,0 +1,22 @@
+ticker,account,stop_price,note
+SLNH,ISA,0.98,keep (crypto thesis) - go-forward stop
+SLNH,SIPP,0.98,probation to Aug 13 earnings - exit into strength or on stop
+AQB,ISA,1.09,system pick - fill-based stop
+DDD,SIPP,2.92,system pick - fill-based stop
+FIG,SIPP,18.63,keep (recovering business) - go-forward stop
+ARQQ,ISA,13.70,keep (quantum ticket) - go-forward stop
+SPCX,ISA,86.70,keep (SpaceX) - go-forward stop
+NOW,SIPP,88.98,keep (quality) - go-forward stop
+IIPR,ISA,47.33,keep (quality/income) - go-forward stop
+IREN,ISA,29.44,either/or vs SLNH pending - go-forward stop
+SNAP,SIPP,4.26,rotate-lean - stop caps bleeding while queued
+SMR,ISA,7.86,rotate-lean - stop caps bleeding while queued
+RGTI,ISA,11.96,rotate-lean - stop caps bleeding while queued
+JKS,SIPP,13.61,rotate - stop caps bleeding while queued
+MNTS,SIPP,3.24,rotate - stop caps bleeding while queued
+WWR,SIPP,0.62,rotate - stop caps bleeding while queued
+SRXH,ISA,1.10,rotate - stop caps bleeding while queued
+KITT,ISA,0.70,rotate - stop caps bleeding while queued
+LITS,SIPP,0.77,rotate - stop caps bleeding while queued
+SBET,SIPP,5.14,rotate - stop caps bleeding while queued
+OMG.L,SIPP,30.64,rotate-lean - stop caps bleeding while queued (GBX)
