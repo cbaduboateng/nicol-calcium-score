@@ -2442,6 +2442,80 @@ def _render_portfolio_tab(st) -> None:
             "to open its chart on the Watchlist tab."
         )
 
+        # ---- 🥧 Allocation donuts ------------------------------------------
+        try:
+            import altair as alt
+
+            from .swing import SWING_POOLS as _sp
+            from .ticker_facts import lookup as _pf
+            from .watchlist_alerts import load_watchlist as _plw, map_theme as _pmt
+
+            _wl_desc = {}
+            try:
+                _pwl = _plw()
+                _wl_desc = dict(zip(_pwl["ticker"], _pwl["description"]))
+            except Exception:  # noqa: BLE001
+                pass
+            _etfset = set(_sp["etf"]["tickers"]) | {"INRG.L"}
+            rows_alloc = []
+            for _, p in positions.iterrows():
+                q = quotes.get(p["ticker"]) or {}
+                px = q.get("price")
+                v = (float(p["qty"]) * float(px)
+                     if px and pd.notna(px) else float(p["invested"]))
+                acct = str(p.get("account", "") or "?")
+                fact = _pf(p["ticker"], cache_only=True)
+                theme = _pmt(_wl_desc.get(p["ticker"], ""),
+                             sector=(fact.sector if fact else None))
+                is_core = p["ticker"] in _etfset
+                rows_alloc.append({
+                    "label": f"{p['ticker']} ({acct})",
+                    "value": v,
+                    "theme": "ETF core" if is_core else theme,
+                    "kind": "Core (ETFs)" if is_core else "Satellite (stocks)",
+                })
+            adf = pd.DataFrame(rows_alloc)
+            if not adf.empty:
+                st.markdown("#### 🥧 Allocation")
+                c1, c2 = st.columns(2)
+                base = dict(innerRadius=48, outerRadius=95)
+                with c1:
+                    top = adf.nlargest(9, "value")
+                    rest = adf[~adf.index.isin(top.index)]["value"].sum()
+                    pie1 = pd.concat([top, pd.DataFrame(
+                        [{"label": "Other", "value": rest, "theme": "",
+                          "kind": ""}])]) if rest > 0 else top
+                    st.altair_chart(
+                        alt.Chart(pie1).mark_arc(**base).encode(
+                            theta=alt.Theta("value:Q"),
+                            color=alt.Color("label:N", legend=alt.Legend(
+                                title=None, labelLimit=140)),
+                            tooltip=["label:N",
+                                     alt.Tooltip("value:Q", format=",.0f")],
+                        ).properties(height=260, title="By holding"),
+                        use_container_width=True,
+                    )
+                with c2:
+                    tdf = adf.groupby("theme", as_index=False)["value"].sum()
+                    st.altair_chart(
+                        alt.Chart(tdf).mark_arc(**base).encode(
+                            theta=alt.Theta("value:Q"),
+                            color=alt.Color("theme:N", legend=alt.Legend(
+                                title=None, labelLimit=140)),
+                            tooltip=["theme:N",
+                                     alt.Tooltip("value:Q", format=",.0f")],
+                        ).properties(height=260, title="By theme"),
+                        use_container_width=True,
+                    )
+                core_v = adf[adf["kind"] == "Core (ETFs)"]["value"].sum()
+                st.caption(
+                    f"Core (ETFs) {core_v / adf['value'].sum() * 100.0:.0f}% "
+                    f"vs the Blueprint's 80% target — the rotation gap, "
+                    "drawn to scale."
+                )
+        except Exception:  # noqa: BLE001
+            pass
+
     # ---- Log a trade -------------------------------------------------------
     st.markdown("### ➕ Log a trade")
     with st.form("log_trade", clear_on_submit=True):
