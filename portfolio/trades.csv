@@ -22,4 +22,4 @@ eccdf1d374,2026-08-11,ISA,RGTI,buy,100.7559,16.8189,ISA import - avg cost from T
 729707019d,2026-08-11,ISA,SPCX,buy,10.3237,117.1393,ISA import - avg cost from T212 tape
 8b101fa1c1,2026-08-11,ISA,IIPR,buy,20.7666,51.44,ISA import - avg cost from T212 tape
 3ba3acf65d,2026-08-11,ISA,ARQQ,buy,61.2269,14.5431,ISA import - avg cost from T212 tape
-72f4c25093,2026-08-12,ISA,IIPR,buy,49.5809,59.00,User addition post-import (approx fill - correct me if avg differs)
+72f4c25093,2025-08-01,ISA,IIPR,buy,49.5809,59.00,Held pre-export window - basis APPROX pending T212 average price
