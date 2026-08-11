@@ -12166,6 +12166,16 @@
     "ticker": "NOVN",
     "why_it_matters": ""
   },
+  "NOW": {
+    "cap": "large",
+    "exchange": "?",
+    "market_cap_usd": 131858760426.52893,
+    "name": "NOW",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "NOW",
+    "why_it_matters": ""
+  },
   "NP": null,
   "NPF": null,
   "NPF.NZ": {
@@ -16584,6 +16594,16 @@
     "why_it_matters": ""
   },
   "SPCE": null,
+  "SPCX": {
+    "cap": "mega",
+    "exchange": "?",
+    "market_cap_usd": 1756999360368.33,
+    "name": "SPCX",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "SPCX",
+    "why_it_matters": ""
+  },
   "SPH": null,
   "SPHL": {
     "cap": "micro",
@@ -16742,7 +16762,16 @@
     "ticker": "SRTA",
     "why_it_matters": ""
   },
-  "SRXH": null,
+  "SRXH": {
+    "cap": "micro",
+    "exchange": "?",
+    "market_cap_usd": 35912815.211477995,
+    "name": "SRXH",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "SRXH",
+    "why_it_matters": ""
+  },
   "SSP": {
     "cap": "micro",
     "exchange": "NASDAQ",
