@@ -201,3 +201,35 @@ def test_adherence_matches_buys_within_window():
     assert bool(by["HIVE"]) is True
     assert bool(by["SKIP"]) is False
     assert bool(by["LATE"]) is False
+
+
+def test_same_ticker_two_accounts_stays_two_positions():
+    trades = pd.DataFrame([
+        {"id": "", "date": "2026-01-05", "account": "ISA", "ticker": "SLNH",
+         "side": "buy", "qty": 100, "price": 1.20, "note": ""},
+        {"id": "", "date": "2026-01-06", "account": "SIPP", "ticker": "SLNH",
+         "side": "buy", "qty": 50, "price": 3.00, "note": ""},
+    ])
+    pos, _ = positions_from_trades(trades)
+    assert len(pos) == 2                      # NOT blended
+    by = pos.set_index("account")
+    assert by.loc["ISA", "avg_cost"] == pytest.approx(1.20)
+    assert by.loc["SIPP", "avg_cost"] == pytest.approx(3.00)
+    #
+
+    # a sell in one wrapper never touches the other's basis
+    trades2 = pd.concat([trades, pd.DataFrame([
+        {"id": "", "date": "2026-02-01", "account": "ISA", "ticker": "SLNH",
+         "side": "sell", "qty": 100, "price": 2.00, "note": ""},
+    ])], ignore_index=True)
+    pos2, realised2 = positions_from_trades(trades2)
+    assert len(pos2) == 1
+    assert pos2.iloc[0]["account"] == "SIPP"
+    assert pos2.iloc[0]["qty"] == pytest.approx(50)
+    assert realised2.iloc[0]["account"] == "ISA"
+
+
+def test_accountless_trades_still_work():
+    trades = pd.DataFrame([_t("AAA", "buy", 10, 1.0, "2026-01-05")])
+    pos, _ = positions_from_trades(trades)
+    assert len(pos) == 1 and pos.iloc[0]["account"] == ""

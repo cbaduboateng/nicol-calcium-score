@@ -89,14 +89,16 @@ def main() -> int:
             if not breaches.empty or unpriced:
                 blines: list[str] = []
                 for _, b in breaches.iterrows():
+                    _acct = str(b.get("account", "") or "")
+                    _tag = f" [{_acct}]" if _acct else ""
                     if b["state"] == "breached":
                         blines.append(
-                            f"🛑 {b['ticker']}: close {b['close']:,.2f} ≤ stop "
+                            f"🛑 {b['ticker']}{_tag}: close {b['close']:,.2f} ≤ stop "
                             f"{b['stop']:,.2f} — THE RULE SAYS SELL"
                         )
                     else:
                         blines.append(
-                            f"⚠️ {b['ticker']}: close {b['close']:,.2f}, only "
+                            f"⚠️ {b['ticker']}{_tag}: close {b['close']:,.2f}, only "
                             f"{b['distance_pct']:+.1f}% above stop {b['stop']:,.2f}"
                         )
                 for t in unpriced:

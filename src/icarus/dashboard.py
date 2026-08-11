@@ -2445,10 +2445,12 @@ def _render_portfolio_tab(st) -> None:
     # ---- Log a trade -------------------------------------------------------
     st.markdown("### ➕ Log a trade")
     with st.form("log_trade", clear_on_submit=True):
-        f = st.columns([2, 1, 1, 1])
+        f = st.columns([2, 1, 1, 1, 1])
         with f[0]:
             t_ticker = st.text_input("Ticker", placeholder="HIVE")
         with f[1]:
+            t_account = st.selectbox("Account", ["ISA", "SIPP", ""])
+        with f[4]:
             t_side = st.selectbox("Side", ["buy", "sell"])
         with f[2]:
             t_qty = st.number_input("Quantity", min_value=0.0, step=1.0, format="%g")
@@ -2466,7 +2468,7 @@ def _render_portfolio_tab(st) -> None:
         else:
             trade = new_trade(
                 t_ticker, t_side, t_qty, t_price,
-                trade_date=t_date, note=t_note,
+                trade_date=t_date, note=t_note, account=t_account,
             )
             updated = normalise_trades(pd.concat(
                 [trades, pd.DataFrame([trade])], ignore_index=True,
@@ -2648,8 +2650,10 @@ def _render_portfolio_tab(st) -> None:
             note = f" · {row['note']}" if str(row.get("note") or "").strip() else ""
             # Short id suffix keeps labels unique even for identical
             # duplicate trades (the realistic delete target).
+            acct = str(row.get("account", "") or "")
+            acct_tag = f" [{acct}]" if acct else ""
             return (f"{row['date']}  {row['side']} {float(row['qty']):g} "
-                    f"{row['ticker']} @ {float(row['price']):g}{note} "
+                    f"{row['ticker']}{acct_tag} @ {float(row['price']):g}{note} "
                     f"· #{str(row['id'])[:6]}")
 
         options = {

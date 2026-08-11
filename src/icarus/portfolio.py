@@ -37,7 +37,7 @@ GITHUB_API = "https://api.github.com"
 PORTFOLIO_BRANCH = "portfolio-data"
 PORTFOLIO_PATH = "portfolio/trades.csv"
 
-TRADE_COLUMNS = ["id", "date", "ticker", "side", "qty", "price", "note"]
+TRADE_COLUMNS = ["id", "date", "account", "ticker", "side", "qty", "price", "note"]
 
 
 def empty_trades() -> pd.DataFrame:
@@ -46,11 +46,12 @@ def empty_trades() -> pd.DataFrame:
 
 def new_trade(
     ticker: str, side: str, qty: float, price: float,
-    trade_date: date | None = None, note: str = "",
+    trade_date: date | None = None, note: str = "", account: str = "",
 ) -> dict:
     return {
         "id": uuid.uuid4().hex[:10],
         "date": (trade_date or date.today()).isoformat(),
+        "account": account.strip().upper(),
         "ticker": ticker.strip().upper(),
         "side": side,
         "qty": float(qty),
@@ -66,7 +67,9 @@ def normalise_trades(df: pd.DataFrame) -> pd.DataFrame:
     out = df.copy()
     for col in TRADE_COLUMNS:
         if col not in out.columns:
-            out[col] = "" if col in ("id", "note") else None
+            out[col] = "" if col in ("id", "note", "account") else None
+    out["account"] = (out["account"].fillna("").astype(str).str.strip()
+                      .str.upper().replace({"NAN": "", "NONE": ""}))
     out["ticker"] = out["ticker"].astype(str).str.strip().str.upper()
     out["side"] = out["side"].astype(str).str.strip().str.lower()
     out = out[out["side"].isin(["buy", "sell"])]
@@ -96,17 +99,20 @@ def positions_from_trades(
     """
     if trades is None or trades.empty:
         return (
-            pd.DataFrame(columns=["ticker", "qty", "avg_cost", "invested"]),
+            pd.DataFrame(columns=["ticker", "account", "qty", "avg_cost", "invested"]),
             pd.DataFrame(columns=[
-                "date", "ticker", "qty", "sell_price", "avg_cost",
+                "date", "ticker", "account", "qty", "sell_price", "avg_cost",
                 "realised_pnl", "oversold",
             ]),
         )
     t = normalise_trades(trades)
-    holdings: dict[str, dict] = {}
+    # Positions are per (ticker, account): the same stock held in two
+    # wrappers is two positions with two cost bases and two stops —
+    # blending them distorts both.
+    holdings: dict[tuple[str, str], dict] = {}
     realised: list[dict] = []
     for _, tr in t.iterrows():
-        tk = tr["ticker"]
+        tk = (tr["ticker"], tr["account"])
         h = holdings.setdefault(tk, {"qty": 0.0, "avg": 0.0})
         if tr["side"] == "buy":
             new_qty = h["qty"] + tr["qty"]
@@ -121,7 +127,8 @@ def positions_from_trades(
             if sell_qty > 0:
                 realised.append({
                     "date": tr["date"],
-                    "ticker": tk,
+                    "ticker": tk[0],
+                    "account": tk[1],
                     "qty": sell_qty,
                     "sell_price": tr["price"],
                     "avg_cost": h["avg"],
@@ -131,21 +138,22 @@ def positions_from_trades(
                 h["qty"] -= sell_qty
             elif oversold:
                 realised.append({
-                    "date": tr["date"], "ticker": tk, "qty": 0.0,
+                    "date": tr["date"], "ticker": tk[0], "account": tk[1],
+                    "qty": 0.0,
                     "sell_price": tr["price"], "avg_cost": h["avg"],
                     "realised_pnl": 0.0, "oversold": True,
                 })
     open_rows = [
-        {"ticker": tk, "qty": h["qty"], "avg_cost": h["avg"],
-         "invested": h["qty"] * h["avg"]}
+        {"ticker": tk[0], "account": tk[1], "qty": h["qty"],
+         "avg_cost": h["avg"], "invested": h["qty"] * h["avg"]}
         for tk, h in holdings.items() if h["qty"] > 1e-9
     ]
     return (
         pd.DataFrame(open_rows).sort_values("invested", ascending=False)
         .reset_index(drop=True) if open_rows else
-        pd.DataFrame(columns=["ticker", "qty", "avg_cost", "invested"]),
+        pd.DataFrame(columns=["ticker", "account", "qty", "avg_cost", "invested"]),
         pd.DataFrame(realised) if realised else pd.DataFrame(columns=[
-            "date", "ticker", "qty", "sell_price", "avg_cost",
+            "date", "ticker", "account", "qty", "sell_price", "avg_cost",
             "realised_pnl", "oversold",
         ]),
     )
@@ -234,12 +242,18 @@ def fx_pnl_breakdown(
     if fx.empty:
         return None
     fx_now = float(fx.iloc[-1])
-    held = set(positions["ticker"].astype(str))
+    acct_col = ("account" if "account" in positions.columns else None)
+    held = (
+        set(zip(positions["ticker"].astype(str), positions[acct_col].astype(str)))
+        if acct_col else {(t, "") for t in positions["ticker"].astype(str)}
+    )
 
     usd_cost_total = 0.0
     gbp_cost_total = 0.0
-    for ticker in held:
+    for ticker, acct in held:
         tt = trades[trades["ticker"].astype(str) == ticker].copy()
+        if acct_col and "account" in trades.columns:
+            tt = tt[tt["account"].astype(str).str.upper() == acct]
         tt["date"] = pd.to_datetime(tt["date"], errors="coerce")
         tt = tt.dropna(subset=["date"]).sort_values("date")
         qty = usd_cost = gbp_cost = 0.0
@@ -629,6 +643,7 @@ def stop_breaches(
             continue
         rows.append({
             "ticker": p["ticker"],
+            "account": str(p.get("account", "") or ""),
             "qty": float(p["qty"]),
             "avg_cost": float(p["avg_cost"]),
             "stop": stop,
