@@ -72,6 +72,11 @@ def main() -> int:
             token=os.environ.get("PICKLOG_TOKEN", "").strip(),
         )
         positions, _ = positions_from_trades(pt)
+        from icarus.portfolio import load_stop_overrides
+        _ovr = load_stop_overrides(
+            "cbaduboateng/nicol-calcium-score",
+            token=os.environ.get("PICKLOG_TOKEN", "").strip(),
+        )
         if not positions.empty:
             closes: dict[str, float] = {}
             missing: list[str] = []
@@ -85,7 +90,7 @@ def main() -> int:
                 if q.get("price"):
                     closes[t] = q["price"]
             unpriced = [t for t in positions["ticker"] if t not in closes]
-            breaches = stop_breaches(positions, closes)
+            breaches = stop_breaches(positions, closes, overrides=_ovr)
             if not breaches.empty or unpriced:
                 blines: list[str] = []
                 for _, b in breaches.iterrows():
@@ -113,7 +118,7 @@ def main() -> int:
                     _rq.post(
                         f"{NTFY_SERVER}/{topic}",
                         data=("\n".join(blines)
-                              + "\n\nStops = avg cost −20% (Exit-Lab verdict). Not financial advice."
+                              + "\n\nStops = pinned override or avg cost −20%. Not financial advice."
                               ).encode("utf-8"),
                         headers={"Title": b_title.encode("utf-8"),
                                  "Priority": prio, "Tags": "rotating_light"},

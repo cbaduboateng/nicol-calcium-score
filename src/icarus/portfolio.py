@@ -350,6 +350,8 @@ def fetch_gbpusd() -> float | None:
 DEFAULT_PORTFOLIO_STOP_PCT = 0.20  # Exit-Lab verdict 2026-08-03
 PICKS_PATH = "portfolio/picks.csv"
 PICK_COLUMNS = ["date", "ticker", "adjusted_score", "pool"]
+STOPS_PATH = "portfolio/stops.csv"
+STOP_COLUMNS = ["ticker", "account", "stop_price", "note"]
 SCANS_PATH = "portfolio/scans.csv"
 SCAN_COLUMNS = ["scanned_at_utc", "n_curated_gems", "n_explorer_gems",
                 "pick", "best_score", "verdict", "gems", "gem_mentions"]
@@ -360,6 +362,7 @@ def portfolio_risk(
     quotes: dict[str, dict],
     *,
     stop_pct: float = DEFAULT_PORTFOLIO_STOP_PCT,
+    overrides: dict[tuple[str, str], float] | None = None,
 ) -> dict:
     """The number that prevents ruin: total loss if EVERY holding fell to
     its stop tomorrow. Positions already below their stop contribute
@@ -372,7 +375,9 @@ def portfolio_risk(
         q = quotes.get(p["ticker"]) or {}
         px = q.get("price")
         px = float(px) if px is not None and pd.notna(px) else float(p["avg_cost"])
-        stop = float(p["avg_cost"]) * (1.0 - stop_pct)
+        key = (str(p["ticker"]).upper(), str(p.get("account", "") or "").upper())
+        stop = float((overrides or {}).get(
+            key, float(p["avg_cost"]) * (1.0 - stop_pct)))
         value = float(p["qty"]) * px
         total_value += value
         if px <= stop:
@@ -522,6 +527,51 @@ def append_pick(token: str, repo: str, pick: dict) -> None:
     put.raise_for_status()
 
 
+def load_stop_overrides(
+    repo: str,
+    *, branch: str = PORTFOLIO_BRANCH, path: str = STOPS_PATH,
+    token: str = "",
+) -> dict[tuple[str, str], float]:
+    """Per-position stop overrides {(ticker, account): stop_price}.
+
+    Legacy/imported positions need GO-FORWARD stops (current price −20%
+    at adoption time) — their avg-cost stops are often long breached and
+    would nag forever. An override row pins the stop explicitly; absent
+    a row, the avg-cost convention applies."""
+    import requests
+    out: dict[tuple[str, str], float] = {}
+    try:
+        if token:
+            resp = requests.get(
+                f"{GITHUB_API}/repos/{repo}/contents/{path}",
+                params={"ref": branch}, headers=_gh_headers(token), timeout=20,
+            )
+            if resp.status_code == 404:
+                return out
+            resp.raise_for_status()
+            text = base64.b64decode(resp.json()["content"]).decode("utf-8")
+        else:
+            resp = requests.get(
+                f"https://raw.githubusercontent.com/{repo}/{branch}/{path}",
+                timeout=20,
+            )
+            if resp.status_code == 404 or not resp.text.strip():
+                return out
+            resp.raise_for_status()
+            text = resp.text
+        df = pd.read_csv(io.StringIO(text), dtype=str)
+        for _, r in df.iterrows():
+            try:
+                out[(str(r["ticker"]).upper().strip(),
+                     str(r.get("account", "") or "").upper().strip())] = float(
+                    r["stop_price"])
+            except (TypeError, ValueError, KeyError):
+                continue
+    except Exception as exc:  # noqa: BLE001
+        log.warning("Stop-override read failed (%s)", exc)
+    return out
+
+
 def append_scan(token: str, repo: str, scan: dict, *, keep_last: int = 200) -> None:
     """Append one scan verdict to scans.csv on the data branch.
 
@@ -611,6 +661,7 @@ def stop_breaches(
     *,
     stop_pct: float = DEFAULT_PORTFOLIO_STOP_PCT,
     warn_within_pct: float = 3.0,
+    overrides: dict[tuple[str, str], float] | None = None,
 ) -> pd.DataFrame:
     """The most valuable alert the app can send: 'your rule says sell'.
 
@@ -631,7 +682,9 @@ def stop_breaches(
         close = latest_closes.get(p["ticker"])
         if close is None or not pd.notna(close) or close <= 0:
             continue
-        stop = float(p["avg_cost"]) * (1.0 - stop_pct)
+        key = (str(p["ticker"]).upper(), str(p.get("account", "") or "").upper())
+        stop = float((overrides or {}).get(
+            key, float(p["avg_cost"]) * (1.0 - stop_pct)))
         if stop <= 0:
             continue
         distance_pct = (float(close) - stop) / stop * 100.0
