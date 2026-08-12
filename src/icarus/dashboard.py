@@ -2460,7 +2460,47 @@ def _render_portfolio_tab(st) -> None:
             "to open its chart on the Watchlist tab."
         )
 
-        # ---- 🥧 Allocation donuts ------------------------------------------
+        # ---- 🩺 Holdings health (informs, never exits) -------------------------
+    if totals["n_positions"]:
+        with st.expander("🩺 Holdings health — dynamic assessment (never an exit signal)"):
+            st.caption(
+                "Live context per position: P&L, stop distance, momentum and "
+                "🚨 falsifier headlines (dilution / going-concern / delisting "
+                "language). **By charter this card cannot sell** — the "
+                "thesis-exit experiment (ledger #25) proved momentum wobble "
+                "exits gut returns; exits remain stop · target · timeout · "
+                "written falsifiers only."
+            )
+            try:
+                from .holding_health import assess_holding
+                from .portfolio import load_stop_overrides as _lso
+                from .watchlist_alerts import fetch_price_history as _fph
+                _hovr = _lso(repo, token=token)
+                _htick = sorted(set(positions["ticker"].astype(str)))
+                _hhist = _fph(_htick, period="1y")
+                for _, hp in positions.iterrows():
+                    hk = (str(hp["ticker"]).upper(),
+                          str(hp.get("account", "") or "").upper())
+                    stopv = _hovr.get(hk, float(hp["avg_cost"]) * 0.8)
+                    card = assess_holding(
+                        hp["ticker"], hp.to_dict(),
+                        _hhist.get(hp["ticker"]), stop_price=stopv,
+                    )
+                    acct = str(hp.get("account", "") or "")
+                    flag = " 🚨" if card["falsifier_tags"] else ""
+                    st.markdown(
+                        f"**{card['ticker']}**"
+                        + (f" `{acct}`" if acct else "")
+                        + f"{flag} — {card['line']}"
+                    )
+                    if card["falsifier_sample"]:
+                        st.caption(f"  ↳ “{card['falsifier_sample']}” — read "
+                                   "it; a fact falsifier means exit next "
+                                   "session, any price.")
+            except Exception as exc:  # noqa: BLE001
+                st.caption(f"Health cards unavailable this refresh ({exc})")
+
+    # ---- 🥧 Allocation donuts ------------------------------------------
         try:
             import altair as alt
 

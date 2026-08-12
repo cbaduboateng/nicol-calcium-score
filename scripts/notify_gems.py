@@ -128,6 +128,36 @@ def main() -> int:
     except Exception as exc:  # noqa: BLE001
         log.warning("Stop-breach check failed (%s)", exc)
 
+    # ---- 🚨 Falsifier-headline sweep on held names ------------------------
+    # Facts kill theses (ledger #25): dilution / going-concern / delisting
+    # language on a HELD name warrants a same-day human read.
+    try:
+        from icarus.holding_health import fetch_falsifier_flags
+        if not positions.empty:
+            flags = fetch_falsifier_flags(
+                sorted(set(positions["ticker"].astype(str))))
+            if flags and topic:
+                import requests as _rq2
+                flines = [
+                    f"🚨 {t}: {', '.join(d['tags'])} — “{d['sample']}”"
+                    for t, d in flags.items()
+                ]
+                _rq2.post(
+                    f"{NTFY_SERVER}/{topic}",
+                    data=("\n".join(flines)
+                          + "\n\nFact falsifiers demand a read TODAY - if "
+                            "real, the rule is exit next session, any price."
+                          ).encode("utf-8"),
+                    headers={"Title": "🚨 Falsifier headlines on holdings".encode("utf-8"),
+                             "Priority": "urgent", "Tags": "warning"},
+                    timeout=30,
+                )
+                log.info("Pushed %d falsifier flags", len(flines))
+            elif flags:
+                log.info("Falsifier flags (no topic): %s", list(flags))
+    except Exception as exc:  # noqa: BLE001
+        log.warning("Falsifier sweep failed (%s)", exc)
+
     pattern = learn_target_pattern(watchlist, history)
     if pattern is not None:
         watchlist = derive_targets(watchlist, history, pattern)
