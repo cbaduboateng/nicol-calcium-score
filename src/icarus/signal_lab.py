@@ -89,6 +89,7 @@ class ExitVariant:
     trail_low_days: int | None = None   # exit on close below the N-day low
     take_half_at_pct: float | None = None  # realise half at +X%, ride the rest
     use_target: bool = True             # False = pure trend-follow, no target
+    exit_neg_mom_days: int | None = None  # exit when trailing N-day momentum < 0
 
 
 DEFAULT_EXIT_VARIANTS: tuple[ExitVariant, ...] = (
@@ -100,6 +101,11 @@ DEFAULT_EXIT_VARIANTS: tuple[ExitVariant, ...] = (
     ExitVariant("take half at +30%", take_half_at_pct=30.0),
     ExitVariant("trend only: trail, no target",
                 trail_low_days=20, use_target=False, timeout_days=365),
+    # Thesis exits: sell when the momentum that admitted us has flipped.
+    ExitVariant("thesis exit: 3m momentum flips + 20% stop",
+                stop_pct=0.20, exit_neg_mom_days=63),
+    ExitVariant("thesis exit: 6m momentum flips + 20% stop",
+                stop_pct=0.20, exit_neg_mom_days=126),
 )
 
 
@@ -108,6 +114,7 @@ def _mark_forward_exit(
     roll_low: pd.Series | None,
     sig: dict,
     v: ExitVariant,
+    mom: pd.Series | None = None,
 ) -> dict:
     """Walk one entry forward under an exit policy. Conservative ordering
     per bar: stop, then trailing, then target, then timeout. With
@@ -139,6 +146,10 @@ def _mark_forward_exit(
             low = roll_low.get(ts, np.nan)
             if np.isfinite(low) and px < float(low):
                 reason = "trail"
+        if (reason is None and v.exit_neg_mom_days and mom is not None):
+            m = mom.get(ts, np.nan)
+            if np.isfinite(m) and float(m) < 0.0:
+                reason = "thesis"          # the setup that admitted us is gone
         if reason is None and target is not None and pd.notna(target) and px >= float(target):
             reason = "target"
         if reason is None and ts >= timeout_d:
@@ -191,6 +202,12 @@ def compare_exit_variants(
                 t: s.rolling(v.trail_low_days).min().shift(1)
                 for t, s in series_by_ticker.items()
             }
+        mom_by_ticker: dict[str, pd.Series] = {}
+        if v.exit_neg_mom_days:
+            mom_by_ticker = {
+                t: s.pct_change(v.exit_neg_mom_days, fill_method=None)
+                for t, s in series_by_ticker.items()
+            }
         marked: list[dict] = []
         for _, sig in entries.iterrows():
             s = series_by_ticker.get(sig["ticker"])
@@ -198,6 +215,7 @@ def compare_exit_variants(
                 continue
             m = _mark_forward_exit(
                 s, roll_by_ticker.get(sig["ticker"]), sig.to_dict(), v,
+                mom=mom_by_ticker.get(sig["ticker"]),
             )
             m["signal_date"] = sig["signal_date"]
             marked.append(m)
