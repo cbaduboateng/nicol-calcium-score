@@ -1,6 +1,6 @@
 ticker,account,stop_price,note
-SLNH,ISA,1.02,keep (crypto thesis) - ratcheted 11 Aug
-SLNH,SIPP,0.98,probation to Aug 13 earnings - exit into strength or on stop
+SLNH,ISA,1.13,"EARNINGS 13 AUG (release ~21:00 UK, call 22:00): trim to ~1,650 sh into strength; keeper floor ratcheted pre-print"
+SLNH,SIPP,1.13,"EARNINGS 13 AUG (release ~21:00 UK, call 22:00): SIPP lot exits INTO strength during Thu session per plan"
 AQB,ISA,1.09,system pick - fill-based stop
 DDD,SIPP,2.92,system pick - fill-based stop
 FIG,SIPP,18.63,keep (recovering business) - go-forward stop
