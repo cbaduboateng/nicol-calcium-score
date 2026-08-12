@@ -8,7 +8,7 @@ ARQQ,ISA,19.20,keep (quantum ticket) - ratcheted under quantum rally 11 Aug
 SPCX,ISA,106.00,keep (SpaceX) - ratcheted 11 Aug
 NOW,SIPP,88.98,keep (quality) - go-forward stop
 IIPR,ISA,47.33,keep (quality/income) - go-forward stop
-IREN,ISA,29.44,either/or vs SLNH pending - go-forward stop
+IREN,ISA,29.44,"EXIT WINDOW: sells by Fri 14 Aug close, sooner into any pop; stop 29.44 guards meanwhile"
 SNAP,SIPP,4.26,rotate-lean - stop caps bleeding while queued
 SMR,ISA,7.86,rotate-lean - stop caps bleeding while queued
 RGTI,ISA,14.45,rotate-lean - ratcheted under quantum rally 11 Aug
@@ -16,7 +16,7 @@ JKS,SIPP,13.61,rotate - stop caps bleeding while queued
 MNTS,SIPP,3.24,rotate - stop caps bleeding while queued
 WWR,SIPP,0.62,rotate - stop caps bleeding while queued
 SRXH,ISA,1.49,rotate - ratchet #2 - bounce continues; trail weekly
-KITT,ISA,0.70,rotate - stop caps bleeding while queued
+KITT,ISA,0.70,"EXIT WINDOW: sells 13 Aug after Ondas print - into pop or at market, no third outcome"
 LITS,SIPP,0.77,rotate - stop caps bleeding while queued
 SBET,SIPP,5.14,rotate - stop caps bleeding while queued
 OMG.L,SIPP,30.64,rotate-lean - stop caps bleeding while queued (GBX)
