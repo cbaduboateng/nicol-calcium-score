@@ -24,6 +24,8 @@ import logging
 import numpy as np
 import pandas as pd
 
+from .portfolio import native_to_usd
+
 log = logging.getLogger(__name__)
 
 DEFAULT_CORE_WEIGHT = 0.80
@@ -104,8 +106,9 @@ def classify_holdings(
             t = str(p["ticker"]).upper()
             q = quotes.get(t) or {}
             px = q.get("price")
-            v = (float(p["qty"]) * float(px)
-                 if px and pd.notna(px) else float(p["invested"]))
+            v = native_to_usd(
+                t, float(p["qty"]) * float(px)
+                if px and pd.notna(px) else float(p["invested"]))
             if t in etf_symbols:
                 core_v += v
                 core_names.append(t)
@@ -184,8 +187,9 @@ def plan_progress(positions: pd.DataFrame, quotes: dict[str, dict]) -> dict:
             held.add(t)
             q = quotes.get(t) or {}
             px = q.get("price")
-            v = (float(p["qty"]) * float(px)
-                 if px and pd.notna(px) else float(p["invested"]))
+            v = native_to_usd(
+                t, float(p["qty"]) * float(px)
+                if px and pd.notna(px) else float(p["invested"]))
             total += v
             if t not in plan["core"]:
                 stock += v

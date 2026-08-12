@@ -233,3 +233,19 @@ def test_accountless_trades_still_work():
     trades = pd.DataFrame([_t("AAA", "buy", 10, 1.0, "2026-01-05")])
     pos, _ = positions_from_trades(trades)
     assert len(pos) == 1 and pos.iloc[0]["account"] == ""
+
+
+def test_totals_convert_gbx_lines_instead_of_summing_pence():
+    from icarus.portfolio import portfolio_totals
+    trades = pd.DataFrame([
+        _t("AAPL", "buy", 10, 100.0, "2026-01-05"),      # $1,000
+        {"id": "", "date": "2026-01-05", "ticker": "INRG.L", "side": "buy",
+         "qty": 100, "price": 700.0, "note": ""},         # 70,000 GBX = £700
+    ])
+    pos, _ = positions_from_trades(trades)
+    t = portfolio_totals(pos, {}, gbpusd=1.35)
+    # £700 x 1.35 = $945; NOT 70,000 "dollars"
+    assert t["invested"] == pytest.approx(1000.0 + 945.0)
+    q = {"AAPL": {"price": 110.0}, "INRG.L": {"price": 770.0}}
+    t2 = portfolio_totals(pos, q, gbpusd=1.35)
+    assert t2["value"] == pytest.approx(1100.0 + 770.0 * 100 / 100 * 1.35)

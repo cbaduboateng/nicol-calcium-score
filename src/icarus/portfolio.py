@@ -39,6 +39,21 @@ PORTFOLIO_PATH = "portfolio/trades.csv"
 
 TRADE_COLUMNS = ["id", "date", "account", "ticker", "side", "qty", "price", "note"]
 
+# London lines quote in GBX (pence). Everything else in the book is USD.
+DEFAULT_GBPUSD = 1.35
+
+
+def is_gbx(ticker: str) -> bool:
+    return str(ticker).upper().endswith(".L")
+
+
+def native_to_usd(ticker: str, amount: float, gbpusd: float | None = None) -> float:
+    """Convert a native-quoted amount (GBX for .L lines, USD otherwise)
+    into USD so cross-currency positions can be summed honestly."""
+    if is_gbx(ticker):
+        return amount / 100.0 * (gbpusd or DEFAULT_GBPUSD)
+    return amount
+
 
 def empty_trades() -> pd.DataFrame:
     return pd.DataFrame(columns=TRADE_COLUMNS)
@@ -162,23 +177,29 @@ def positions_from_trades(
 def portfolio_totals(
     positions: pd.DataFrame,
     quotes: dict[str, dict],
+    *,
+    gbpusd: float | None = None,
 ) -> dict:
-    """Aggregate live value / unrealised / day P&L across holdings.
-    ``quotes``: {ticker: {"price": float, "prev_close": float|None}}."""
+    """Aggregate live value / unrealised / day P&L across holdings, in
+    USD. GBX-quoted .L lines are converted so pence never sum with
+    dollars. ``quotes``: {ticker: {"price": float, "prev_close": ...}}."""
     value = invested = day_pnl = 0.0
     priced = 0
     for _, p in positions.iterrows():
-        q = quotes.get(p["ticker"]) or {}
+        t = p["ticker"]
+        q = quotes.get(t) or {}
         px = q.get("price")
-        invested += float(p["invested"])
+        inv_usd = native_to_usd(t, float(p["invested"]), gbpusd)
+        invested += inv_usd
         if px is None or not pd.notna(px):
-            value += float(p["invested"])  # fall back to cost basis
+            value += inv_usd               # fall back to cost basis
             continue
         priced += 1
-        value += float(p["qty"]) * float(px)
+        value += native_to_usd(t, float(p["qty"]) * float(px), gbpusd)
         prev = q.get("prev_close")
         if prev is not None and pd.notna(prev) and prev > 0:
-            day_pnl += float(p["qty"]) * (float(px) - float(prev))
+            day_pnl += native_to_usd(
+                t, float(p["qty"]) * (float(px) - float(prev)), gbpusd)
     return {
         "value": value,
         "invested": invested,
@@ -266,8 +287,12 @@ def fx_pnl_breakdown(
                 rate_idx = fx.index.searchsorted(tr["date"], side="right") - 1
                 rate = float(fx.iloc[max(rate_idx, 0)])
                 qty += q
-                usd_cost += q * p
-                gbp_cost += q * p / rate
+                if is_gbx(ticker):
+                    usd_cost += q * p / 100.0 * rate   # GBX -> USD at trade date
+                    gbp_cost += q * p / 100.0          # GBX -> GBP, no FX
+                else:
+                    usd_cost += q * p
+                    gbp_cost += q * p / rate
             else:
                 if qty <= 0:
                     continue
@@ -284,9 +309,11 @@ def fx_pnl_breakdown(
     for _, p in positions.iterrows():
         q = quotes.get(str(p["ticker"])) or {}
         px = q.get("price")
-        value_usd += (
+        value_usd += native_to_usd(
+            str(p["ticker"]),
             float(p["qty"]) * float(px)
-            if px and pd.notna(px) else float(p["invested"])
+            if px and pd.notna(px) else float(p["invested"]),
+            fx_now,
         )
     value_gbp = value_usd / fx_now
 
@@ -378,12 +405,12 @@ def portfolio_risk(
         key = (str(p["ticker"]).upper(), str(p.get("account", "") or "").upper())
         stop = float((overrides or {}).get(
             key, float(p["avg_cost"]) * (1.0 - stop_pct)))
-        value = float(p["qty"]) * px
+        value = native_to_usd(p["ticker"], float(p["qty"]) * px)
         total_value += value
         if px <= stop:
             n_below += 1
             continue
-        total_risk += float(p["qty"]) * (px - stop)
+        total_risk += native_to_usd(p["ticker"], float(p["qty"]) * (px - stop))
     return {
         "risk_at_stops": total_risk,
         "risk_pct_of_value": (total_risk / total_value * 100.0) if total_value > 0 else 0.0,

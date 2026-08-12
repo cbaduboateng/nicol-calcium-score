@@ -2291,7 +2291,20 @@ def _render_portfolio_tab(st) -> None:
                 st.session_state["portfolio_quotes_cache"] = (
                     held, _time.time(), quotes,
                 )
-    totals = portfolio_totals(positions, quotes)
+    _gbpusd_now = None
+    try:
+        from .portfolio import fetch_gbpusd as _fgx
+        import time as _t0
+        _fxc = st.session_state.get("gbpusd_cache")
+        if _fxc and _t0.time() - _fxc[0] < 900:
+            _gbpusd_now = _fxc[1]
+        else:
+            _gbpusd_now = _fgx()
+            if _gbpusd_now:
+                st.session_state["gbpusd_cache"] = (_t0.time(), _gbpusd_now)
+    except Exception:  # noqa: BLE001
+        pass
+    totals = portfolio_totals(positions, quotes, gbpusd=_gbpusd_now)
     realised_total = float(realised["realised_pnl"].sum()) if not realised.empty else 0.0
 
     # ---- Hero --------------------------------------------------------------
@@ -2420,7 +2433,10 @@ def _render_portfolio_tab(st) -> None:
                 if px and prev and pd.notna(px) and pd.notna(prev) and prev > 0
                 else None
             )
-            value = float(p["qty"]) * float(px) if px and pd.notna(px) else float(p["invested"])
+            from .portfolio import native_to_usd as _n2u
+            value = _n2u(str(p["ticker"]),
+                         float(p["qty"]) * float(px)
+                         if px and pd.notna(px) else float(p["invested"]))
             unreal_pct = (
                 (value / float(p["invested"]) - 1.0) * 100.0
                 if float(p["invested"]) > 0 else 0.0
@@ -2463,8 +2479,10 @@ def _render_portfolio_tab(st) -> None:
             for _, p in positions.iterrows():
                 q = quotes.get(p["ticker"]) or {}
                 px = q.get("price")
-                v = (float(p["qty"]) * float(px)
-                     if px and pd.notna(px) else float(p["invested"]))
+                from .portfolio import native_to_usd as _n2u
+                v = _n2u(str(p["ticker"]),
+                         float(p["qty"]) * float(px)
+                         if px and pd.notna(px) else float(p["invested"]))
                 acct = str(p.get("account", "") or "?")
                 fact = _pf(p["ticker"], cache_only=True)
                 theme = _pmt(_wl_desc.get(p["ticker"], ""),
