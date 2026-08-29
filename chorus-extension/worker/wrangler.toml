@@ -1,0 +1,7 @@
+name = "chorus-selector-packs"
+main = "src/index.js"
+compatibility_date = "2026-01-01"
+
+# Free tier is ample: the extension fetches at most twice a day per install,
+# and responses are cached for an hour.
+workers_dev = true

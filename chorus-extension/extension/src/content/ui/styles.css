@@ -1,0 +1,197 @@
+/*
+ * Injected into the host page, so every rule is namespaced under .chorus- and
+ * uses inset box-shadow rather than borders: adding a border to a comment in a
+ * virtualised feed causes layout shift and makes the page jump while scrolling.
+ */
+
+.chorus-marked {
+  position: relative;
+  transition: box-shadow 120ms ease-out;
+}
+
+.chorus-band-coordinated {
+  box-shadow: inset 4px 0 0 0 #d1344b;
+  background: rgba(209, 52, 75, 0.05);
+}
+
+.chorus-band-suspicious {
+  box-shadow: inset 4px 0 0 0 #d98324;
+  background: rgba(217, 131, 36, 0.045);
+}
+
+.chorus-band-weak {
+  box-shadow: inset 4px 0 0 0 #8a94a6;
+}
+
+.chorus-dimmed {
+  opacity: 0.35;
+  filter: grayscale(0.6);
+}
+
+.chorus-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 0 2px;
+  padding: 3px 9px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  background: transparent;
+  font: 500 12px/1.4 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  cursor: pointer;
+  max-width: 100%;
+}
+
+.chorus-chip:hover { background: rgba(127, 127, 127, 0.12); }
+.chorus-chip:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+
+.chorus-chip-coordinated { color: #d1344b; }
+.chorus-chip-suspicious { color: #b5701c; }
+.chorus-chip-weak { color: #6b7280; }
+
+.chorus-chip-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: 0 0 auto;
+}
+
+/* ---- detail popover ---- */
+
+.chorus-popover {
+  position: fixed;
+  z-index: 2147483646;
+  width: min(380px, calc(100vw - 24px));
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #16181c;
+  border: 1px solid #d7dbe0;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);
+  font: 13px/1.5 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.chorus-popover h3 {
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.chorus-popover .chorus-band-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.chorus-finding {
+  padding: 9px 0;
+  border-top: 1px solid #eceef0;
+}
+
+.chorus-finding-label {
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.chorus-finding-detail { color: #4a5057; }
+
+.chorus-caveat {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid #eceef0;
+  color: #5b6169;
+  font-size: 12px;
+}
+
+.chorus-popover-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.chorus-btn {
+  padding: 6px 11px;
+  border-radius: 8px;
+  border: 1px solid #d7dbe0;
+  background: #f6f7f9;
+  color: inherit;
+  font: 500 12px/1.3 inherit;
+  cursor: pointer;
+}
+
+.chorus-btn:hover { background: #eceef1; }
+
+/* ---- thread summary panel ---- */
+
+.chorus-panel {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 2147483645;
+  width: 268px;
+  padding: 13px 15px;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #16181c;
+  border: 1px solid #d7dbe0;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
+  font: 13px/1.45 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.chorus-panel-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 650;
+  margin-bottom: 8px;
+}
+
+.chorus-panel-close {
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  color: #6b7280;
+  padding: 2px 4px;
+}
+
+.chorus-stat {
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 0;
+}
+
+.chorus-stat-value { font-variant-numeric: tabular-nums; font-weight: 600; }
+
+.chorus-clean {
+  color: #4a5057;
+}
+
+@media (prefers-color-scheme: dark) {
+  .chorus-popover,
+  .chorus-panel {
+    background: #16181c;
+    color: #e7e9ea;
+    border-color: #2f3336;
+  }
+  .chorus-finding,
+  .chorus-caveat,
+  .chorus-popover .chorus-finding { border-color: #2f3336; }
+  .chorus-finding-detail,
+  .chorus-caveat,
+  .chorus-clean { color: #9aa0a6; }
+  .chorus-btn {
+    background: #202327;
+    border-color: #2f3336;
+  }
+  .chorus-btn:hover { background: #2a2e33; }
+  .chorus-chip-suspicious { color: #e8973a; }
+  .chorus-chip-weak { color: #8b939e; }
+}

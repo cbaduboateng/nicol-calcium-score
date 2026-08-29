@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chorus settings</title>
+<style>
+  :root { color-scheme: light dark; }
+  body {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 32px 24px 64px;
+    font: 14px/1.6 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #fff;
+    color: #16181c;
+  }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  h2 { font-size: 15px; margin: 32px 0 8px; }
+  .lede { color: #5b6169; margin: 0 0 8px; }
+  label.row {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 10px 0; border-top: 1px solid #eceef0;
+  }
+  label.row input { margin-top: 4px; }
+  .row-text strong { display: block; font-weight: 600; }
+  .row-text span { color: #5b6169; font-size: 13px; }
+  textarea {
+    width: 100%; min-height: 72px; padding: 8px 10px; border-radius: 8px;
+    border: 1px solid #d7dbe0; font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+    background: #fbfbfc; color: inherit; resize: vertical;
+  }
+  button {
+    padding: 8px 14px; border-radius: 8px; border: 1px solid #d7dbe0;
+    background: #f6f7f9; color: inherit; font: 500 13px inherit; cursor: pointer;
+  }
+  button:hover { background: #eceef1; }
+  button.danger { border-color: #e5b4bc; color: #b3253c; }
+  .stats { padding: 12px 14px; border-radius: 10px; background: #f6f7f9; margin: 12px 0; }
+  .saved { color: #1a7f43; font-size: 13px; margin-left: 10px; }
+  .caution {
+    margin-top: 8px; padding: 14px 16px; border-radius: 10px;
+    background: #fdf6ec; border: 1px solid #f0dcc0; color: #6b4d1c; font-size: 13px;
+  }
+  @media (prefers-color-scheme: dark) {
+    body { background: #16181c; color: #e7e9ea; }
+    .lede, .row-text span { color: #9aa0a6; }
+    label.row { border-color: #2f3336; }
+    textarea, button, .stats { background: #202327; border-color: #2f3336; }
+    .caution { background: #26200f; border-color: #4a3c1c; color: #e2c893; }
+  }
+</style>
+</head>
+<body>
+  <h1>Chorus settings</h1>
+  <p class="lede">Highlights replies that repeat the same wording across many accounts.</p>
+
+  <div class="caution">
+    <strong>What this tool does and does not tell you.</strong>
+    Chorus reports observable facts: identical or near-identical wording posted by
+    multiple accounts, shared sentence templates, and reply bursts. It does not
+    determine whether an account is automated, and it deliberately contains no
+    stylometric &ldquo;was this written by AI&rdquo; scoring, because such detectors are
+    unreliable on short text and misfire on people writing in a second language.
+    Repeated wording has innocent explanations. Read the evidence before concluding
+    anything about a person.
+  </div>
+
+  <h2>Display</h2>
+  <label class="row">
+    <input type="checkbox" id="enabled">
+    <span class="row-text"><strong>Analyse comment sections</strong>
+    <span>Turn the whole extension off without uninstalling it.</span></span>
+  </label>
+  <label class="row">
+    <input type="checkbox" id="showWeak">
+    <span class="row-text"><strong>Show weak signals</strong>
+    <span>Include circumstantial markers such as default avatars. Noisy, and never sufficient on its own.</span></span>
+  </label>
+  <label class="row">
+    <input type="checkbox" id="hidePanel">
+    <span class="row-text"><strong>Hide the thread summary panel</strong>
+    <span>Keep the inline markers but drop the floating box.</span></span>
+  </label>
+
+  <h2>Cross-thread memory</h2>
+  <label class="row">
+    <input type="checkbox" id="memoryEnabled">
+    <span class="row-text"><strong>Remember wording across threads</strong>
+    <span>Stores a fingerprint of each reply&rsquo;s wording, the handle, and which thread it
+    appeared in &mdash; never the text itself. Stays on this device and is never uploaded.
+    This is what lets Chorus notice an account posting the same line in many places.</span></span>
+  </label>
+
+  <div class="stats" id="stats">Loading memory statistics&hellip;</div>
+  <button id="clearMemory" class="danger" type="button">Erase stored memory</button>
+
+  <h2>Sites to skip</h2>
+  <p class="lede">One hostname per line. Chorus will not run on these.</p>
+  <textarea id="disabledHosts" spellcheck="false" aria-label="Hostnames to skip"></textarea>
+
+  <p style="margin-top:20px">
+    <button id="save" type="button">Save settings</button>
+    <span class="saved" id="saved" hidden>Saved</span>
+  </p>
+
+  <script src="options.js" type="module"></script>
+</body>
+</html>
