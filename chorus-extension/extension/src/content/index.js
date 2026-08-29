@@ -143,7 +143,8 @@ async function run() {
 
     const analysis = analyzeThread({ comments: plain, memory });
 
-    state.overlay.clear();
+    // No clear() here: render() reconciles against what is already painted so
+    // scrolling does not tear down and rebuild every mark.
     state.overlay.render(analysis, elementsById, {
       showWeak: state.settings.showWeak,
       hidePanel: state.settings.hidePanel,

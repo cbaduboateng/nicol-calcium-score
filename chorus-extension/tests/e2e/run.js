@@ -102,6 +102,48 @@ async function main() {
   assert.ok(/\d+ accounts/.test(popover), 'popover should quantify the accounts involved');
   assert.ok(/innocent explanations|campaigns/i.test(popover), 'popover should carry a caveat');
 
+  // --- marks must survive re-analysis without being rebuilt ----------------
+  //
+  // Scrolling a real feed mutates the DOM constantly, which re-runs analysis.
+  // If rendering tore everything down each pass the page would flicker, so
+  // stamp the live chips, provoke a mutation the way a scroll-load would, and
+  // confirm the very same nodes are still there afterwards.
+  await page.evaluate(() => {
+    document.querySelectorAll('.chorus-chip').forEach((chip, i) => {
+      chip.dataset.probe = String(i);
+    });
+    const article = document.createElement('article');
+    article.setAttribute('data-testid', 'tweet');
+    article.innerHTML =
+      '<div data-testid="User-Name"><span>Late Arrival</span><span>@late_arrival</span>' +
+      '<time datetime="2026-08-29T13:05:00Z">55m</time></div>' +
+      '<div data-testid="tweetText">Just found this thread, adding my own thoughts late</div>';
+    document.querySelector('main').appendChild(article);
+  });
+  await page.waitForTimeout(1500);
+
+  const afterMutation = await page.evaluate(() => ({
+    chips: document.querySelectorAll('.chorus-chip').length,
+    survivingProbes: document.querySelectorAll('.chorus-chip[data-probe]').length,
+    marked: document.querySelectorAll('.chorus-marked').length,
+    panels: document.querySelectorAll('.chorus-panel').length,
+    lateMarked: !!document
+      .querySelector('article:last-of-type')
+      ?.classList.contains('chorus-marked'),
+  }));
+  console.log('\n--- after DOM mutation ---');
+  console.log(afterMutation);
+
+  assert.equal(afterMutation.chips, 6, 'chips should not be duplicated after re-analysis');
+  assert.equal(
+    afterMutation.survivingProbes,
+    6,
+    'existing chips were destroyed and rebuilt - this would flicker while scrolling'
+  );
+  assert.equal(afterMutation.marked, 6, 'marks should be stable across re-analysis');
+  assert.equal(afterMutation.panels, 1, 'exactly one summary panel should exist');
+  assert.equal(afterMutation.lateMarked, false, 'a new organic reply should stay unmarked');
+
   await page.screenshot({ path: path.join(outDir, 'thread.png'), fullPage: true });
   await page.setViewportSize({ width: 700, height: 900 });
   await page.screenshot({ path: path.join(outDir, 'popover.png') });

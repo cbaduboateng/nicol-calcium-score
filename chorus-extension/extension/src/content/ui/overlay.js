@@ -37,36 +37,47 @@ function summarisePrimary(result) {
   return primary ? primary.label : null;
 }
 
+const BAND_CLASSES = [
+  'chorus-band-coordinated',
+  'chorus-band-suspicious',
+  'chorus-band-weak',
+];
+
 export class Overlay {
   constructor(doc) {
     this.doc = doc;
-    this.marked = new Set();
+    /** element -> {band, chipText, dimmed} describing what is currently painted. */
+    this.marks = new Map();
     this.popover = null;
     this.panel = null;
+    this.panelSignature = null;
     this.onDismiss = null;
   }
 
   /** Remove every trace of the extension from the page. */
   clear() {
-    for (const el of this.marked) {
-      el.classList.remove(
-        'chorus-marked',
-        'chorus-band-coordinated',
-        'chorus-band-suspicious',
-        'chorus-band-weak',
-        'chorus-dimmed'
-      );
-    }
-    this.marked.clear();
+    for (const el of [...this.marks.keys()]) this.unmark(el);
+    this.marks.clear();
     for (const chip of this.doc.querySelectorAll('.chorus-chip')) chip.remove();
     this.closePopover();
     this.panel?.remove();
     this.panel = null;
+    this.panelSignature = null;
   }
 
+  /**
+   * Reconcile the page against the latest report.
+   *
+   * Analysis re-runs whenever the feed mutates, which during active scrolling
+   * is several times a second. Tearing every mark down and rebuilding it would
+   * make the page visibly flicker and would close the popover under the user's
+   * cursor, so this diffs against what is already painted and touches only
+   * what actually changed.
+   */
   render(report, elementsById, options = {}) {
     const { showWeak = false, focusClusterId = null } = options;
 
+    const desired = new Map();
     for (const result of report.comments) {
       const element = elementsById.get(result.id);
       if (!element) continue;
@@ -75,43 +86,97 @@ export class Overlay {
         result.band === 'coordinated' ||
         result.band === 'suspicious' ||
         (result.band === 'weak' && showWeak);
-
       if (!visible) continue;
 
-      element.classList.add('chorus-marked', `chorus-band-${result.band}`);
-      this.marked.add(element);
+      const dimmed = focusClusterId
+        ? !result.findings.some((f) => f.clusterId === focusClusterId)
+        : false;
 
-      if (focusClusterId) {
-        const inFocus = result.findings.some((f) => f.clusterId === focusClusterId);
-        element.classList.toggle('chorus-dimmed', !inFocus);
-      }
+      desired.set(element, {
+        result,
+        band: result.band,
+        chipText: BAND_COPY[result.band].chip(result),
+        dimmed,
+      });
+    }
 
-      if (!element.querySelector(':scope > .chorus-chip')) {
-        element.appendChild(this.buildChip(result, report));
+    // Retract marks that no longer apply — including nodes the platform has
+    // recycled to hold entirely different comments.
+    for (const element of [...this.marks.keys()]) {
+      if (!desired.has(element) || !element.isConnected) this.unmark(element);
+    }
+
+    for (const [element, want] of desired) {
+      const current = this.marks.get(element);
+      if (
+        current &&
+        current.band === want.band &&
+        current.chipText === want.chipText &&
+        current.dimmed === want.dimmed
+      ) {
+        // Already correct: leave the DOM completely alone.
+        this.marks.set(element, { ...want });
+        continue;
       }
+      this.applyMark(element, want, report);
     }
 
     this.renderPanel(report, options);
   }
 
-  buildChip(result, report) {
-    const copy = BAND_COPY[result.band];
+  applyMark(element, want, report) {
+    element.classList.add('chorus-marked');
+    for (const cls of BAND_CLASSES) {
+      element.classList.toggle(cls, cls === `chorus-band-${want.band}`);
+    }
+    element.classList.toggle('chorus-dimmed', want.dimmed);
+
+    let chip = element.querySelector(':scope > .chorus-chip');
+    if (!chip) {
+      chip = this.buildChip();
+      element.appendChild(chip);
+    }
+    this.updateChip(chip, want, report);
+    this.marks.set(element, { ...want });
+  }
+
+  unmark(element) {
+    element.classList.remove('chorus-marked', 'chorus-dimmed', ...BAND_CLASSES);
+    element.querySelector(':scope > .chorus-chip')?.remove();
+    this.marks.delete(element);
+  }
+
+  /**
+   * The chip is built once per element and then updated in place. Its click
+   * handler reads the current result off the node rather than closing over it,
+   * so re-analysis never needs to detach and re-attach listeners.
+   */
+  buildChip() {
     const chip = this.doc.createElement('button');
-    chip.className = `chorus-chip chorus-chip-${result.band}`;
     chip.type = 'button';
-    chip.setAttribute('aria-label', `Why this reply was marked: ${copy.label}`);
 
     const dot = this.doc.createElement('span');
     dot.className = 'chorus-chip-dot';
     chip.appendChild(dot);
-    chip.appendChild(this.doc.createTextNode(copy.chip(result)));
+    chip.appendChild(this.doc.createTextNode(''));
 
     chip.addEventListener('click', (event) => {
       event.preventDefault();
       event.stopPropagation();
-      this.showPopover(chip, result, report);
+      const { result, report } = chip.chorusState ?? {};
+      if (result) this.showPopover(chip, result, report);
     });
     return chip;
+  }
+
+  updateChip(chip, want, report) {
+    chip.className = `chorus-chip chorus-chip-${want.band}`;
+    chip.setAttribute(
+      'aria-label',
+      `Why this reply was marked: ${BAND_COPY[want.band].label}`
+    );
+    chip.lastChild.nodeValue = want.chipText;
+    chip.chorusState = { result: want.result, report };
   }
 
   showPopover(anchor, result, report) {
@@ -218,8 +283,19 @@ export class Overlay {
   }
 
   renderPanel(report, options) {
+    if (options.hidePanel) {
+      this.panel?.remove();
+      this.panel = null;
+      this.panelSignature = null;
+      return;
+    }
+
+    // Rebuild only when the numbers actually change, so the panel does not
+    // flicker on every scroll tick.
+    const signature = JSON.stringify([report.summary, options.focusClusterId]);
+    if (this.panel?.isConnected && signature === this.panelSignature) return;
+    this.panelSignature = signature;
     this.panel?.remove();
-    if (options.hidePanel) return;
 
     const { summary } = report;
     const panel = this.doc.createElement('div');
