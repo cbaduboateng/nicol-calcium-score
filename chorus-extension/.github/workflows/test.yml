@@ -31,5 +31,7 @@ jobs:
         run: |
           npm install playwright@1.56.1
           npx playwright install --with-deps chromium
-      - name: End-to-end test
+      - name: End-to-end test (scraped adapter)
         run: node tests/e2e/run.js
+      - name: End-to-end test (Bluesky API adapter)
+        run: node tests/e2e/bluesky.js

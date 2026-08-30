@@ -24,6 +24,7 @@ import {
   detectLlmLeak,
   detectLinkRepetition,
   detectAuthorFlood,
+  detectNewAccounts,
 } from './signals.js';
 
 /**
@@ -41,6 +42,7 @@ export const WEIGHTS = {
   LINK_REPEAT: 1,
   BURST: 1.5,
   HANDLE_PATTERN: 0.5,
+  NEW_ACCOUNT: 0.5,
   DEFAULT_AVATAR: 0.25,
 };
 
@@ -125,6 +127,7 @@ export function analyzeThread({ comments = [], memory = new Map(), options = {} 
   const bursts = detectBursts(prepared);
   const links = detectLinkRepetition(prepared);
   const floods = detectAuthorFlood(prepared, duplicateClusters);
+  const newAccounts = detectNewAccounts(prepared);
 
   const clusterOf = new Map();
   for (const cluster of [...duplicateClusters, ...templateClusters]) {
@@ -141,6 +144,7 @@ export function analyzeThread({ comments = [], memory = new Map(), options = {} 
       burst: bursts.flagged.has(comment.id),
       linkDomain: links.flagged.get(comment.id),
       floodCount: floods.get(comment.id),
+      accountAgeDays: newAccounts.get(comment.id),
       memoryHit: memory.get(comment.id),
     })
   );
@@ -264,6 +268,17 @@ function scoreComment(comment, context) {
       weight: WEIGHTS.HANDLE_PATTERN,
       label: 'Default-style handle',
       detail: `Handle looks auto-generated (${handleShape}). Many real users never change theirs.`,
+    });
+  }
+
+  if (context.accountAgeDays !== undefined) {
+    findings.push({
+      code: 'NEW_ACCOUNT',
+      weight: WEIGHTS.NEW_ACCOUNT,
+      label: 'Account was new when it posted',
+      detail:
+        `The account was ${context.accountAgeDays} day(s) old when this was posted. ` +
+        'Every genuine new user looks like this too.',
     });
   }
 

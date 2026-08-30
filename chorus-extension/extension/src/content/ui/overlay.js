@@ -292,7 +292,7 @@ export class Overlay {
 
     // Rebuild only when the numbers actually change, so the panel does not
     // flicker on every scroll tick.
-    const signature = JSON.stringify([report.summary, options.focusClusterId]);
+    const signature = JSON.stringify([report.summary, options.focusClusterId, options.offScreen]);
     if (this.panel?.isConnected && signature === this.panelSignature) return;
     this.panelSignature = signature;
     this.panel?.remove();
@@ -319,7 +319,10 @@ export class Overlay {
     if (summary.clusters === 0 && summary.coordinated === 0 && summary.suspicious === 0) {
       const clean = this.doc.createElement('div');
       clean.className = 'chorus-clean';
-      clean.textContent = `Checked ${summary.total} replies. No repeated wording or shared templates found.`;
+      clean.textContent =
+        `Checked ${summary.total} replies` +
+        (options.offScreen > 0 ? ' (including ones not yet on screen)' : '') +
+        '. No repeated wording or shared templates found.';
       panel.appendChild(clean);
     } else {
       panel.appendChild(stat(this.doc, 'Replies checked', summary.total));
@@ -327,6 +330,17 @@ export class Overlay {
       panel.appendChild(stat(this.doc, 'Accounts involved', summary.accountsInClusters));
       if (summary.coordinated) panel.appendChild(stat(this.doc, 'Strong matches', summary.coordinated));
       if (summary.suspicious) panel.appendChild(stat(this.doc, 'Partial matches', summary.suspicious));
+
+      // On API-backed sources the whole thread is analysed even though only
+      // part of it is rendered, so say so rather than letting the counts look
+      // inconsistent with what is visible.
+      if (options.offScreen > 0) {
+        const note = this.doc.createElement('div');
+        note.className = 'chorus-clean';
+        note.style.marginTop = '8px';
+        note.textContent = `${options.offScreen} of these replies are not on screen yet.`;
+        panel.appendChild(note);
+      }
 
       if (options.focusClusterId) {
         const actions = this.doc.createElement('div');

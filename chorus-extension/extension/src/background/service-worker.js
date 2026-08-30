@@ -20,6 +20,9 @@ const PACK_ALARM = 'chorus:refresh-pack';
 const PRUNE_ALARM = 'chorus:prune';
 const PACK_REFRESH_HOURS = 12;
 
+/** The only origin the fetch proxy will talk to. */
+const ALLOWED_FETCH_PREFIX = 'https://public.api.bsky.app/xrpc/';
+
 /**
  * Where refreshed selector packs come from. Deploy worker/ and put its URL
  * here, or leave it null to run entirely on the built-in selectors.
@@ -80,6 +83,29 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         .then((stats) => sendResponse(stats))
         .catch(() => sendResponse({ records: 0, unavailable: true }));
       return true;
+
+    // Narrow, allowlisted fetch proxy. Content scripts cannot reach the public
+    // API directly because the host page's CSP and CORS apply to them. This is
+    // deliberately NOT a general proxy: only the Bluesky public AppView is
+    // permitted, so a compromised content script cannot use it to reach
+    // arbitrary hosts with the extension's privileges.
+    case 'chorus:fetch': {
+      const url = String(message.url ?? '');
+      if (!url.startsWith(ALLOWED_FETCH_PREFIX)) {
+        sendResponse({ error: `blocked: ${url.slice(0, 60)}` });
+        return false;
+      }
+      fetch(url, { credentials: 'omit', cache: 'no-cache' })
+        .then(async (response) => {
+          sendResponse({
+            ok: response.ok,
+            status: response.status,
+            body: await response.text(),
+          });
+        })
+        .catch((error) => sendResponse({ error: String(error?.message ?? error) }));
+      return true;
+    }
 
     case 'chorus:memory-clear':
       clearMemory()

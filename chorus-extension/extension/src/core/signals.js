@@ -192,3 +192,28 @@ export function detectAuthorFlood(comments, clusters, opts = {}) {
   }
   return flagged;
 }
+
+/**
+ * Accounts created shortly before they posted.
+ *
+ * Only some sources expose account age (Bluesky does, via profileViewBasic;
+ * a scraped DOM generally does not), so this is skipped silently when the
+ * data is absent.
+ *
+ * Weighted as circumstantial and deliberately excluded from the hard-evidence
+ * set: every legitimate new user looks exactly like this on their first day.
+ * It is only ever worth anything alongside evidence involving other accounts.
+ */
+export function detectNewAccounts(comments, opts = {}) {
+  const { maxAgeDays = 14 } = opts;
+  const flagged = new Map();
+
+  for (const c of comments) {
+    if (!Number.isFinite(c.accountCreatedMs) || !Number.isFinite(c.timestampMs)) continue;
+    const ageDays = (c.timestampMs - c.accountCreatedMs) / 86_400_000;
+    if (ageDays >= 0 && ageDays <= maxAgeDays) {
+      flagged.set(c.id, Math.max(0, Math.round(ageDays)));
+    }
+  }
+  return flagged;
+}

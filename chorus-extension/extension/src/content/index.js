@@ -10,6 +10,38 @@
 import { analyzeThread } from '../core/analyze.js';
 import { extractComments, findAdapter, validateSpec } from './adapters/base.js';
 import { BUILTIN_SPECS, threadKeyFor } from './adapters/builtin.js';
+import {
+  BLUESKY_SPEC,
+  BLUESKY_API,
+  loadThread,
+  findRenderedPosts,
+} from './adapters/bluesky.js';
+
+/**
+ * Public-API requests go through the service worker rather than being issued
+ * from the page.
+ *
+ * A content script's fetch runs with the host page's origin, so it is subject
+ * to that page's CSP connect-src and to CORS. Neither is under our control and
+ * either can silently kill the adapter. The worker fetches under the
+ * extension's own host permissions, where neither applies.
+ *
+ * Shaped like a fetch Response so the adapter stays testable with a plain fake.
+ */
+async function backgroundFetch(url, init = {}) {
+  const response = await chrome.runtime.sendMessage({
+    type: 'chorus:fetch',
+    url,
+    credentials: init.credentials ?? 'omit',
+  });
+  if (!response) throw new Error('no response from background worker');
+  if (response.error) throw new Error(response.error);
+  return {
+    ok: response.ok,
+    status: response.status,
+    json: async () => JSON.parse(response.body),
+  };
+}
 import { Overlay } from './ui/overlay.js';
 
 /**
@@ -85,8 +117,10 @@ async function loadSettings() {
  * otherwise fall back to the built-in. A pack that fails validation is
  * discarded loudly in the console rather than silently disabling detection.
  */
+const ALL_SPECS = [...BUILTIN_SPECS, BLUESKY_SPEC];
+
 async function resolveSpec(hostname) {
-  let specs = BUILTIN_SPECS;
+  let specs = ALL_SPECS;
   try {
     const stored = await chrome.storage.local.get('selectorPack');
     const pack = stored?.selectorPack;
@@ -98,7 +132,7 @@ async function resolveSpec(hostname) {
         else valid.push(spec);
       }
       if (valid.length) {
-        const byId = new Map(BUILTIN_SPECS.map((s) => [s.id, s]));
+        const byId = new Map(ALL_SPECS.map((s) => [s.id, s]));
         for (const spec of valid) byId.set(spec.id, { ...byId.get(spec.id), ...spec });
         specs = [...byId.values()];
       }
@@ -107,6 +141,62 @@ async function resolveSpec(hostname) {
     /* fall back to built-ins */
   }
   return findAdapter(specs, hostname);
+}
+
+
+/**
+ * Fetched threads are cached per URL. Analysis re-runs on every DOM mutation,
+ * but the reply set only changes when someone actually posts, so refetching on
+ * each scroll tick would hammer a public API for no benefit.
+ */
+const threadCache = { url: null, at: 0, data: null };
+const THREAD_TTL_MS = 45_000;
+
+async function loadThreadCached(url, { force = false } = {}) {
+  const fresh = threadCache.url === url && Date.now() - threadCache.at < THREAD_TTL_MS;
+  if (fresh && !force) return threadCache.data;
+
+  const data = await loadThread(url);
+  threadCache.url = url;
+  threadCache.at = Date.now();
+  threadCache.data = data;
+  return data;
+}
+
+/**
+ * Gather the thread to score, plus a map from comment id to the element that
+ * should carry its mark.
+ *
+ * The two source kinds differ in an important way. A scraped adapter can only
+ * ever see rendered comments, so analysed and paintable are the same set. An
+ * API adapter sees the whole thread, so a cluster may include replies that are
+ * not on screen — which is more accurate, and worth telling the reader.
+ */
+async function collect() {
+  if (state.spec.kind === 'api') {
+    const loaded = await loadThreadCached(location.href);
+    if (!loaded) return null;
+
+    state.threadKey = loaded.threadKey;
+    const comments = loaded.comments.filter((c) => !state.dismissed.has(c.id));
+    const rendered = findRenderedPosts(document, state.spec);
+
+    const elementsById = new Map();
+    for (const comment of comments) {
+      const element = rendered.get(comment.rkey);
+      if (element) elementsById.set(comment.id, element);
+    }
+    return { comments, elementsById, offScreen: comments.length - elementsById.size };
+  }
+
+  const scraped = extractComments(document, state.spec).filter(
+    (c) => !state.dismissed.has(c.id)
+  );
+  return {
+    comments: scraped.map(({ element, ...rest }) => rest),
+    elementsById: new Map(scraped.map((c) => [c.id, c.element])),
+    offScreen: 0,
+  };
 }
 
 function schedule() {
@@ -123,25 +213,23 @@ async function run() {
   state.running = true;
 
   try {
-    const comments = extractComments(document, state.spec).filter(
-      (c) => !state.dismissed.has(c.id)
-    );
+    const collected = await collect();
 
-    if (comments.length < MIN_COMMENTS) {
+    if (!collected || collected.comments.length < MIN_COMMENTS) {
       state.overlay.clear();
       state.lastReport = null;
       report(null);
       return;
     }
 
-    const elementsById = new Map(comments.map((c) => [c.id, c.element]));
-    const plain = comments.map(({ element, ...rest }) => rest);
+    const { comments: plain, elementsById, offScreen } = collected;
 
     const memory = state.settings.memoryEnabled
       ? await memoryLookup(plain, state.threadKey)
       : new Map();
 
     const analysis = analyzeThread({ comments: plain, memory });
+    analysis.summary.offScreen = offScreen;
 
     // No clear() here: render() reconciles against what is already painted so
     // scrolling does not tear down and rebuild every mark.
@@ -149,6 +237,7 @@ async function run() {
       showWeak: state.settings.showWeak,
       hidePanel: state.settings.hidePanel,
       focusClusterId: state.focusClusterId,
+      offScreen,
     });
 
     state.lastReport = analysis;
@@ -205,6 +294,7 @@ function watchNavigation() {
     if (location.href === lastUrl) return;
     lastUrl = location.href;
     state.threadKey = threadKeyFor(state.spec, location.href);
+    threadCache.url = null;
     state.focusClusterId = null;
     state.dismissed.clear();
     state.overlay.clear();
@@ -249,7 +339,10 @@ async function init() {
         schedule();
       });
     }
-    if (message?.type === 'chorus:rescan') schedule();
+    if (message?.type === 'chorus:rescan') {
+      threadCache.url = null;
+      schedule();
+    }
     return false;
   });
 

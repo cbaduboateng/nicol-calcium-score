@@ -6,7 +6,7 @@
   "description": "Detects coordinated inauthentic behaviour in social media comment sections.",
   "scripts": {
     "test": "node --test 'tests/*.test.js'",
-    "test:e2e": "node tests/e2e/run.js",
+    "test:e2e": "node tests/e2e/run.js && node tests/e2e/bluesky.js",
     "icons": "node tools/gen-icons.cjs"
   }
 }

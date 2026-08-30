@@ -3,7 +3,8 @@
 Chorus is an unrelated project to the calcium score calculator that surrounds
 it. It is parked in this repository, on a feature branch, only because it had
 nowhere else to go: creating a new GitHub repository was blocked by token
-scope, and this container is ephemeral, so the alternative was losing the work.
+scope, and the build container is ephemeral, so the alternative was losing the
+work.
 
 ## Moving it to its own repository
 

@@ -1,16 +1,21 @@
 {
   "manifest_version": 3,
-  "name": "Chorus — coordinated reply detector",
+  "name": "Chorus \u2014 coordinated reply detector",
   "version": "0.1.0",
   "description": "Highlights replies that repeat the same wording across many accounts, with the evidence shown.",
-  "permissions": ["storage", "alarms"],
+  "permissions": [
+    "storage",
+    "alarms"
+  ],
   "host_permissions": [
     "https://x.com/*",
     "https://twitter.com/*",
     "https://www.youtube.com/*",
     "https://m.youtube.com/*",
     "https://www.reddit.com/*",
-    "https://old.reddit.com/*"
+    "https://old.reddit.com/*",
+    "https://bsky.app/*",
+    "https://public.api.bsky.app/*"
   ],
   "background": {
     "service_worker": "src/background/service-worker.js",
@@ -24,23 +29,31 @@
         "https://www.youtube.com/*",
         "https://m.youtube.com/*",
         "https://www.reddit.com/*",
-        "https://old.reddit.com/*"
+        "https://old.reddit.com/*",
+        "https://bsky.app/*"
       ],
-      "js": ["src/content/loader.js"],
-      "css": ["src/content/ui/styles.css"],
+      "js": [
+        "src/content/loader.js"
+      ],
+      "css": [
+        "src/content/ui/styles.css"
+      ],
       "run_at": "document_idle"
     }
   ],
   "web_accessible_resources": [
     {
-      "resources": ["src/*"],
+      "resources": [
+        "src/*"
+      ],
       "matches": [
         "https://x.com/*",
         "https://twitter.com/*",
         "https://www.youtube.com/*",
         "https://m.youtube.com/*",
         "https://www.reddit.com/*",
-        "https://old.reddit.com/*"
+        "https://old.reddit.com/*",
+        "https://bsky.app/*"
       ]
     }
   ],

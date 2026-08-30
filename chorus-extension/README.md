@@ -4,8 +4,8 @@ A browser extension that highlights replies repeating the same wording across ma
 accounts — the fingerprint of a coordinated posting campaign — and shows you the
 evidence behind every mark.
 
-Works on X/Twitter, YouTube and Reddit comment sections. Runs entirely in your
-browser. No account, no API keys, no data leaves your machine.
+Works on Bluesky, X/Twitter, YouTube and Reddit. Runs entirely in your browser.
+No account, no API keys, no data leaves your machine.
 
 ---
 
@@ -50,10 +50,11 @@ What Chorus does look for instead is **corroborated, checkable facts**.
 | **Link repetition** | One destination pushed by several distinct accounts | Weak |
 | **Reply burst** | Replies arriving far faster than the thread's own baseline rate | Weak |
 | **Handle shape / default avatar** | Auto-generated-looking handle, no profile picture | Very weak |
+| **Account age** | Account created shortly before it posted (where the source exposes it) | Very weak |
 
 ### The guardrail
 
-The last two rows can **never**, on their own, raise a comment above the lowest
+The last three rows can **never**, on their own, raise a comment above the lowest
 band. Promotion requires corroborating evidence involving another account or a
 hard artefact. A default avatar and a numeric handle describe someone who did not
 customise their profile, and treating that as grounds for calling a person a bot
@@ -63,6 +64,58 @@ This is enforced structurally in `analyze.js` — see the `HARD_EVIDENCE` set an
 the gate in `band()` — not by convention, and it is covered by two tests named
 `GUARDRAIL:` that fail the build if the property ever breaks.
 
+## Two kinds of source, and why Bluesky is better
+
+Chorus reads a thread in one of two ways.
+
+**Scraped sources** (X, YouTube, Reddit) read the rendered DOM. That is the only
+option on a closed platform, and it carries a permanent handicap: you see only
+the replies the platform chose to load, which is a biased sample. It is why
+burst detection is weighted low here — the arrival-rate estimate is unreliable
+by construction.
+
+**API sources** (Bluesky) fetch the *complete* reply set from the open,
+unauthenticated AT Protocol AppView, analyse all of it, and then paint results
+onto whichever posts happen to be on screen. This is strictly better:
+
+- A cluster is reported at its true size. If fourteen accounts posted the same
+  line and three are rendered, the chip still says fourteen, and the panel tells
+  you the rest are not on screen yet.
+- Timestamps come from `indexedAt`, assigned by the server. The alternative,
+  `record.createdAt`, is set by the posting client and is trivially forged —
+  which matters, because burst detection is a timing signal.
+- Account age arrives free with every post via `profileViewBasic.createdAt`.
+- Identifiers are real DIDs and AT-URIs, not guesses derived from the markup.
+- **Nothing can silently rot.** There are no selectors to break.
+
+Requests go through the extension's service worker rather than the page,
+because a content script's `fetch` runs under the host page's CSP and CORS,
+neither of which is under our control. The proxy is allowlisted to the Bluesky
+public AppView only — it is deliberately not a general-purpose proxy.
+
+Only two public endpoints are used, `com.atproto.identity.resolveHandle` and
+`app.bsky.feed.getPostThread`, with no credentials and no user identifiers.
+Results are cached per thread for 45 seconds so scrolling does not re-request.
+
+### What about publishing labels?
+
+AT Protocol lets third parties run *labeler* services that publish moderation
+labels network-wide. Chorus deliberately does not do this, and the reason is in
+the data model: a label is `{src, uri, cid, val, neg, cts, exp, sig}` where
+`val` is a string of at most 128 characters. **There is no field for evidence.**
+
+Everything that makes this tool defensible — "this wording appears in 6 replies
+from 6 accounts, average similarity 100%" — has nowhere to live in a label. What
+would ship instead is a bare accusation attached to a named person, published
+publicly and signed. A false positive stops being a private annotation one
+reader dismisses and becomes a durable public claim, with an appeals queue
+someone has to staff.
+
+So Chorus reads from AT Protocol and publishes nothing. If that ever changes it
+should be post records only, never accounts; `severity: inform`, `blurs: none`,
+`defaultSetting: ignore`; and with `exp` set, because coordination is a property
+of a moment rather than of a person.
+
 ## Installing
 
 Nothing to compile.
@@ -70,7 +123,12 @@ Nothing to compile.
 ```bash
 git clone <this repo>
 cd chorus-extension
-node --test 'tests/*.test.js'   # optional: 19 tests, no dependencies
+node --test 'tests/*.test.js'   # 31 tests, no dependencies
+
+# Optional: end-to-end tests, which load the real extension into Chromium.
+npm install playwright && npx playwright install chromium
+node tests/e2e/run.js       # scraped adapter, against an X-shaped page
+node tests/e2e/bluesky.js   # API adapter, against a mocked AT Protocol thread
 ```
 
 **Chrome / Edge / Brave**
@@ -82,7 +140,7 @@ node --test 'tests/*.test.js'   # optional: 19 tests, no dependencies
 1. Go to `about:debugging#/runtime/this-firefox`
 2. **Load Temporary Add-on** → select `extension/manifest.json`
 
-Then open any X post, YouTube video or Reddit thread and scroll the replies.
+Then open any Bluesky, X, YouTube or Reddit thread and scroll the replies.
 
 ## What you will see
 
@@ -119,7 +177,7 @@ extension/src/
     signals.js     burst detection, handle shapes, LLM leakage, link repetition
     analyze.js     evidence aggregation, banding, and the hard-evidence gate
   content/
-    adapters/      per-platform selectors, expressed as DATA not code
+    adapters/      per-platform sources: selectors as DATA, plus the Bluesky API adapter
     ui/            markers, evidence popover, thread panel
     index.js       observe → extract → analyse → paint
   storage/db.js    cross-thread memory (LSH over SimHash bands)
@@ -144,10 +202,16 @@ extension's own origin.
 
 Stated plainly, because a tool like this is dangerous when oversold:
 
-- **It only sees loaded replies.** Platforms load a biased subset, which is why
-  burst detection is weighted low — the arrival-rate estimate is unreliable.
+- **On scraped sources it only sees loaded replies.** Platforms load a biased
+  subset, which is why burst detection is weighted low there. This limitation
+  does not apply to Bluesky, where the whole thread is fetched.
 - **Selectors rot.** When X reshuffles its DOM, detection silently stops until the
-  adapter is updated. Check `confirmed` dates in `builtin.js`.
+  adapter is updated. Check `confirmed` dates in `builtin.js`. Again, not a
+  Bluesky problem — that adapter does not scrape.
+- **The Bluesky adapter has not been run against the live API.** It is built to
+  the published lexicons and covered end-to-end against a mocked AppView, but
+  the network was unavailable in the environment where it was written, so it
+  needs one real-world smoke test.
 - **Coordinated ≠ inauthentic.** Fandoms, activist campaigns and ordinary people
   repeating a slogan all produce genuine clusters. The UI says so on every popover.
 - **Short replies are ignored** (under 4 words). "lol", "this" and "same" are
@@ -160,7 +224,7 @@ Stated plainly, because a tool like this is dangerous when oversold:
 
 ## Roadmap
 
-- Account-history signals (age, reply-only ratio) where the DOM exposes them
+- Account-history signals (reply-only ratio, follower shape) where sources expose them
 - Optional fact-check matching via the Google Fact Check Tools API, through the worker
 - Image provenance: C2PA Content Credentials verification on media in replies
 - Exportable cluster reports for researchers and platform reporting
