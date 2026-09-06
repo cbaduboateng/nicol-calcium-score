@@ -1950,6 +1950,16 @@
     "ticker": "BRNT.L",
     "why_it_matters": ""
   },
+  "BRNX": {
+    "cap": "micro",
+    "exchange": "NASDAQ",
+    "market_cap_usd": 1614789.0,
+    "name": "BrenX Ltd.",
+    "sector": "Utilities - Renewable",
+    "summary": "",
+    "ticker": "BRNX",
+    "why_it_matters": ""
+  },
   "BRR": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -7688,6 +7698,16 @@
     "ticker": "HOPE",
     "why_it_matters": ""
   },
+  "HOS": {
+    "cap": "unknown",
+    "exchange": "NYSE",
+    "market_cap_usd": null,
+    "name": "Hornbeck Offshore Services, Inc",
+    "sector": "Other",
+    "summary": "",
+    "ticker": "HOS",
+    "why_it_matters": ""
+  },
   "HOVR": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -7995,6 +8015,16 @@
   "HYT": null,
   "HYVE": null,
   "HZO": null,
+  "IA": {
+    "cap": "small",
+    "exchange": "NASDAQ",
+    "market_cap_usd": 331492672.0,
+    "name": "Innovative Aerosystems, Inc.",
+    "sector": "Aerospace & Defense",
+    "summary": "",
+    "ticker": "IA",
+    "why_it_matters": ""
+  },
   "IAG": null,
   "IART": {
     "cap": "small",
@@ -12550,6 +12580,16 @@
     "ticker": "NXE",
     "why_it_matters": ""
   },
+  "NXH": {
+    "cap": "small",
+    "exchange": "NASDAQ",
+    "market_cap_usd": 377215840.0,
+    "name": "Neighborhood Intelligence, Inc.",
+    "sector": "Internet Retail",
+    "summary": "",
+    "ticker": "NXH",
+    "why_it_matters": ""
+  },
   "NXMH": {
     "cap": "micro",
     "exchange": "?",
@@ -13343,6 +13383,16 @@
     "sector": "Asset Management",
     "summary": "",
     "ticker": "OXSQ",
+    "why_it_matters": ""
+  },
+  "PAAI": {
+    "cap": "micro",
+    "exchange": "AMEX",
+    "market_cap_usd": 49515076.0,
+    "name": "Paradium AI, Inc.",
+    "sector": "Internet Content & Information",
+    "summary": "",
+    "ticker": "PAAI",
     "why_it_matters": ""
   },
   "PAAS": {
@@ -14460,6 +14510,16 @@
     "why_it_matters": ""
   },
   "PSO": null,
+  "PSQL": {
+    "cap": "small",
+    "exchange": "NASDAQ",
+    "market_cap_usd": 1689857792.0,
+    "name": "Pasqal Holding SA",
+    "sector": "Computer Hardware",
+    "summary": "",
+    "ticker": "PSQL",
+    "why_it_matters": ""
+  },
   "PSTG": null,
   "PSTI": null,
   "PSTL": null,
@@ -15962,6 +16022,16 @@
     "sector": "Biotechnology",
     "summary": "",
     "ticker": "SGMT",
+    "why_it_matters": ""
+  },
+  "SGRX": {
+    "cap": "micro",
+    "exchange": "NASDAQ",
+    "market_cap_usd": 1747601.0,
+    "name": "Sangrix Inc.",
+    "sector": "Financial Data & Stock Exchanges",
+    "summary": "",
+    "ticker": "SGRX",
     "why_it_matters": ""
   },
   "SGRY": {
@@ -18491,6 +18561,16 @@
     "why_it_matters": ""
   },
   "UWMC": null,
+  "VAI": {
+    "cap": "micro",
+    "exchange": "NASDAQ",
+    "market_cap_usd": 32754350.0,
+    "name": "Valor Energy Inc.",
+    "sector": "Rental & Leasing Services",
+    "summary": "",
+    "ticker": "VAI",
+    "why_it_matters": ""
+  },
   "VANI": {
     "cap": "micro",
     "exchange": "?",
