@@ -4635,6 +4635,16 @@
     "why_it_matters": ""
   },
   "DRIV": null,
+  "DRK": {
+    "cap": "micro",
+    "exchange": "NASDAQ",
+    "market_cap_usd": 27903470.0,
+    "name": "DarkHorse Technologies Inc.",
+    "sector": "Software - Infrastructure",
+    "summary": "",
+    "ticker": "DRK",
+    "why_it_matters": ""
+  },
   "DRS": {
     "cap": "large",
     "exchange": "NASDAQ",
@@ -7044,6 +7054,16 @@
     "ticker": "GOVX",
     "why_it_matters": ""
   },
+  "GOW": {
+    "cap": "micro",
+    "exchange": "NASDAQ",
+    "market_cap_usd": 180884496.0,
+    "name": "GOWell Energy Technology",
+    "sector": "Oil & Gas Equipment & Services",
+    "summary": "",
+    "ticker": "GOW",
+    "why_it_matters": ""
+  },
   "GP": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -7918,6 +7938,16 @@
     "sector": "Integrated Freight & Logistics",
     "summary": "",
     "ticker": "HUBG",
+    "why_it_matters": ""
+  },
+  "HUCK": {
+    "cap": "micro",
+    "exchange": "NASDAQ",
+    "market_cap_usd": 150515712.0,
+    "name": "Huckleberry.ai, Inc.",
+    "sector": "Software - Application",
+    "summary": "",
+    "ticker": "HUCK",
     "why_it_matters": ""
   },
   "HUMA": {
@@ -12527,6 +12557,16 @@
     "ticker": "NWBI",
     "why_it_matters": ""
   },
+  "NWCL": {
+    "cap": "mid",
+    "exchange": "NASDAQ",
+    "market_cap_usd": 2209909760.0,
+    "name": "newcleo plc",
+    "sector": "Specialty Industrial Machinery",
+    "summary": "",
+    "ticker": "NWCL",
+    "why_it_matters": ""
+  },
   "NWE": {
     "cap": "mid",
     "exchange": "?",
@@ -12569,6 +12609,16 @@
     "why_it_matters": ""
   },
   "NX": null,
+  "NXAT": {
+    "cap": "micro",
+    "exchange": "NASDAQ",
+    "market_cap_usd": 2831996.0,
+    "name": "Nexus Advanced Technologies Inc.",
+    "sector": "Conglomerates",
+    "summary": "",
+    "ticker": "NXAT",
+    "why_it_matters": ""
+  },
   "NXDR": null,
   "NXE": {
     "cap": "mid",
@@ -13059,6 +13109,16 @@
     "ticker": "ONEG",
     "why_it_matters": ""
   },
+  "ONEN": {
+    "cap": "micro",
+    "exchange": "NASDAQ",
+    "market_cap_usd": 198285728.0,
+    "name": "ONE Nuclear Energy Inc.",
+    "sector": "Utilities - Independent Power Producers",
+    "summary": "",
+    "ticker": "ONEN",
+    "why_it_matters": ""
+  },
   "ONEW": {
     "cap": "micro",
     "exchange": "?",
@@ -13128,6 +13188,16 @@
     "why_it_matters": ""
   },
   "OPLN": null,
+  "OPNW": {
+    "cap": "micro",
+    "exchange": "NASDAQ",
+    "market_cap_usd": 72399744.0,
+    "name": "OpenWorld, Inc.",
+    "sector": "Information Technology Services",
+    "summary": "",
+    "ticker": "OPNW",
+    "why_it_matters": ""
+  },
   "OPRT": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -17103,6 +17173,16 @@
     "ticker": "SVCO",
     "why_it_matters": ""
   },
+  "SVIA": {
+    "cap": "small",
+    "exchange": "NASDAQ",
+    "market_cap_usd": 378221792.0,
+    "name": "Silvia, Inc.",
+    "sector": "Capital Markets",
+    "summary": "",
+    "ticker": "SVIA",
+    "why_it_matters": ""
+  },
   "SVM": null,
   "SVRA": {
     "cap": "small",
@@ -17471,6 +17551,16 @@
     "why_it_matters": ""
   },
   "TEO": null,
+  "TEVA": {
+    "cap": "large",
+    "exchange": "NYSE",
+    "market_cap_usd": 46103543808.0,
+    "name": "Teva Pharmaceutical Industries Limited",
+    "sector": "Drug Manufacturers - Specialty & Generic",
+    "summary": "",
+    "ticker": "TEVA",
+    "why_it_matters": ""
+  },
   "TFPM": null,
   "TFSL": {
     "cap": "mid",
