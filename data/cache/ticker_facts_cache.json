@@ -1105,6 +1105,16 @@
     "ticker": "AXGN",
     "why_it_matters": ""
   },
+  "AXNX": {
+    "cap": "micro",
+    "exchange": "NASDAQ",
+    "market_cap_usd": 5976218.0,
+    "name": "Axonex AI Group Limited",
+    "sector": "Engineering & Construction",
+    "summary": "",
+    "ticker": "AXNX",
+    "why_it_matters": ""
+  },
   "AXTA": null,
   "AY": null,
   "AYA": {
@@ -1403,6 +1413,16 @@
   "BCS": null,
   "BCSF": null,
   "BCX": null,
+  "BDAI": {
+    "cap": "micro",
+    "exchange": "NASDAQ",
+    "market_cap_usd": 17893802.0,
+    "name": "Biddance AI Systems, Inc.",
+    "sector": "Information Technology Services",
+    "summary": "",
+    "ticker": "BDAI",
+    "why_it_matters": ""
+  },
   "BDJ": null,
   "BDN": null,
   "BDTX": {
@@ -14220,6 +14240,16 @@
     "ticker": "POLA",
     "why_it_matters": ""
   },
+  "POM": {
+    "cap": "micro",
+    "exchange": "NASDAQ",
+    "market_cap_usd": 10843156.0,
+    "name": "Pomdoctor Limited",
+    "sector": "Pharmaceutical Retailers",
+    "summary": "",
+    "ticker": "POM",
+    "why_it_matters": ""
+  },
   "POR": null,
   "POWW": {
     "cap": "micro",
@@ -16330,6 +16360,16 @@
     "sector": "Software - Infrastructure",
     "summary": "",
     "ticker": "SKYA",
+    "why_it_matters": ""
+  },
+  "SKYD": {
+    "cap": "large",
+    "exchange": "NYSE",
+    "market_cap_usd": 39177723904.0,
+    "name": "Skydance Corporation",
+    "sector": "Entertainment",
+    "summary": "",
+    "ticker": "SKYD",
     "why_it_matters": ""
   },
   "SKYQ": {
@@ -19511,6 +19551,16 @@
   },
   "WOLF": null,
   "WOOF": null,
+  "WORX": {
+    "cap": "micro",
+    "exchange": "NASDAQ",
+    "market_cap_usd": 1181831.0,
+    "name": "SCWorx Corp.",
+    "sector": "Health Information Services",
+    "summary": "",
+    "ticker": "WORX",
+    "why_it_matters": ""
+  },
   "WPC": {
     "cap": "large",
     "exchange": "?",
