@@ -111,3 +111,4 @@ scanned_at_utc,n_curated_gems,n_explorer_gems,pick,best_score,verdict,gems,gem_m
 2026-10-23 21:33,5,5,FIG,0.515,pick: FIG,FIG AI OTLK BAYRY LON:THG ATOM LFVN TEAD POET CNVS,FIG:0 AI:0 OTLK:0 BAYRY:0 LON:THG:0 ATOM:0 LFVN:0 TEAD:0 POET:0 CNVS:0
 2026-10-26 20:09,3,5,,0.496,best adjusted score 0.50 (FIG) is below the 0.50 conviction floor,FIG AI LON:THG ATOM LFVN TEAD POET CNVS,FIG:0 AI:0 LON:THG:0 ATOM:0 LFVN:0 TEAD:0 POET:0 CNVS:0
 2026-10-26 22:47,3,5,,0.496,best adjusted score 0.50 (FIG) is below the 0.50 conviction floor,FIG AI LON:THG ATOM LFVN TEAD POET CNVS,FIG:0 AI:0 LON:THG:0 ATOM:0 LFVN:0 TEAD:0 POET:0 CNVS:0
+2026-10-27 19:38,3,5,,0.457,best adjusted score 0.46 (AI) is below the 0.50 conviction floor,AI FIG LON:THG ATOM LFVN TEAD POET CNVS,AI:0 FIG:0 LON:THG:0 ATOM:0 LFVN:0 TEAD:0 POET:0 CNVS:0
