@@ -130,3 +130,4 @@ scanned_at_utc,n_curated_gems,n_explorer_gems,pick,best_score,verdict,gems,gem_m
 2026-11-06 23:19,4,5,,0.498,best adjusted score 0.50 (CLVR) is below the 0.50 conviction floor,CLVR FIVN AI LON:THG ATOM LFVN TEAD POET CNVS,CLVR:0 FIVN:0 AI:0 LON:THG:0 ATOM:0 LFVN:0 TEAD:0 POET:0 CNVS:0
 2026-11-09 23:35,4,5,,0.497,best adjusted score 0.50 (FIVN) is below the 0.50 conviction floor,FIVN AI LON:THG CLVR ATOM LFVN TEAD POET CNVS,FIVN:0 AI:0 LON:THG:0 CLVR:0 ATOM:0 LFVN:0 TEAD:0 POET:0 CNVS:0
 2026-11-10 01:40,4,5,,0.497,best adjusted score 0.50 (FIVN) is below the 0.50 conviction floor,FIVN AI LON:THG CLVR ATOM LFVN TEAD POET CNVS,FIVN:0 AI:0 LON:THG:0 CLVR:0 ATOM:0 LFVN:0 TEAD:0 POET:0 CNVS:0
+2026-11-10 21:00,5,5,,0.441,best adjusted score 0.44 (LON:ASC) is below the 0.50 conviction floor,LON:ASC FIVN UAA AI FIG ATOM LFVN TEAD POET CNVS,LON:ASC:0 FIVN:0 UAA:0 AI:0 FIG:0 ATOM:0 LFVN:0 TEAD:0 POET:0 CNVS:0
