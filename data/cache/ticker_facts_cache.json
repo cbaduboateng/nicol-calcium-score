@@ -201,6 +201,16 @@
   "AGGP": null,
   "AGI": null,
   "AGIO": null,
+  "AGLT": {
+    "cap": "small",
+    "exchange": "NASDAQ",
+    "market_cap_usd": 1672128000.0,
+    "name": "Agility Robotics, Inc.",
+    "sector": "Computer Hardware",
+    "summary": "",
+    "ticker": "AGLT",
+    "why_it_matters": ""
+  },
   "AGNC": null,
   "AGNT": null,
   "AGPU": null,
@@ -2428,6 +2438,16 @@
     "ticker": "CART",
     "why_it_matters": ""
   },
+  "CASK": {
+    "cap": "small",
+    "exchange": "NASDAQ",
+    "market_cap_usd": 363529088.0,
+    "name": "Sempreon, Inc.",
+    "sector": "Beverages - Wineries & Distilleries",
+    "summary": "",
+    "ticker": "CASK",
+    "why_it_matters": ""
+  },
   "CAST": {
     "cap": "micro",
     "exchange": "NASDAQ",
@@ -3748,6 +3768,16 @@
     "sector": "Other Industrial Metals & Mining",
     "summary": "",
     "ticker": "CRML",
+    "why_it_matters": ""
+  },
+  "CRMN": {
+    "cap": "micro",
+    "exchange": "NASDAQ",
+    "market_cap_usd": 13348918.0,
+    "name": "Skyline Builders Group Holding Limited",
+    "sector": "Engineering & Construction",
+    "summary": "",
+    "ticker": "CRMN",
     "why_it_matters": ""
   },
   "CRMT": {
@@ -5839,6 +5869,16 @@
   },
   "FBP": null,
   "FBRT": null,
+  "FCDH": {
+    "cap": "micro",
+    "exchange": "NASDAQ",
+    "market_cap_usd": 3112304.0,
+    "name": "Forcendra Holding Limited",
+    "sector": "Advertising Agencies",
+    "summary": "",
+    "ticker": "FCDH",
+    "why_it_matters": ""
+  },
   "FCEL": {
     "cap": "small",
     "exchange": "?",
@@ -5963,6 +6003,16 @@
     "sector": "Banks - Regional",
     "summary": "",
     "ticker": "FFIN",
+    "why_it_matters": ""
+  },
+  "FFTT": {
+    "cap": "micro",
+    "exchange": "NASDAQ",
+    "market_cap_usd": 10617498.0,
+    "name": "Masonglory Limited",
+    "sector": "Engineering & Construction",
+    "summary": "",
+    "ticker": "FFTT",
     "why_it_matters": ""
   },
   "FFWD": null,
@@ -13197,6 +13247,16 @@
     "why_it_matters": ""
   },
   "OPFI": null,
+  "OPHI": {
+    "cap": "micro",
+    "exchange": "NASDAQ",
+    "market_cap_usd": 11225798.0,
+    "name": "CollPlant Biotechnologies Ltd.",
+    "sector": "Biotechnology",
+    "summary": "",
+    "ticker": "OPHI",
+    "why_it_matters": ""
+  },
   "OPK": {
     "cap": "small",
     "exchange": "?",
@@ -14972,6 +15032,16 @@
     "sector": "Semiconductors",
     "summary": "",
     "ticker": "QUIK",
+    "why_it_matters": ""
+  },
+  "QUIT": {
+    "cap": "small",
+    "exchange": "NASDAQ",
+    "market_cap_usd": 651607744.0,
+    "name": "Achieve Life Sciences, Inc.",
+    "sector": "Biotechnology",
+    "summary": "",
+    "ticker": "QUIT",
     "why_it_matters": ""
   },
   "QURE": {
